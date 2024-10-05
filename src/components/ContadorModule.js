@@ -289,7 +289,7 @@ useEffect(() => {
                                     <em>Todos los Estados</em>
                                 </MenuItem>
                                 <MenuItem value="POR APROBAR">POR APROBAR</MenuItem>
-                                <MenuItem value="APROBADO">APROBADO</MenuItem>
+                                <MenuItem value="POR ABONAR">APROBADO</MenuItem>
     
                             </Select>
                         </Grid>
