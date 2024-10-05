@@ -23,9 +23,7 @@ const Navbar = () => {
                 if (token) {
                     const userResponse = await api.get('/users/me/');
                     setUser(userResponse.data);
-                } else {
-                    navigate('/login'); // Si no hay token, redirigir al login
-                }
+                } 
             } catch (error) {
                 console.error('Failed to fetch user', error);
                 localStorage.removeItem('token'); // Eliminar token si hay error
