@@ -1,0 +1,350 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: black;
+    color: #333;
+}
+.header {
+    background-color: #ffffff;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #333;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+.header img {
+    height: 60px;
+}
+.nav-links {
+    display: flex;
+    gap: 30px;
+    list-style: none;
+    margin-left: auto;
+}
+.nav-links a {
+    text-decoration: none;
+    font-weight: 500;
+    color: #aaa;
+    font-size: 18px;
+}
+.nav-links a:hover {
+    color: #FF6E40;
+}
+.right-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+/* Redes sociales */
+.social-icons {
+    display: flex;
+    gap: 15px;
+}
+.social-icons a {
+    color: #1F3A93;
+    font-size: 20px;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+.social-icons a:hover {
+    color: #FF6E40;
+}
+/* Botones */
+.buttons {
+    display: flex;
+    gap: 10px;
+}
+.button {
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+.btn-login {
+    background-color: #FF6E40;
+    color: #ffffff;
+    border: none;
+}
+.btn-login:hover {
+    background-color: #FF5722;
+}
+.btn-register {
+    background-color: transparent;
+    color: #FF6E40;
+    border: 2px solid #FF6E40;
+}
+.btn-register:hover {
+    background-color: #FF6E40;
+    color: #ffffff;
+}
+
+/* Slider */
+/* Slider */
+.slider {
+position: relative;
+width: 100%;
+height: 600px; /* Puedes ajustar esta altura según sea necesario */
+overflow: hidden;
+}
+
+.slides {
+display: flex;
+width: 300%; /* Ajusta el contenedor para que ocupe el 100% por imagen, 3 imágenes -> 300% */
+transition: transform 0.5s ease-in-out;
+}
+
+.slides img {
+width: 100%; /* Cada imagen ocupa el 100% del contenedor del slider */
+height: 600px; /* Mantén la altura */
+object-fit: cover; /* Ajusta las imágenes sin distorsionar */
+}
+
+/* Texto superpuesto en el slider */
+.slide-text {
+position: absolute;
+bottom: 50px;
+left: 65%;
+transform: translateX(-50%);
+color: #fff;
+font-size: 28px;
+font-weight: bold;
+text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+text-align: center;
+}
+
+/* Puntos de navegación */
+.dots {
+position: absolute;
+bottom: 20px;
+left: 50%;
+transform: translateX(-50%);
+display: flex;
+gap: 10px;
+}
+
+.dot {
+width: 15px;
+height: 15px;
+background-color: rgba(255, 255, 255, 0.5);
+border-radius: 50%;
+cursor: pointer;
+}
+
+.dot.active {
+background-color: #FF6E40;
+}
+
+/* Estilos del formulario */
+.login-form {
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    transform: translateY(-50%);
+    background-color: #FF6E40;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 300px;
+    color: #fff;
+}
+.login-form h3 {
+    margin-bottom: 15px;
+    font-size: 22px;
+    color: #fff;
+    text-align: center;
+}
+.login-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+}
+.login-form .btn-submit {
+    background-color: #32469B;
+    color: white;
+    padding: 10px;
+    width: 100%;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+.login-form a {
+    color: #fff;
+    font-size: 14px;
+    text-decoration: underline;
+    display: block;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.info-section {
+position: relative;
+background-image: url('c:/imagenes/fondo3.png');
+background-size: cover;
+padding: 60px 0;
+height: 900px;
+}
+
+.info-content2 {
+position: absolute;
+bottom: -300px;
+left: 35%;
+transform: translateX(-50%);
+color: #fff;
+font-size: 28px;
+font-weight: bold;
+text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+text-align: left;
+}
+
+.info-background {
+display: flex;
+align-items: center;
+justify-content: center;
+position: relative;
+}
+
+.info-content {
+text-align: left;
+max-width: 1200px;
+margin: 0 auto;
+padding: 50px;
+}
+
+.info-content h2 {
+font-size: 34px;
+color: white;
+font-weight: bold;
+}
+
+.info-content p {
+color: white;
+font-size: 18px;
+}
+
+.compu-img {
+width: 30%;
+height: auto;
+position: absolute;
+right: 0;
+bottom: 30;
+}
+
+/* Estilos para la nueva sección */
+.feature-section {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 50px;
+background-color:white;
+background-size: cover;
+color: #fff;
+ height: 500px;
+}
+
+.feature-image {
+max-width: 100%;
+height: auto;
+}
+
+.right-content h2 {
+color: #fff;
+font-size: 28px;
+font-weight: bold;
+line-height: 1.5;
+}
+
+.right-content p {
+color: #fff;
+font-size: 16px;
+line-height: 1.5;
+margin-top: 20px;
+}
+
+
+.left-content {
+width: 30%;
+height: auto;
+position: absolute;
+right: 0;
+bottom: 30;
+}
+
+@media (max-width: 768px) {
+.feature-section {
+    flex-direction: column;
+    text-align: center;
+}
+
+.right-content h2 {
+    font-size: 22px;
+}
+
+.right-content p {
+    font-size: 14px;
+}
+}
+
+.footer {
+    background-color: #1F3A93;
+    color: #fff;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+.footer .logo {
+    flex: 1;
+}
+.footer .logo img {
+    width: 150px;
+}
+.footer .section {
+    flex: 1;
+    margin: 20px;
+}
+.footer .section h4 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+.footer .section ul {
+    list-style: none;
+}
+.footer .section ul li {
+    margin: 5px 0;
+}
+.footer .section ul li a {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+.footer .section ul li a:hover {
+    color: #FF6E40;
+}
+.footer .social-icons {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+.footer .social-icons a {
+    color: #fff;
+    font-size: 20px;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+.footer .social-icons a:hover {
+    color: #FF6E40;
+}
+.footer .whatsapp {
+    margin-top: 10px;
+}

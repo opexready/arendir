@@ -1,0 +1,25 @@
+.card {
+    border: none;
+}
+
+.card-title {
+    color: #0056b3; /* Azul */
+}
+
+.form-group label {
+    color: #0056b3; /* Azul */
+}
+
+.btn-primary {
+    background-color: #ff6600; /* Naranja */
+    border-color: #ff6600; /* Naranja */
+}
+
+.btn-primary:hover {
+    background-color: #e65c00; /* Naranja oscuro */
+    border-color: #e65c00; /* Naranja oscuro */
+}
+
+.container {
+    max-width: 600px;
+}

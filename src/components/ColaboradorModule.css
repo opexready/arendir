@@ -1,0 +1,67 @@
+/* Fondo General */
+body {
+    background-color: #E1E8F0; /* Gris Claro */
+}
+
+/* Tarjetas */
+.card {
+    border: none;
+    background-color: #FFFFFF; /* Fondo blanco para las tarjetas */
+}
+
+.card-body {
+    color: #1A3B63; /* Azul Oscuro para el texto en las tarjetas */
+}
+
+/* Estado de Carga */
+.loading {
+    text-align: center;
+    font-size: 1.5rem;
+    color: #1A3B63; /* Azul Oscuro */
+}
+
+/* Contenedor Principal */
+.container {
+    max-width: 800px;
+}
+
+/* Botones Primarios */
+.btn-primary {
+    background-color: #3A699A; /* Azul Medio */
+    border-color: #3A699A; /* Azul Medio */
+}
+
+.btn-primary:hover {
+    background-color: #2E5578; /* Un tono más oscuro de Azul Medio para el hover */
+    border-color: #2E5578; /* Un tono más oscuro de Azul Medio para el hover */
+}
+
+/* Botones Secundarios */
+.btn-secondary {
+    background-color: #6c757d; /* Gris */
+    border-color: #6c757d; /* Gris */
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268; /* Gris oscuro */
+    border-color: #545b62; /* Gris oscuro */
+}
+
+/* Encabezados */
+h1, h2, h3, h4, h5, h6 {
+    color: #1A3B63; /* Azul Oscuro para los encabezados */
+}
+
+/* Texto Secundario */
+.text-secondary {
+    color: #A2C0E8; /* Azul Claro para el texto secundario */
+}
+
+/* Enlaces */
+a {
+    color: #3A699A; /* Azul Medio para enlaces */
+}
+
+a:hover {
+    color: #2E5578; /* Un tono más oscuro de Azul Medio para el hover de enlaces */
+}

@@ -1,0 +1,36 @@
+/* Contenedor general */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Estilo de la tabla */
+.table {
+  background-color: #FFFFFF; /* Fondo blanco */
+  border: 1px solid #ddd;
+}
+
+/* Encabezado de la tabla */
+.table thead {
+  background-color: #1A3B63; /* Azul Oscuro */
+  color: white;
+}
+
+.table thead th {
+  text-align: center;
+}
+
+/* Filas pares de la tabla */
+.table tbody tr:nth-child(even) {
+  background-color: #F2F2F2; /* Gris claro para filas pares */
+}
+
+/* Hover en las filas de la tabla */
+.table tbody tr:hover {
+  background-color: #E9ECEF; /* Gris claro para el hover */
+}
+
+/* Estilo de los controles del formulario */
+.form-control {
+  margin-bottom: 10px;
+}

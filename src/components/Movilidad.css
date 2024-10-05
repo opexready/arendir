@@ -1,0 +1,48 @@
+/* Fondo General */
+body {
+    background-color: #E1E8F0; /* Gris Claro */
+}
+
+/* Contenedor Principal */
+.container {
+    max-width: 600px;
+    background-color: #FFFFFF; /* Fondo blanco para el contenedor */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Título */
+h1 {
+    color: #1A3B63; /* Azul Oscuro */
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+/* Formulario */
+.form-label {
+    font-weight: bold;
+    color: #1A3B63; /* Azul Oscuro */
+}
+
+.form-control {
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 14px; /* Tamaño de texto del formulario */
+}
+
+/* Botón de Enviar */
+.btn-primary {
+    background-color: #3A699A; /* Azul Medio */
+    border-color: #3A699A; /* Azul Medio */
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+    width: 100%; /* Ancho completo */
+}
+
+.btn-primary:hover {
+    background-color: #2E5578; /* Azul Medio Oscuro */
+    border-color: #2E5578; /* Azul Medio Oscuro */
+}

@@ -1,0 +1,85 @@
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+    color: #0056b3; /* Azul */
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.form-label {
+    font-weight: bold;
+    color: #0056b3; /* Azul */
+}
+
+.btn-primary {
+    background-color: #0056b3; /* Azul */
+    border-color: #0056b3; /* Azul */
+    border-radius: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    width: 100%; /* Ancho completo */
+}
+
+.btn-primary:hover {
+    background-color: #004494; /* Azul oscuro */
+    border-color: #004494; /* Azul oscuro */
+}
+
+.container {
+    max-width: 800px; /* Aumentando el ancho máximo para un mejor diseño */
+}
+
+.input-group-text {
+    background-color: #0056b3; /* Azul */
+    color: #fff;
+    font-weight: bold;
+    border-radius: 0;
+}
+
+.custom-file-upload {
+    display: inline-block;
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #0056b3; /* Azul */
+    color: #fff !important; /* Letra blanca siempre visible */
+    font-weight: bold; /* Negrita */
+    border-radius: 20px;
+    text-align: center;
+    margin-top: 4px;
+    width: 100%; /* Ancho completo */
+    text-transform: uppercase;
+    font-size: 14px; /* Tamaño de la fuente */
+}
+
+.custom-file-upload:hover {
+    background-color: #004494; /* Azul oscuro */
+}
+
+.alert-success {
+    background-color: #e0f3ff;
+    border-color: #a6ddff;
+    color: #0056b3;
+}
+
+.alert-danger {
+    background-color: #ffe6e6;
+    border-color: #ffcccc;
+    color: #b30000;
+}
+
+.form-group {
+    margin-bottom: 20px; /* Espacio entre campos del formulario */
+}
+
+input[type="file"] {
+    display: none; /* Oculta el campo de archivo */
+}
+
+.row {
+    margin-bottom: 20px;
+}

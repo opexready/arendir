@@ -1,0 +1,89 @@
+.contador-container {
+    background-color: #E1E8F0;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.contador-info p {
+    color: #1A3B63; /* Azul Oscuro */
+}
+
+.filtro-select {
+    border-radius: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+}
+
+.contador-table thead.table-header {
+    background-color: #3A699A; /* Azul Medio */
+    color: #fff;
+    font-size: 13px;
+}
+
+.contador-table td {
+    font-size: 13px; /* Incrementar el tamaño del texto en las celdas */
+}
+
+.estado-select {
+    border-radius: 10px;
+    padding: 5px 10px;
+    background-color: #fff;
+}
+
+.btn-export {
+    border-radius: 5px;
+    padding: 5px 15px;
+    font-size: 0.875rem;
+}
+
+.link-button {
+    color: #3A699A;
+    text-decoration: none;
+    padding: 0;
+}
+
+.link-button:hover {
+    color: #2E5578;
+}
+
+.icon-lupa {
+    width: 16px;
+    height: 16px;
+}
+
+.modal-title {
+    color: #1A3B63;
+}
+
+button.btn-primary {
+    background-color: #3A699A;
+    border-color: #3A699A;
+    font-size: 13px;
+}
+
+button.btn-primary:hover {
+    background-color: #2E5578;
+    border-color: #2E5578;
+}
+
+button.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    font-size: 13px;
+}
+
+button.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+button.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+button.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}

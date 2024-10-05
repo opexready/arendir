@@ -1,0 +1,42 @@
+/* Home.css */
+
+.home-container {
+    background-color: #E1E8F0; /* Fondo General: Gris Claro */
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+}
+
+.home-card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 100%;
+}
+
+.home-title {
+    color: #1A3B63; /* Encabezados: Azul Oscuro */
+    margin-bottom: 20px;
+}
+
+.home-button {
+    background-color: #3A699A; /* Botones: Azul Medio */
+    color: white;
+    border-color: #3A699A;
+    margin: 10px 0; /* Ajuste de márgenes verticales */
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+.home-button:hover {
+    background-color: #2E5578; /* Hover: Azul Medio Oscuro */
+}
+
+.loading {
+    color: #1A3B63; /* Texto de Carga: Azul Oscuro */
+}

@@ -1,0 +1,13 @@
+/* Puedes agregar estilos personalizados aquí si es necesario */
+.container {
+    max-width: 800px;
+}
+
+.form-group label {
+    font-weight: bold;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
