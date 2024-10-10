@@ -102,33 +102,34 @@ const LandingPage = () => {
 
       {/* Info Section */}
       <section className="info-section">
-        <div className="info-background">
-          <div className="info-content">
-            <div className="info-content2">
-              <h2>
-                Nuestro sistema está diseñado para simplificar y optimizar el proceso de control de
-                gastos corporativos
-              </h2>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean commodo ligula eget
-                dolor.
-              </p>
-            </div>
-            <div className="logo-container">
-              <img
-                src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/logoblanco.png?alt=media&token=d730a36b-5bc6-4c54-8bc8-1350ae15c5ac"
-                alt="Arendir Logo Blanco"
-                className="info-logo"
-              />
-            </div>
-            <img
-              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/compu.png?alt=media&token=b4252030-527d-4596-b618-6a0f16f1ff87"
-              alt="Ilustración de computadora"
-              className="compu-img"
-            />
-          </div>
-        </div>
-      </section>
+  <div className="info-background">
+    <div className="info-content">
+      <div className="info-content2">
+        <h2>
+          Nuestro sistema está diseñado para simplificar y optimizar el proceso de control de
+          gastos corporativos
+        </h2>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean commodo ligula eget
+          dolor.
+        </p>
+      </div>
+      <div className="logo-container">
+        <img
+          src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/logoblanco.png?alt=media&token=d730a36b-5bc6-4c54-8bc8-1350ae15c5ac"
+          alt="Arendir Logo Blanco"
+          className="info-logo"
+        />
+      </div>
+      <img
+        src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/compu.png?alt=media&token=b4252030-527d-4596-b618-6a0f16f1ff87"
+        alt="Ilustración de computadora"
+        className="compu-img"
+      />
+    </div>
+  </div>
+</section>
+
 
       {/* Feature Section */}
       <section className="feature-section">
@@ -143,12 +144,9 @@ const LandingPage = () => {
           <div className="right-content">
             <h2>
               Nos destacamos por brindar una experiencia de usuario fluida y un soporte técnico
-              dedicado
-            </h2>
-            <p>
-              Adaptándonos a las necesidades específicas de cada empresa, nuestro sistema optimiza
+              dedicado, adaptándonos a las necesidades específicas de cada empresa, nuestro sistema optimiza
               el control de gastos.
-            </p>
+            </h2>
           </div>
         </div>
       </section>

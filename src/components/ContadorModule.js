@@ -373,13 +373,24 @@ useEffect(() => {
                     </Grid>
                 </FormControl>
 
-                <Button variant="contained" color="primary" onClick={handleFiltrarClick} sx={{ mb: 4 }}>
+                <Button 
+                    variant="contained" 
+                    onClick={handleFiltrarClick} 
+                    sx={{ 
+                        mb: 4, 
+                        backgroundColor: '#2E3192',  // Color de fondo principal
+                        '&:hover': { 
+                            backgroundColor: '#1F237A',  // Color de fondo en hover
+                        },
+                        color: 'white',  // Color del texto
+                    }}
+                >
                     Filtrar
                 </Button>
 
                 <TableContainer>
                     <Table>
-                        <TableHead sx={{ backgroundColor: '#007bff' }}> {/* Fondo de la cabecera */}
+                        <TableHead sx={{ backgroundColor: '#2E3192' }}> {/* Fondo de la cabecera en azul oscuro */}
                             <TableRow>
                                 <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Item</TableCell>
                                 <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Fecha</TableCell>
@@ -427,26 +438,27 @@ useEffect(() => {
                                         )}
                                     </TableCell>
                                     <TableCell>
-                                    <FormControl fullWidth>
-                                        <Select
-                                            value={documento.estado || ""}
-                                            onChange={(e) => handleEstadoChange(documento.id, e.target.value)}
-                                            displayEmpty
-                                        >
-                                            <MenuItem value="" disabled>
-                                                <em>Selecciona un Estado</em>
-                                            </MenuItem>
-                                            <MenuItem value="POR ABONAR">APROBADO</MenuItem>
-                                            <MenuItem value="RECHAZADO">RECHAZADO</MenuItem>
-                                            <MenuItem value="POR APROBAR">POR APROBAR</MenuItem> {/* Agregar todas las opciones posibles */}
-                                        </Select>
-                                    </FormControl>
-                                </TableCell>
+                                        <FormControl fullWidth>
+                                            <Select
+                                                value={documento.estado || ""}
+                                                onChange={(e) => handleEstadoChange(documento.id, e.target.value)}
+                                                displayEmpty
+                                            >
+                                                <MenuItem value="" disabled>
+                                                    <em>Selecciona un Estado</em>
+                                                </MenuItem>
+                                                <MenuItem value="POR ABONAR">APROBADO</MenuItem>
+                                                <MenuItem value="RECHAZADO">RECHAZADO</MenuItem>
+                                                <MenuItem value="POR APROBAR">POR APROBAR</MenuItem> {/* Agregar todas las opciones posibles */}
+                                            </Select>
+                                        </FormControl>
+                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
                 </TableContainer>
+
 
                 <Modal open={showModal} onClose={handleCloseModal}>
                     <Box sx={{

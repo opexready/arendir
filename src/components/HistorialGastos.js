@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api';
 import { Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Select, MenuItem, FormControl, InputLabel, Typography, Paper, TextField, Button, Grid } from '@mui/material';
-import { jwtDecode } from 'jwt-decode'; // Para obtener el username del token
+import {jwtDecode} from 'jwt-decode'; // Para obtener el username del token
 
 const HistorialGastos = () => {
     const [documentos, setDocumentos] = useState([]);
@@ -52,14 +52,24 @@ const HistorialGastos = () => {
 
     // Estilo personalizado para la cabecera de la tabla
     const headerStyle = {
-        backgroundColor: '#1976d2', // Azul de Material UI
+        backgroundColor: '#2E3192', // Color de fondo de la cabecera
         color: 'white', // Texto blanco
         fontWeight: 'bold', // Negrita
     };
 
     return (
         <Container maxWidth="lg" sx={{ marginTop: 4 }}>
-            <Typography variant="h4" align="center" gutterBottom>
+            <Typography 
+                variant="h4" 
+                align="center" 
+                gutterBottom 
+                sx={{ 
+                    color: '#F15A29',  // Color naranja
+                    fontWeight: 'bold',  // Texto en negrita
+                    margin: '0',  // Elimina márgenes extra
+                    fontSize: '1.5rem'  // Ajusta el tamaño de la fuente si es necesario
+                }}
+            >
                 Historial de Gastos
             </Typography>
 
@@ -101,23 +111,6 @@ const HistorialGastos = () => {
                         </FormControl>
                     </Grid>
 
-                    {/* <Grid item xs={12} sm={6} md={4}>
-                        <FormControl fullWidth>
-                            <InputLabel id="tipo-anticipo-label">Tipo de Anticipo</InputLabel>
-                            <Select
-                                labelId="tipo-anticipo-label"
-                                id="tipoAnticipo"
-                                value={tipoAnticipo}
-                                label="Tipo de Anticipo"
-                                onChange={(e) => setTipoAnticipo(e.target.value)}
-                            >
-                                <MenuItem value="">Todos</MenuItem>
-                                <MenuItem value="SERVICIO">SERVICIO</MenuItem>
-                                <MenuItem value="PRODUCTO">PRODUCTO</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Grid> */}
-
                     {/* Fechas */}
                     <Grid item xs={12} sm={6} md={4}>
                         <TextField
@@ -140,45 +133,18 @@ const HistorialGastos = () => {
                         />
                     </Grid>
 
-                    {/* <Grid item xs={12} sm={6} md={4}>
-                        <TextField
-                            label="Fecha Rendición Desde"
-                            type="date"
-                            fullWidth
-                            value={fechaRendicionFrom}
-                            onChange={(e) => setFechaRendicionFrom(e.target.value)}
-                            InputLabelProps={{ shrink: true }}
-                        />
-                    </Grid> */}
-                    {/* <Grid item xs={12} sm={6} md={4}>
-                        <TextField
-                            label="Fecha Rendición Hasta"
-                            type="date"
-                            fullWidth
-                            value={fechaRendicionTo}
-                            onChange={(e) => setFechaRendicionTo(e.target.value)}
-                            InputLabelProps={{ shrink: true }}
-                        />
-                    </Grid> */}
-
-                    {/* Filtro de número de rendición */}
-                    {/* <Grid item xs={12} sm={6} md={4}>
-                        <TextField
-                            label="Número de Rendición"
-                            fullWidth
-                            value={numeroRendicion}
-                            onChange={(e) => setNumeroRendicion(e.target.value)}
-                        />
-                    </Grid> */}
-
                     {/* Botón para aplicar filtros */}
                     <Grid item xs={12}>
                         <Button
                             variant="contained"
-                            color="primary"
                             fullWidth
                             onClick={handleSubmit}
-                            sx={{ marginTop: 2 }}
+                            sx={{ 
+                                backgroundColor: '#2E3192',  // Color de fondo
+                                '&:hover': { backgroundColor: '#1F237A' },  // Color de fondo cuando se hace hover
+                                color: 'white',  // Color del texto
+                                marginTop: 2 
+                            }}
                         >
                             Aplicar Filtros
                         </Button>

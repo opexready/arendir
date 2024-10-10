@@ -155,9 +155,21 @@ const AnticiposViajes = () => {
         <Container maxWidth="sm" sx={{ marginTop: 10 }}>
             <Card sx={{ boxShadow: 3 }}>
                 <CardContent>
-                    <Typography variant="h4" component="h1" align="center" gutterBottom>
-                        Anticipos de Viajes
-                    </Typography>
+                <Typography 
+                    variant="h4" 
+                    component="h1" 
+                    align="center" 
+                    gutterBottom 
+                    sx={{ 
+                        color: '#F15A29',  // Color naranja
+                        fontWeight: 'bold',  // Texto en negrita
+                        margin: '0',  // Elimina márgenes extra
+                        fontSize: '1.5rem'  // Ajusta el tamaño de la fuente si es necesario
+                    }}
+                >
+                    Anticipos de Viajes
+                </Typography>
+
                     <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
                         {/* Tipo de Viaje */}
                         <TextField
@@ -180,13 +192,24 @@ const AnticiposViajes = () => {
                         {tipoViaje === 'NACIONAL' ? (
                             <>
                                 <Button
-                                    variant="outlined"
-                                    fullWidth
-                                    onClick={() => setOpenUbigeoDialog(true)}
-                                    sx={{ mt: 2, mb: 2 }}
-                                >
-                                    Seleccionar Destino (Nacional)
-                                </Button>
+    variant="outlined"
+    fullWidth
+    onClick={() => setOpenUbigeoDialog(true)}
+    sx={{ 
+        mt: 2, 
+        mb: 2, 
+        color: '#2E3192',  // Color del texto
+        borderColor: '#2E3192',  // Color del borde
+        '&:hover': { 
+            backgroundColor: '#F15A29',  // Color de fondo al hacer hover
+            borderColor: '#F15A29',  // Cambiar color de borde en hover
+            color: 'white'  // Cambiar color del texto a blanco en hover
+        }
+    }}
+>
+    Seleccionar Destino (Nacional)
+</Button>
+
                                 <Typography variant="body1" sx={{ mb: 2 }}>
                                     {formData.destino ? `Destino seleccionado: ${formData.destino}` : 'No se ha seleccionado destino.'}
                                 </Typography>
@@ -286,16 +309,28 @@ const AnticiposViajes = () => {
                                                         value={formData.total}
                                                         onChange={handleChange}
                                                     />
-                                                    <Button
-                                                        type="submit"
-                                                        fullWidth
-                                                        variant="contained"
-                                                        color="primary"
-                                                        disabled={isLoading}
-                                                        sx={{ mt: 3, mb: 2 }}
-                                                    >
-                                                        {isLoading ? 'Enviando...' : 'Solicitar'}
-                                                    </Button>
+                                                 <Button
+                                                    type="submit"
+                                                    fullWidth
+                                                    variant="contained"
+                                                    disabled={isLoading}
+                                                    sx={{ 
+                                                        mt: 3, 
+                                                        mb: 2, 
+                                                        backgroundColor: '#2E3192',  // Color de fondo
+                                                        '&:hover': { 
+                                                            backgroundColor: '#1F237A',  // Color de fondo en hover
+                                                        },
+                                                        color: 'white',  // Color del texto
+                                                        '&:disabled': {
+                                                            backgroundColor: '#A5A5A5',  // Color de fondo cuando está deshabilitado
+                                                            color: '#E0E0E0',  // Color del texto cuando está deshabilitado
+                                                        }
+                                                    }}
+                                                >
+                                                    {isLoading ? 'Enviando...' : 'Solicitar'}
+                                                </Button>
+
                                                 </Box>
                                             </CardContent>
                                         </Card>

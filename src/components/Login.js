@@ -33,9 +33,10 @@ const Login = () => {
     return (
         <Container maxWidth="sm">
             <Box sx={{ mt: '80px', textAlign: 'center' }}>  {}  
-                <Typography variant="h4" component="h1" gutterBottom>
-                    Bienvenido
-                </Typography>
+            <Typography variant="h4" component="h1" gutterBottom sx={{ color: '#F15A29' }}>
+                Bienvenido
+            </Typography>
+
             </Box>
             {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
             <Box component="form" onSubmit={handleSubmit} sx={{ p: 4, backgroundColor: '#f5f5f5', borderRadius: '8px' }}>

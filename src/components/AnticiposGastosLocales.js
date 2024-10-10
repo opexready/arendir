@@ -104,9 +104,21 @@ const AnticiposGastosLocales = () => {
         <Container maxWidth="sm" sx={{ marginTop: 10 }}> {/* Ajustar el padding superior */}
             <Card sx={{ boxShadow: 3 }}>
                 <CardContent>
-                    <Typography variant="h4" component="h1" align="center" gutterBottom>
-                        Anticipos Gastos Locales
-                    </Typography>
+                <Typography 
+                    variant="h4" 
+                    component="h1" 
+                    align="center" 
+                    gutterBottom 
+                    sx={{ 
+                        color: '#F15A29',  // Color naranja
+                        fontWeight: 'bold',  // Texto en negrita
+                        margin: '0',  // Elimina márgenes extra
+                        fontSize: '1.5rem'  // Ajusta el tamaño de la fuente si es necesario
+                    }}
+                >
+                    Anticipos Gastos Locales
+                </Typography>
+
                     <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
                         <TextField
                             variant="outlined"
@@ -171,12 +183,24 @@ const AnticiposGastosLocales = () => {
                             type="submit"
                             fullWidth
                             variant="contained"
-                            color="primary"
                             disabled={isLoading}
-                            sx={{ mt: 3, mb: 2 }}
+                            sx={{ 
+                                mt: 3, 
+                                mb: 2, 
+                                backgroundColor: '#2E3192',  // Color de fondo principal
+                                '&:hover': { 
+                                    backgroundColor: '#1F237A',  // Color de fondo en hover
+                                },
+                                color: 'white',  // Color del texto
+                                '&:disabled': {
+                                    backgroundColor: '#A5A5A5',  // Color de fondo cuando está deshabilitado
+                                    color: '#E0E0E0',  // Color del texto cuando está deshabilitado
+                                }
+                            }}
                         >
                             {isLoading ? 'Enviando...' : 'Solicitar'}
-                        </Button>
+                    </Button>
+
                     </Box>
                 </CardContent>
             </Card>

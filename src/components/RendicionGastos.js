@@ -85,9 +85,22 @@ const RendicionGastos = () => {
         <Container maxWidth="sm" sx={{ mt: 5 }}> {/* Elimina el contenedor extra */}
             <Card>
                 <CardContent>
-                    <Typography variant="h4" component="h1" align="center" gutterBottom>
-                        Gastos Generales
-                    </Typography>
+                <Typography 
+                    variant="h4" 
+                    component="h1" 
+                    align="center" 
+                    gutterBottom 
+                    sx={{ 
+                        color: '#F15A29', // Color naranja
+                        fontWeight: 'bold', // Texto en negrita
+                        textAlign: 'center', // Centrado
+                        margin: '0', // Elimina márgenes extra
+                        fontSize: '1.5rem' // Ajusta el tamaño de la fuente si es necesario
+                    }}
+                >
+                    Gastos Generales
+                </Typography>
+
                     <FormControl fullWidth variant="outlined" sx={{ marginBottom: 3 }}>
                         <InputLabel id="category-label">Categoría</InputLabel>
                         <Select
