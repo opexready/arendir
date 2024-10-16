@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './LandingPage.css'; // Asegúrate de tener el archivo CSS para los estilos
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import "./LandingPage.css"; // Asegúrate de tener el archivo CSS para los estilos
 
 const LandingPage = () => {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handleLoginClick = () => {
-    navigate('/login'); // Redirigir al login
+    navigate("/login"); // Redirigir al login
   };
 
   const currentSlide = (index) => {
@@ -67,7 +67,10 @@ const LandingPage = () => {
 
       {/* Slider */}
       <section className="slider">
-        <div className="slides" style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
+        <div
+          className="slides"
+          style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+        >
           <img
             src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/slide1.png?alt=media&token=3bf465dc-c288-442a-b57b-113b2f375061"
             alt="Slide 1"
@@ -82,12 +85,22 @@ const LandingPage = () => {
           />
         </div>
         <div className="slide-text">
-          Ofrecemos una solución de software integral para la gestión de rendiciones de gastos
+          Ofrecemos una solución de software integral para la gestión de
+          rendiciones de gastos
         </div>
         <div className="dots">
-          <span className={`dot ${currentIndex === 0 ? 'active' : ''}`} onClick={() => currentSlide(0)}></span>
-          <span className={`dot ${currentIndex === 1 ? 'active' : ''}`} onClick={() => currentSlide(1)}></span>
-          <span className={`dot ${currentIndex === 2 ? 'active' : ''}`} onClick={() => currentSlide(2)}></span>
+          <span
+            className={`dot ${currentIndex === 0 ? "active" : ""}`}
+            onClick={() => currentSlide(0)}
+          ></span>
+          <span
+            className={`dot ${currentIndex === 1 ? "active" : ""}`}
+            onClick={() => currentSlide(1)}
+          ></span>
+          <span
+            className={`dot ${currentIndex === 2 ? "active" : ""}`}
+            onClick={() => currentSlide(2)}
+          ></span>
         </div>
         <div className="login-form">
           <h3>Iniciar sesión</h3>
@@ -102,34 +115,33 @@ const LandingPage = () => {
 
       {/* Info Section */}
       <section className="info-section">
-  <div className="info-background">
-    <div className="info-content">
-      <div className="info-content2">
-        <h2>
-          Nuestro sistema está diseñado para simplificar y optimizar el proceso de control de
-          gastos corporativos
-        </h2>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean commodo ligula eget
-          dolor.
-        </p>
-      </div>
-      <div className="logo-container">
-        <img
-          src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/logoblanco.png?alt=media&token=d730a36b-5bc6-4c54-8bc8-1350ae15c5ac"
-          alt="Arendir Logo Blanco"
-          className="info-logo"
-        />
-      </div>
-      <img
-        src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/compu.png?alt=media&token=b4252030-527d-4596-b618-6a0f16f1ff87"
-        alt="Ilustración de computadora"
-        className="compu-img"
-      />
-    </div>
-  </div>
-</section>
-
+        <div className="info-background">
+          <div className="info-content">
+            <div className="info-content2">
+              <h2>
+                Nuestro sistema está diseñado para simplificar y optimizar el
+                proceso de control de gastos corporativos
+              </h2>
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean
+                commodo ligula eget dolor.
+              </p>
+            </div>
+            <div className="logo-container">
+              <img
+                src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/logoblanco.png?alt=media&token=d730a36b-5bc6-4c54-8bc8-1350ae15c5ac"
+                alt="Arendir Logo Blanco"
+                className="info-logo"
+              />
+            </div>
+            <img
+              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/compu.png?alt=media&token=b4252030-527d-4596-b618-6a0f16f1ff87"
+              alt="Ilustración de computadora"
+              className="compu-img"
+            />
+          </div>
+        </div>
+      </section>
 
       {/* Feature Section */}
       <section className="feature-section">
@@ -143,9 +155,10 @@ const LandingPage = () => {
           </div>
           <div className="right-content">
             <h2>
-              Nos destacamos por brindar una experiencia de usuario fluida y un soporte técnico
-              dedicado, adaptándonos a las necesidades específicas de cada empresa, nuestro sistema optimiza
-              el control de gastos.
+              Nos destacamos por brindar una experiencia de usuario fluida y un
+              soporte técnico dedicado, adaptándonos a las necesidades
+              específicas de cada empresa, nuestro sistema optimiza el control
+              de gastos.
             </h2>
           </div>
         </div>
@@ -190,7 +203,10 @@ const LandingPage = () => {
         <div className="section">
           <h4>CONTÁCTANOS</h4>
           <div className="whatsapp">
-            <a href="https://wa.me/1234567890" style={{ color: '#fff', textDecoration: 'none' }}>
+            <a
+              href="https://wa.me/1234567890"
+              style={{ color: "#fff", textDecoration: "none" }}
+            >
               <i className="fab fa-whatsapp"></i> Chatea por Whatsapp
             </a>
           </div>

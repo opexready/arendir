@@ -3,6 +3,7 @@ import { Container, Card, CardContent, TextField, Button, Box, Typography, Dialo
 import axios from 'axios';
 import './AnticiposViajes.css';
 import { baseURL, api } from '../api';
+import ubigeoData from '../data/ubigeoData'; 
 
 const AnticiposViajes = () => {
     const getCurrentDate = () => {
@@ -46,16 +47,8 @@ const AnticiposViajes = () => {
     const [selectedDistrito, setSelectedDistrito] = useState('');
     const [provincias, setProvincias] = useState([]);
     const [distritos, setDistritos] = useState([]);
-
-    // Ubigeo data
-    const ubigeoData = {
-        Lima: {
-            Lima: ["Miraflores", "San Isidro", "Surco"],
-            Callao: ["Ventanilla", "Bellavista"],
-        },
-        // Otros departamentos y sus provincias/distritos
-    };
-
+    
+ 
     // Obtener la información del usuario autenticado al cargar el componente
     useEffect(() => {
         const fetchUserData = async () => {
@@ -68,6 +61,17 @@ const AnticiposViajes = () => {
 
                 const userData = response.data;
                 // Actualiza los datos del formulario con la información del usuario
+                console.log('User ID:', userData.id);  // <- Aquí está el log
+
+                 // Llama a la API de rendición usando el user_id
+                const rendicionResponse = await axios.get(`${baseURL}/rendicion/last`, {
+                    params: { user_id: userData.id }
+                });
+                const rendicionData = rendicionResponse.data;
+
+                // Imprime el campo "nombre" de la API de rendición
+                console.log('Nombre de rendición:', rendicionData.nombre);
+
                 setFormData({
                     ...formData,
                     usuario: userData.email,
@@ -80,7 +84,8 @@ const AnticiposViajes = () => {
                     numero_cuenta: userData.cuenta_bancaria || '',
                     fecha_emision: getCurrentDate(),
                     tipo_solicitud: "ANTICIPO",
-                    tipo_anticipo: "VIAJES"
+                    tipo_anticipo: "VIAJES",
+                    numero_rendicion: rendicionData.nombre
                 });
             } catch (error) {
                 console.error('Error al obtener los datos del usuario:', error);
@@ -90,13 +95,32 @@ const AnticiposViajes = () => {
         fetchUserData();
     }, []); // Se ejecuta solo una vez cuando el componente se monta
 
+    // const handleChange = (e) => {
+    //     const { name, value } = e.target;
+    //     setFormData({
+    //         ...formData,
+    //         [name]: value
+    //     });
+    // };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        });
+    
+        // Si el campo actualizado es "presupuesto", actualizamos "total" con el mismo valor
+        if (name === 'presupuesto') {
+            setFormData({
+                ...formData,
+                presupuesto: value,
+                total: value // Reflejar el valor del presupuesto en el total
+            });
+        } else {
+            setFormData({
+                ...formData,
+                [name]: value
+            });
+        }
     };
+    
 
     const handleTipoViajeChange = (e) => {
         const tipo = e.target.value;

@@ -4,12 +4,13 @@ import { Container, Card, CardContent, Typography, TextField, Button, Alert, Men
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import './DatosRecibo.css';
-import { baseURL, api } from '../api';  
+// import { baseURL, api } from '../api';  
+import api, { baseURL } from '../api';
 
 const DatosRecibo = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { selectedCuentaContable, selectedRubro } = location.state || {};
+    const { selectedCuentaContable, selectedRubro, numeroRendicion } = location.state || {};
 
     const [formData, setFormData] = useState({
         fecha: '',
@@ -113,8 +114,7 @@ const DatosRecibo = () => {
         if (file) {
             const formData = new FormData();
             formData.append('file', file);
-
-            setIsLoading(true); // Inicia el estado de carga
+            setIsLoading(true); 
 
             try {
                 const uploadResponse = await axios.post(`${baseURL}/upload-file-firebase/`, formData, {
@@ -130,10 +130,15 @@ const DatosRecibo = () => {
                 });
 
                 if (decodeResponse.data.detail === "No QR code found in the image") {
-                    // Si el QR no es válido, muestra un error
                     setError('No se encontró un código QR en la imagen. Por favor, intente con otra imagen.');
                 } else {
-                    // Si hay datos válidos, rellena el formulario
+
+                    const decodedRuc = decodeResponse.data.ruc; // OBTENER EL RUC DEL QR DECODIFICADO
+
+                    // NUEVO: BUSCAR AUTOMÁTICAMENTE EL RUC DECODIFICADO EN /consulta-ruc
+                    const rucResponse = await axios.get(`${baseURL}/consulta-ruc?ruc=${decodedRuc}`);
+                    const razonSocial = rucResponse.data.razonSocial;
+
                     setFormData((prevFormData) => ({
                         ...prevFormData,
                         fecha: decodeResponse.data.fecha || '',
@@ -143,7 +148,8 @@ const DatosRecibo = () => {
                         numero: decodeResponse.data.numero || '',
                         igv: decodeResponse.data.igv || '',
                         total: decodeResponse.data.total || '',
-                        archivo: fileLocation
+                        archivo: fileLocation,
+                        proveedor: razonSocial || 'Proveedor Desconocido'
                     }));
                     setError(''); // Limpia el error si hay datos
                 }
@@ -176,7 +182,7 @@ const DatosRecibo = () => {
             usuario: loggedInUser,
             gerencia: "Gerencia de Finanzas",
             ruc: formData.ruc,
-            proveedor: "Proveedor S.A.",
+            proveedor: formData.proveedor || "Proveedor Desconocido",
             fecha_emision: formData.fecha,
             moneda: formData.moneda || "PEN",
             tipo_documento: formData.tipoDoc,
@@ -193,14 +199,15 @@ const DatosRecibo = () => {
             pago: parseFloat(formData.total),
             detalle: "Pago por servicios de consultoría",
             estado: "POR APROBAR",
-            tipo_solicitud: "GASTO",
+            tipo_solicitud: "RENDICION",
             empresa: "innova",
             archivo: formData.archivo,
             tipo_cambio: formData.moneda === 'USD' ? tipoCambio : 1,
             afecto: parseFloat(formData.afecto) || 0.0,
             inafecto: formData.inafecto ? parseFloat(formData.inafecto) : 0.0,
             rubro: formData.rubro,
-            cuenta_contable: parseInt(formData.cuentaContable, 10)
+            cuenta_contable: parseInt(formData.cuentaContable, 10),
+            numero_rendicion: numeroRendicion
         };
 
         try {
@@ -217,15 +224,51 @@ const DatosRecibo = () => {
         }
     };
 
-    const handleDialogClose = (registerAnother) => {
+    // const handleDialogClose = (registerAnother) => {
+    //     setDialogOpen(false);
+    //     if (registerAnother) {
+    //         // Redirigir a la página de rendición de gastos
+    //         navigate('/colaborador/rendicion-gastos');
+    //     } else {
+    //         // Finalizar rendición y cerrar sesión
+    //         localStorage.removeItem('token'); // Eliminar el token de sesión
+    //         navigate('/login'); // Redirigir al login
+    //     }
+    // };
+
+    const handleDialogClose = async (registerAnother) => {
         setDialogOpen(false);
+    
         if (registerAnother) {
-            // Redirigir a la página de rendición de gastos
-            navigate('/colaborador/rendicion-gastos');
+            try {
+                // Obtén el user_id de la sesión
+                const userString = localStorage.getItem('user');
+                const user = userString ? JSON.parse(userString) : null;
+                const userId = user ? user.id : null;
+    
+                if (userId) {
+                    // Realiza la solicitud GET al endpoint para obtener la última rendición
+                    const response = await api.get(`/rendicion/last`, { params: { user_id: userId } });
+                    
+                    // Extrae y muestra el campo "nombre" en la consola
+                    const { nombre } = response.data;
+                    console.log("Nombre de la última rendición:", nombre);
+    
+                    // Redirigir a la página de rendición de gastos si es necesario
+                    navigate('/colaborador/rendicion-gastos');
+                } else {
+                    console.error('Error: Usuario no autenticado');
+                    alert('Error: Usuario no autenticado');
+                }
+            } catch (error) {
+                console.error('Error al obtener la última rendición:', error);
+                alert('Error al obtener la última rendición. Intente nuevamente.');
+            }
         } else {
             // Finalizar rendición y cerrar sesión
-            localStorage.removeItem('token'); // Eliminar el token de sesión
-            navigate('/login'); // Redirigir al login
+            localStorage.removeItem('numero_rendicion');
+            //localStorage.removeItem('token'); // Eliminar el token de sesión
+            navigate('/colaborador'); // Redirigir al login
         }
     };
 
@@ -385,7 +428,7 @@ const DatosRecibo = () => {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => handleDialogClose(true)} color="primary">
-                        Nuevo Gasto
+                        Adicionar Gasto
                     </Button>
                     <Button onClick={() => handleDialogClose(false)} color="secondary">
                         Finalizar Rendición

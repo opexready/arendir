@@ -28,25 +28,32 @@ const AnticiposGastosLocales = () => {
         banco: '',
         numero_cuenta: '',
         fecha_solicitud: getCurrentDate(),
-        fecha_emision: getCurrentDate() // Agregamos este campo para la fecha de emisión
+        fecha_emision: getCurrentDate(),
+        numero_rendicion: '' // Añadimos el campo numero_rendicion
     });
 
-    const [responseMessage, setResponseMessage] = useState(''); // Para manejar la respuesta de la API
-    const [isLoading, setIsLoading] = useState(false); // Estado para manejar la carga
-    const [open, setOpen] = useState(false); // Estado para controlar el popup
+    const [responseMessage, setResponseMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [open, setOpen] = useState(false);
 
-    // Obtener la información del usuario autenticado al cargar el componente
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await axios.get(`${baseURL}/users/me`, {
+                const userResponse = await axios.get(`${baseURL}/users/me`, {
                     headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}` // Asegúrate de que el token esté en localStorage
+                        Authorization: `Bearer ${localStorage.getItem('token')}`
                     }
                 });
 
-                const userData = response.data;
-                // Actualiza los datos del formulario con la información del usuario
+                const userData = userResponse.data;
+
+                // Obtener el numero_rendicion llamando a la API /rendicion/last
+                const rendicionResponse = await axios.get(`${baseURL}/rendicion/last`, {
+                    params: { user_id: userData.id }
+                });
+
+                const rendicionData = rendicionResponse.data;
+
                 setFormData({
                     ...formData,
                     usuario: userData.email,
@@ -55,13 +62,12 @@ const AnticiposGastosLocales = () => {
                     gerencia: userData.gerencia,
                     area: userData.area,
                     ceco: userData.ceco,
-                    banco: userData.banco || '', // Si no hay banco, dejar vacío
+                    banco: userData.banco || '',
                     numero_cuenta: userData.cuenta_bancaria || '',
                     fecha_solicitud: getCurrentDate(),
-                    fecha_emision: getCurrentDate(), // Campo de fecha de emisión inicializado
-                    tipo_solicitud: "ANTICIPO",
-                    tipo_anticipo: "GASTOS LOCALES",
+                    fecha_emision: getCurrentDate(),
                     cuenta_contable: userData.cuenta_contable,
+                    numero_rendicion: rendicionData.nombre // Asignar el nombre del rendición al campo
                 });
             } catch (error) {
                 console.error('Error al obtener los datos del usuario:', error);
@@ -81,43 +87,32 @@ const AnticiposGastosLocales = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsLoading(true); // Iniciar el loading
+        setIsLoading(true);
 
         try {
             const response = await axios.post(`${baseURL}/documentos/crear-con-pdf-local/`, formData);
             setResponseMessage('Anticipo creado correctamente.');
-            setOpen(true); // Abre el popup cuando se crea el documento exitosamente
+            setOpen(true);
         } catch (error) {
             setResponseMessage('Error al crear el documento.');
             console.error('Error:', error);
         } finally {
-            setIsLoading(false); // Detener el loading
+            setIsLoading(false);
         }
     };
 
     const handleClose = () => {
         setOpen(false);
-        window.history.back(); // Retrocede una vez en el historial del navegador
+        window.history.back();
     };
 
     return (
-        <Container maxWidth="sm" sx={{ marginTop: 10 }}> {/* Ajustar el padding superior */}
+        <Container maxWidth="sm" sx={{ marginTop: 10 }}>
             <Card sx={{ boxShadow: 3 }}>
                 <CardContent>
-                <Typography 
-                    variant="h4" 
-                    component="h1" 
-                    align="center" 
-                    gutterBottom 
-                    sx={{ 
-                        color: '#F15A29',  // Color naranja
-                        fontWeight: 'bold',  // Texto en negrita
-                        margin: '0',  // Elimina márgenes extra
-                        fontSize: '1.5rem'  // Ajusta el tamaño de la fuente si es necesario
-                    }}
-                >
-                    Anticipos Gastos Locales
-                </Typography>
+                    <Typography variant="h4" component="h1" align="center" gutterBottom sx={{ color: '#F15A29', fontWeight: 'bold', margin: '0', fontSize: '1.5rem' }}>
+                        Anticipos Gastos Locales
+                    </Typography>
 
                     <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
                         <TextField
@@ -150,7 +145,6 @@ const AnticiposGastosLocales = () => {
                             <option value="USD">USD</option>
                         </TextField>
 
-                        {/* Campo Fecha Emisión */}
                         <TextField
                             variant="outlined"
                             margin="normal"
@@ -179,28 +173,28 @@ const AnticiposGastosLocales = () => {
                             value={formData.total}
                             onChange={handleChange}
                         />
+
                         <Button
                             type="submit"
                             fullWidth
                             variant="contained"
                             disabled={isLoading}
-                            sx={{ 
-                                mt: 3, 
-                                mb: 2, 
-                                backgroundColor: '#2E3192',  // Color de fondo principal
-                                '&:hover': { 
-                                    backgroundColor: '#1F237A',  // Color de fondo en hover
+                            sx={{
+                                mt: 3,
+                                mb: 2,
+                                backgroundColor: '#2E3192',
+                                '&:hover': {
+                                    backgroundColor: '#1F237A',
                                 },
-                                color: 'white',  // Color del texto
+                                color: 'white',
                                 '&:disabled': {
-                                    backgroundColor: '#A5A5A5',  // Color de fondo cuando está deshabilitado
-                                    color: '#E0E0E0',  // Color del texto cuando está deshabilitado
+                                    backgroundColor: '#A5A5A5',
+                                    color: '#E0E0E0',
                                 }
                             }}
                         >
                             {isLoading ? 'Enviando...' : 'Solicitar'}
-                    </Button>
-
+                        </Button>
                     </Box>
                 </CardContent>
             </Card>
@@ -217,7 +211,6 @@ const AnticiposGastosLocales = () => {
                 </DialogActions>
             </Dialog>
 
-            {/* Backdrop with CircularProgress for loading effect */}
             <Backdrop open={isLoading} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
                 <CircularProgress color="inherit" />
             </Backdrop>

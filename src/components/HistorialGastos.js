@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api';
 import { Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Select, MenuItem, FormControl, InputLabel, Typography, Paper, TextField, Button, Grid } from '@mui/material';
-import {jwtDecode} from 'jwt-decode'; // Para obtener el username del token
 
 const HistorialGastos = () => {
     const [documentos, setDocumentos] = useState([]);
@@ -13,16 +12,54 @@ const HistorialGastos = () => {
     const [fechaRendicionFrom, setFechaRendicionFrom] = useState('');
     const [fechaRendicionTo, setFechaRendicionTo] = useState('');
     const [numeroRendicion, setNumeroRendicion] = useState('');
-    const [loggedInUser, setLoggedInUser] = useState('');
+    const [userId, setUserId] = useState(null); // Almacena el user_id numérico
+    const [username, setUsername] = useState(''); // Almacena el email como username
+    const [rendiciones, setRendiciones] = useState([]); // Estado para las rendiciones
 
-    // Obtener el nombre de usuario del token almacenado en localStorage
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            const decodedToken = jwtDecode(token);
-            setLoggedInUser(decodedToken.sub); // Asumiendo que `sub` es el username
+    // Obtener el user_id y email desde el endpoint /users/me
+    const fetchUserData = async () => {
+        try {
+            const response = await api.get('/users/me', {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}` // Incluye el token en la cabecera
+                }
+            });
+            const userData = response.data;
+            setUserId(userData.id); // Asigna el user_id
+            setUsername(userData.email); // Asigna el email como username
+            console.log('User ID:', userData.id);
+            console.log('Username (Email):', userData.email); // Verifica que se haya asignado correctamente
+        } catch (error) {
+            console.error('Error fetching user data:', error);
         }
+    };
+
+    // Obtener las rendiciones desde la API usando el user_id
+    const fetchRendiciones = async () => {
+        if (!userId) return; // Asegúrate de que userId esté definido
+
+        try {
+            const response = await api.get(`/rendicion/nombres?user_id=${userId}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            setRendiciones(response.data); // Asignar las rendiciones al estado
+            console.log('Rendiciones:', response.data); // Verifica las rendiciones obtenidas
+        } catch (error) {
+            console.error('Error fetching rendiciones:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchUserData(); // Llama a la función para obtener el user_id y el email al montar el componente
     }, []);
+
+    useEffect(() => {
+        if (userId) {
+            fetchRendiciones(); // Cargar rendiciones cuando se haya obtenido el userId
+        }
+    }, [userId]);
 
     const fetchDocumentos = async () => {
         try {
@@ -30,7 +67,7 @@ const HistorialGastos = () => {
                 params: {
                     company_name: 'innova', // Suponiendo que se filtra por nombre de la empresa
                     estado: estado,
-                    username: loggedInUser, // Usuario logueado
+                    username: username, // Aquí se usa el email como username
                     tipo_solicitud: tipoSolicitud,
                     tipo_anticipo: tipoAnticipo,
                     numero_rendicion: numeroRendicion,
@@ -87,9 +124,8 @@ const HistorialGastos = () => {
                                 onChange={(e) => setEstado(e.target.value)}
                             >
                                 <MenuItem value="">Todos</MenuItem>
-                                <MenuItem value="POR APROBAR">POR APROBAR</MenuItem>
+                                <MenuItem value="POR APROBAR">PENDIENTE</MenuItem>
                                 <MenuItem value="POR ABONAR">APROBADO</MenuItem>
-                                <MenuItem value="CERRADO">CERRADO</MenuItem>
                             </Select>
                         </FormControl>
                     </Grid>
@@ -105,8 +141,29 @@ const HistorialGastos = () => {
                                 onChange={(e) => setTipoSolicitud(e.target.value)}
                             >
                                 <MenuItem value="">Todos</MenuItem>
-                                <MenuItem value="GASTO">GASTO</MenuItem>
+                                <MenuItem value="RENDICION">RENDICIÓN</MenuItem>
                                 <MenuItem value="ANTICIPO">ANTICIPO</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Grid>
+
+                    {/* Combo de Rendiciones */}
+                    <Grid item xs={12} sm={6} md={4}>
+                        <FormControl fullWidth>
+                            <InputLabel id="rendicion-label">Rendiciones</InputLabel>
+                            <Select
+                                labelId="rendicion-label"
+                                id="rendicionSelect"
+                                value={numeroRendicion}
+                                label="Rendiciones"
+                                onChange={(e) => setNumeroRendicion(e.target.value)}
+                            >
+                                <MenuItem value="">Todas</MenuItem>
+                                {rendiciones.map((rendicion, index) => (
+                                    <MenuItem key={index} value={rendicion}>
+                                        {rendicion}
+                                    </MenuItem>
+                                ))}
                             </Select>
                         </FormControl>
                     </Grid>

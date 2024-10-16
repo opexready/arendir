@@ -106,6 +106,29 @@ body {
     overflow: hidden;
 }
 
+.slider img {
+    position: relative;
+    width: 100%;
+    height: auto;
+    object-fit: cover; /* Esto asegura que la imagen ocupe bien el espacio del slider */
+  }
+  
+  .slider .slides {
+    position: relative;
+  }
+  
+  .slider::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50%; /* Ajusta este valor según qué tan alto quieras el degradado */
+    background: linear-gradient(transparent, black); /* Sombrea de transparente a negro */
+    pointer-events: none; /* Para que no interfiera con el contenido */
+  }
+  
+
 .slides {
     display: flex;
     transition: transform 0.5s ease-in-out;
@@ -122,12 +145,17 @@ body {
     bottom: 20px;
     left: 70%;
     transform: translateX(-50%);
-    color: #fff;
+    color: #fff !important; /* Asegura que el color blanco se aplique siempre */
     font-size: 20px;
     font-weight: bold;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    text-shadow: none; /* Elimina cualquier sombra si la había */
     text-align: center;
+    background: none; /* Sin fondo detrás del texto */
+    opacity: 1; /* Elimina cualquier opacidad */
+    z-index: 2; /* Asegura que el texto esté por encima de cualquier otro elemento */
 }
+
+
 
 /* Gradiente para el slider */
 .slides::after {
@@ -153,19 +181,22 @@ body {
     transform: translateX(-50%);
     display: flex;
     gap: 10px;
+    z-index: 3; /* Asegura que los puntos estén visibles por encima de otros elementos */
 }
 
 .dot {
     width: 10px;
     height: 10px;
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: #fff; /* Puntos completamente blancos */
     border-radius: 50%;
     cursor: pointer;
+    opacity: 1 !important; /* Elimina cualquier opacidad */
 }
 
 .dot.active {
-    background-color: #FF6E40;
+    background-color: #FF6E40; /* Mantén el color del punto activo */
 }
+
 
 /* Formulario de login */
 .login-form {
@@ -220,17 +251,22 @@ body {
 /* Info Section */
 .info-section {
     position: relative;
+    background-color: black;
     background-image: url('https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/fondo3.png?alt=media&token=759a2bc7-9ff9-46e9-9b8c-35a10a2367ca');
-    background-size: cover;
+    background-size: 100% auto; /* El ancho ocupará el 100% y la altura se ajusta automáticamente */
+    background-position: top center; /* Centra la imagen horizontalmente y la coloca en la parte superior verticalmente */
+    background-repeat: no-repeat; /* Evita que la imagen se repita */
     padding: 60px 0;
     height: auto;
-    color: #fff;
+    color: #333;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    clip-path: polygon(0 15%, 100% 0, 100% 85%, 0% 100%);
 }
+
+
+
 
 .info-background {
     display: flex;
@@ -240,6 +276,7 @@ body {
     max-width: 1200px;
     position: relative;
     padding: 20px;
+  
 }
 
 .info-content2 {
@@ -268,7 +305,18 @@ body {
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
+    opacity: 0;
+    animation: fadeIn 2s ease-in forwards;
 }
+
+@keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 
 .info-logo {
     width: 150px;

@@ -33,7 +33,7 @@ const ContadorModule = () => {
     const [filtros, setFiltros] = useState({
         colaborador: '',
         estado: 'POR APROBAR',
-        tipo_solicitud: 'GASTO',
+        tipo_solicitud: 'RENDICION',
         numero_rendicion: '',
         fechaDesde: '2024-08-01',
         fechaHasta: new Date().toISOString().split('T')[0],
@@ -312,7 +312,7 @@ useEffect(() => {
                                     <em>Todos los Tipos de Solicitud</em>
                                 </MenuItem>
                                 <MenuItem value="ANTICIPO">ANTICIPO</MenuItem>
-                                <MenuItem value="GASTO">GASTO</MenuItem>
+                                <MenuItem value="RENDICION">RENDICION</MenuItem>
                             </Select>
                         </Grid>
                         <Grid item xs={12} sm={3}>

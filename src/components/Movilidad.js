@@ -7,19 +7,9 @@ import axios from 'axios';
 import { jwtDecode } from 'jwt-decode'; 
 import './Movilidad.css';
 import { baseURL } from '../api';  
-
-// Datos Ubigeo (solo muestra Lima para simplificar, puedes expandirlo más tarde)
-const ubigeoData = {
-    "Lima": {
-        "Lima": ["Miraflores", "Surco", "San Isidro"],
-        "Canta": ["Obrajillo", "Huaros", "San Buenaventura"],
-        "Huarochirí": ["Matucana", "San Mateo", "San Antonio"]
-    },
-    "Arequipa": {}, 
-    "Cusco": {},
-    "Piura": {},
-    // Aquí puedes incluir todos los departamentos si es necesario
-};
+import { useNavigate } from 'react-router-dom';
+import api from '../api';
+import ubigeoData from '../data/ubigeoData'; 
 
 const Movilidad = () => {
     const [formData, setFormData] = useState({
@@ -33,9 +23,9 @@ const Movilidad = () => {
         empresa: 'innova',
         moneda: 'PEN',
         total: '',
-        cuenta_contable: 63112, // Se asigna un valor por defecto
+        cuenta_contable: 63112,
         rubro: 'Movilidad',
-        fecha_emision: null // Nuevo campo para la fecha de emisión
+        fecha_emision: null
     });
 
     const [selectedDepartamento, setSelectedDepartamento] = useState('');
@@ -43,12 +33,18 @@ const Movilidad = () => {
     const [selectedDistrito, setSelectedDistrito] = useState('');
     const [provincias, setProvincias] = useState([]);
     const [distritos, setDistritos] = useState([]);
-    
-    const [isOrigen, setIsOrigen] = useState(false); // Identifica si es origen o destino
+    const navigate = useNavigate();
+    const [isOrigen, setIsOrigen] = useState(false);
     const [responseMessage, setResponseMessage] = useState(''); 
     const [isLoading, setIsLoading] = useState(false); 
     const [open, setOpen] = useState(false); 
     const [openUbigeoDialog, setOpenUbigeoDialog] = useState(false); 
+
+    // Definir la función openUbigeoDialogForField
+    const openUbigeoDialogForField = (isForOrigen) => {
+        setIsOrigen(isForOrigen);
+        setOpenUbigeoDialog(true);
+    };
 
     // Función que maneja cambios en el formulario
     const handleChange = (e) => {
@@ -59,24 +55,21 @@ const Movilidad = () => {
         }));
     };
 
-    // Manejador de cambios para el departamento seleccionado
     const handleDepartamentoChange = (e) => {
         const departamento = e.target.value;
         setSelectedDepartamento(departamento);
         setProvincias(Object.keys(ubigeoData[departamento]));
-        setSelectedProvincia(''); // Resetea la provincia y el distrito al cambiar el departamento
+        setSelectedProvincia('');
         setSelectedDistrito('');
     };
 
-    // Manejador de cambios para la provincia seleccionada
     const handleProvinciaChange = (e) => {
         const provincia = e.target.value;
         setSelectedProvincia(provincia);
         setDistritos(ubigeoData[selectedDepartamento][provincia]);
-        setSelectedDistrito(''); // Resetea el distrito al cambiar la provincia
+        setSelectedDistrito('');
     };
 
-    // Guardar el distrito seleccionado como origen o destino
     const handleDistritoSelection = () => {
         if (isOrigen) {
             setFormData((prevState) => ({
@@ -92,13 +85,6 @@ const Movilidad = () => {
         setOpenUbigeoDialog(false);
     };
 
-    // Abrir el popup de selección de distrito para origen o destino
-    const openUbigeoDialogForField = (isForOrigen) => {
-        setIsOrigen(isForOrigen);
-        setOpenUbigeoDialog(true);
-    };
-
-    // Cálculo automático del total basado en gastoDeducible y gastoNoDeducible
     useEffect(() => {
         const deducible = parseFloat(formData.gastoDeducible) || 0;
         const noDeducible = parseFloat(formData.gastoNoDeducible) || 0;
@@ -113,6 +99,14 @@ const Movilidad = () => {
         setIsLoading(true);
 
         const token = localStorage.getItem('token');
+        const existingRendicion = localStorage.getItem("numero_rendicion");
+        if (!existingRendicion) {
+            console.error("Error: No se encontró numero_rendicion en localStorage.");
+            alert("Error: No se encontró un número de rendición.");
+            setIsLoading(false);
+            return;
+        }
+
         let loggedInUser = '';
         if (token) {
             const decodedToken = jwtDecode(token);
@@ -131,13 +125,12 @@ const Movilidad = () => {
             usuario: loggedInUser,
             correlativo: "00000000",
             dni: "111111111",
-            gerencia: "Comercial"
+            gerencia: "Comercial",
+            numero_rendicion: existingRendicion
         };
 
-        console.log("Datos enviados: ", dataToSend); // Para depurar
-
         try {
-            const response = await axios.post(`${baseURL}/generar-pdf-movilidad/`, dataToSend);
+            await axios.post(`${baseURL}/generar-pdf-movilidad/`, dataToSend);
             setResponseMessage('Documento creado correctamente.');
             setOpen(true); 
         } catch (error) {
@@ -148,9 +141,50 @@ const Movilidad = () => {
         }
     };
 
-    const handleClose = () => {
+    // const handleClose = (registerAnother) => {
+    //     setOpen(false);
+    //     if (registerAnother) {
+    //         console.log("Iniciando un nuevo gasto, manteniendo el número de rendición actual.");
+    //     } else {
+    //         console.log("Finalizando la rendición.");
+    //         localStorage.removeItem("numero_rendicion");
+    //         navigate('/colaborador');
+    //     }
+    // };
+
+    const handleClose = async (registerAnother) => {
         setOpen(false);
-        window.history.back(); 
+    
+        if (registerAnother) {
+            try {
+                // Obtén el user_id de la sesión
+                const userString = localStorage.getItem('user');
+                const user = userString ? JSON.parse(userString) : null;
+                const userId = user ? user.id : null;
+    
+                if (userId) {
+                    // Realiza la solicitud GET al endpoint para obtener la última rendición
+                    const response = await api.get(`/rendicion/last`, { params: { user_id: userId } });
+    
+                    // Extrae y muestra el campo "nombre" en la consola
+                    const { nombre } = response.data;
+                    console.log("Nombre de la última rendición:", nombre);
+    
+                    // Redirigir a la página de rendición de gastos
+                    navigate('/colaborador/rendicion-gastos');
+                } else {
+                    console.error('Error: Usuario no autenticado');
+                    alert('Error: Usuario no autenticado');
+                }
+            } catch (error) {
+                console.error('Error al obtener la última rendición:', error);
+                alert('Error al obtener la última rendición. Intente nuevamente.');
+            }
+        } else {
+            // Finalizar rendición y cerrar sesión
+            localStorage.removeItem("numero_rendicion");
+            navigate('/colaborador'); // Redirigir al dashboard principal
+        }
     };
 
     return (
@@ -161,7 +195,6 @@ const Movilidad = () => {
                         Gastos de Movilidad
                     </Typography>
                     <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
-                        {/* Selector de Fecha de Emisión */}
                         <LocalizationProvider dateAdapter={AdapterDateFns} locale={esLocale}>
                             <DatePicker
                                 label="Fecha de Viaje"
@@ -171,7 +204,6 @@ const Movilidad = () => {
                             />
                         </LocalizationProvider>
 
-                        {/* Selector para Origen con popup */}
                         <TextField
                             variant="outlined"
                             margin="normal"
@@ -179,11 +211,10 @@ const Movilidad = () => {
                             fullWidth
                             label="Origen"
                             value={formData.origen}
-                            onClick={() => openUbigeoDialogForField(true)}  // Abre el popup de selección de distrito
-                            InputProps={{ readOnly: true }}  // Solo lectura
+                            onClick={() => openUbigeoDialogForField(true)}
+                            InputProps={{ readOnly: true }}
                         />
 
-                        {/* Selector para Destino con popup */}
                         <TextField
                             variant="outlined"
                             margin="normal"
@@ -191,11 +222,10 @@ const Movilidad = () => {
                             fullWidth
                             label="Destino"
                             value={formData.destino}
-                            onClick={() => openUbigeoDialogForField(false)}  // Abre el popup de selección de distrito
-                            InputProps={{ readOnly: true }}  // Solo lectura
+                            onClick={() => openUbigeoDialogForField(false)}
+                            InputProps={{ readOnly: true }}
                         />
 
-                        {/* Otros campos */}
                         <TextField
                             variant="outlined"
                             margin="normal"
@@ -226,9 +256,7 @@ const Movilidad = () => {
                             name="total"
                             type="number"
                             value={formData.total}
-                            InputProps={{
-                                readOnly: true,
-                            }}
+                            InputProps={{ readOnly: true }}
                         />
 
                         <Button
@@ -245,90 +273,88 @@ const Movilidad = () => {
                 </CardContent>
             </Card>
 
-            {/* Backdrop para mostrar el cargando */}
-            <Backdrop open={isLoading} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer +
-                            1 }}>
-                            <CircularProgress color="inherit" />
-                        </Backdrop>
-            
-                        {/* Diálogo de confirmación después del envío */}
-                        <Dialog open={open} onClose={handleClose}>
-                            <DialogTitle>Registro Exitoso</DialogTitle>
-                            <DialogContent>
-                                <Typography>{responseMessage}</Typography>
-                            </DialogContent>
-                            <DialogActions>
-                                <Button onClick={handleClose} color="primary">
-                                    OK
-                                </Button>
-                            </DialogActions>
-                        </Dialog>
-            
-                        {/* Diálogo de selección de Ubigeo (Departamento -> Provincia -> Distrito) */}
-                        <Dialog open={openUbigeoDialog} onClose={() => setOpenUbigeoDialog(false)}>
-                            <DialogTitle>Selecciona Ubicación</DialogTitle>
-                            <DialogContent>
-                                <TextField
-                                    select
-                                    label="Departamento"
-                                    value={selectedDepartamento}
-                                    onChange={handleDepartamentoChange}
-                                    fullWidth
-                                    margin="normal"
-                                >
-                                    {Object.keys(ubigeoData).map((dep) => (
-                                        <MenuItem key={dep} value={dep}>
-                                            {dep}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
-            
-                                {provincias.length > 0 && (
-                                    <TextField
-                                        select
-                                        label="Provincia"
-                                        value={selectedProvincia}
-                                        onChange={handleProvinciaChange}
-                                        fullWidth
-                                        margin="normal"
-                                    >
-                                        {provincias.map((prov) => (
-                                            <MenuItem key={prov} value={prov}>
-                                                {prov}
-                                            </MenuItem>
-                                        ))}
-                                    </TextField>
-                                )}
-            
-                                {distritos.length > 0 && (
-                                    <TextField
-                                        select
-                                        label="Distrito"
-                                        value={selectedDistrito}
-                                        onChange={(e) => setSelectedDistrito(e.target.value)}
-                                        fullWidth
-                                        margin="normal"
-                                    >
-                                        {distritos.map((dist) => (
-                                            <MenuItem key={dist} value={dist}>
-                                                {dist}
-                                            </MenuItem>
-                                        ))}
-                                    </TextField>
-                                )}
-                            </DialogContent>
-                            <DialogActions>
-                                <Button onClick={handleDistritoSelection} color="primary">
-                                    Guardar
-                                </Button>
-                                <Button onClick={() => setOpenUbigeoDialog(false)} color="secondary">
-                                    Cancelar
-                                </Button>
-                            </DialogActions>
-                        </Dialog>
-                    </Container>
-                );
-            };
-            
-            export default Movilidad;
-            
+            <Backdrop open={isLoading} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+                <CircularProgress color="inherit" />
+            </Backdrop>
+
+            <Dialog open={open} onClose={handleClose}>
+                <DialogTitle>Datos enviados con éxito</DialogTitle>
+                <DialogContent>
+                    <Typography>{responseMessage}</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => handleClose(true)} color="primary">
+                        Adicionar Gasto
+                    </Button>
+                    <Button onClick={() => handleClose(false)} color="secondary">
+                        Finalizar Rendición
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            <Dialog open={openUbigeoDialog} onClose={() => setOpenUbigeoDialog(false)}>
+                <DialogTitle>Selecciona Ubicación</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        select
+                        label="Departamento"
+                        value={selectedDepartamento}
+                        onChange={handleDepartamentoChange}
+                        fullWidth
+                        margin="normal"
+                    >
+                        {Object.keys(ubigeoData).map((dep) => (
+                            <MenuItem key={dep} value={dep}>
+                                {dep}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+
+                    {provincias.length > 0 && (
+                        <TextField
+                            select
+                            label="Provincia"
+                            value={selectedProvincia}
+                            onChange={handleProvinciaChange}
+                            fullWidth
+                            margin="normal"
+                        >
+                            {provincias.map((prov) => (
+                                <MenuItem key={prov} value={prov}>
+                                    {prov}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    )}
+
+                    {distritos.length > 0 && (
+                        <TextField
+                            select
+                            label="Distrito"
+                            value={selectedDistrito}
+                            onChange={(e) => setSelectedDistrito(e.target.value)}
+                            fullWidth
+                            margin="normal"
+                        >
+                            {distritos.map((dist) => (
+                                <MenuItem key={dist} value={dist}>
+                                    {dist}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleDistritoSelection} color="primary">
+                        Guardar
+                    </Button>
+                    <Button onClick={() => setOpenUbigeoDialog(false)} color="secondary">
+                        Cancelar
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </Container>
+    );
+};
+
+export default Movilidad;
