@@ -394,19 +394,19 @@ useEffect(() => {
                             <TableRow>
                                 <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Item</TableCell>
                                 <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Fecha</TableCell>
-                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>RUC</TableCell>
+                                {/* <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>RUC</TableCell> */}
                                 <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Tipo Doc</TableCell>
-                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Cuenta Contable</TableCell>
-                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Serie</TableCell>
+                                {/* <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Cuenta Contable</TableCell>
+                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Serie</TableCell> */}
                                 <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Correlativo</TableCell>
-                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rubro</TableCell>
+                                {/* <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rubro</TableCell> */}
                                 <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Moneda</TableCell>
                                 <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Tipo de Cambio</TableCell>
-                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Afecto</TableCell>
+                                {/* <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Afecto</TableCell>
                                 <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>IGV</TableCell>
-                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Inafecto</TableCell>
+                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Inafecto</TableCell> */}
                                 <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Total</TableCell>
-                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Archivo</TableCell>
+                                {/* <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Archivo</TableCell> */}
                                 <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Actualizar Estado</TableCell>
                             </TableRow>
                         </TableHead>
@@ -418,25 +418,25 @@ useEffect(() => {
                                 <TableRow key={documento.id}>
                                     <TableCell>{index + 1}</TableCell>
                                     <TableCell>{documento.fecha_emision}</TableCell>
-                                    <TableCell>{documento.ruc}</TableCell>
+                                    {/* <TableCell>{documento.ruc}</TableCell> */}
                                     <TableCell>{documento.tipo_documento}</TableCell>
-                                    <TableCell>{documento.cuenta_contable}</TableCell>
-                                    <TableCell>{documento.serie}</TableCell>
+                                    {/* <TableCell>{documento.cuenta_contable}</TableCell>
+                                    <TableCell>{documento.serie}</TableCell> */}
                                     <TableCell>{documento.correlativo}</TableCell>
-                                    <TableCell>{documento.rubro}</TableCell>
+                                    {/* <TableCell>{documento.rubro}</TableCell> */}
                                     <TableCell>{documento.moneda}</TableCell>
                                     <TableCell>{documento.tipo_cambio}</TableCell>
-                                    <TableCell>{documento.afecto}</TableCell>
+                                    {/* <TableCell>{documento.afecto}</TableCell>
                                     <TableCell>{documento.igv}</TableCell>
-                                    <TableCell>{documento.inafecto}</TableCell>
+                                    <TableCell>{documento.inafecto}</TableCell> */}
                                     <TableCell>{documento.total}</TableCell>
-                                    <TableCell>
+                                    {/* <TableCell>
                                         {documento.archivo && (
                                             <Button variant="text" onClick={() => handleViewFile(documento)}>
                                                 <img src={lupaIcon} alt="Ver Archivo" style={{ width: 24 }} />
                                             </Button>
                                         )}
-                                    </TableCell>
+                                    </TableCell> */}
                                     <TableCell>
                                         <FormControl fullWidth>
                                             <Select

@@ -123,10 +123,17 @@ const Movilidad = () => {
             fecha_solicitud: today,
             fecha_emision: formData.fecha_emision ? formData.fecha_emision.toISOString().split('T')[0] : today,
             usuario: loggedInUser,
-            correlativo: "00000000",
-            dni: "111111111",
-            gerencia: "Comercial",
-            numero_rendicion: existingRendicion
+            correlativo: "00000001",
+            ruc:"00000000000",
+            dni: "524169325",
+            gerencia: "COMERCIAL",
+            numero_rendicion: existingRendicion,
+            tipo_cambio: 1,
+            afecto: 0,
+            inafecto: 0,
+            igv: 0,
+            serie: "----"
+
         };
 
         try {

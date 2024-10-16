@@ -150,7 +150,7 @@ const HistorialGastos = () => {
                     {/* Combo de Rendiciones */}
                     <Grid item xs={12} sm={6} md={4}>
                         <FormControl fullWidth>
-                            <InputLabel id="rendicion-label">Rendiciones</InputLabel>
+                            <InputLabel id="rendicion-label">Número de Rendición</InputLabel>
                             <Select
                                 labelId="rendicion-label"
                                 id="rendicionSelect"
