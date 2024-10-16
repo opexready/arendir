@@ -23,7 +23,6 @@ api.interceptors.request.use(
     }
 );
 
-// Función para obtener usuarios por company_name y role
 export const getUsersByCompanyAndRole = async (companyName, role) => {
     const response = await api.get(`/users/by-company-and-role/`, {
         params: {
