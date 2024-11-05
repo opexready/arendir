@@ -56,16 +56,16 @@ const ColaboradorModule = () => {
 
     return (
         <Container className={classes.container}>
-            <Card className={classes.card}>
-                <CardContent>
+            {/* <Card className={classes.card}>
+                <CardContent> */}
                     <Routes>
                         <Route path="/" element={<Home user={user} />} />
                         <Route path="/rendicion-gastos" element={<RendicionGastos />} />
                         <Route path="/historial" element={<HistorialGastos username={user.email} companyName={user.company_name} />} />
                         <Route path="/datos-recibo" element={<DatosRecibo />} />
                     </Routes>
-                </CardContent>
-            </Card>
+                {/* </CardContent>
+            </Card> */}
         </Container>
     );
 };

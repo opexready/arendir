@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AppBar, Toolbar, IconButton, Typography, Button, Box, Drawer, List, ListItem, ListItemText, Divider, ListItemIcon } from '@mui/material';
+import { AppBar, Toolbar, IconButton, Typography, Button, Box, List, ListItem, ListItemText, Divider, ListItemIcon } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import FolderIcon from '@mui/icons-material/Folder';  // Icono para rendición
@@ -8,12 +8,8 @@ import ListAltIcon from '@mui/icons-material/ListAlt';
 import PersonIcon from '@mui/icons-material/Person';
 import api from '../api';
 
-const drawerWidth = 240;
-const collapsedDrawerWidth = 60;
-
 const Navbar = () => {
     const [user, setUser] = useState(null);  // Estado para almacenar el usuario autenticado
-    const [drawerOpen, setDrawerOpen] = useState(true); // Controla si el drawer está abierto o cerrado
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -39,42 +35,9 @@ const Navbar = () => {
         navigate('/login');  // Redirigir al login
     };
 
-    const toggleDrawer = () => {
-        setDrawerOpen(!drawerOpen);
-    };
-
     return (
-        <Box sx={{ display: 'flex' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
             {/* Navbar superior */}
-            {/* <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, backgroundColor: '#2E3192' }}>
-                <Toolbar>
-                    {user && user.role === 'COLABORADOR' && (
-                        <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer} sx={{ marginLeft: '10px' }}>
-                            <MenuIcon />
-                        </IconButton>
-                    )}
-                    <Typography variant="h6" sx={{ flexGrow: 1, marginLeft: '10px' }}>
-                        {"A Rendir"}
-                    </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        {user ? (
-                            <>
-                                <IconButton edge="end" color="inherit" onClick={handleLogout}>
-                                    <AccountCircle />
-                                </IconButton>
-                                <Button color="inherit" onClick={handleLogout}>
-                                    Logout
-                                </Button>
-                            </>
-                        ) : (
-                            <Button color="inherit" onClick={() => navigate('/login')}>
-                                Login
-                            </Button>
-                        )}
-                    </Box>
-                </Toolbar>
-            </AppBar> */}
-
             <AppBar 
                 position="fixed" 
                 sx={{ 
@@ -83,18 +46,12 @@ const Navbar = () => {
                 }}
             >
                 <Toolbar>
-                    {user && user.role === 'COLABORADOR' && (
-                        <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer} sx={{ marginLeft: '10px' }}>
-                            <MenuIcon />
-                        </IconButton>
-                    )}
                     <Typography variant="h6" sx={{ flexGrow: 1, marginLeft: '10px' }}>
                         {/* {"A Rendir"} */}
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         {user ? (
-                                <>
-                                {/* Imagen que reemplaza el Logout */}
+                            <>
                                 <img 
                                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/logoblanco2.png?alt=media&token=94ceb944-93e9-4361-83d3-75017559ab67" 
                                     alt="Logo" 
@@ -111,54 +68,45 @@ const Navbar = () => {
                 </Toolbar>
             </AppBar>
 
-
-            {/* Navbar lateral (Drawer), solo visible si el usuario es COLABORADOR */}
-            {user && user.role === 'COLABORADOR' && ( // Solo renderizar el Drawer si el usuario es COLABORADOR
-                <Drawer
+            {/* Menú horizontal debajo del AppBar, visible solo si el usuario es COLABORADOR */}
+            {user && user.role === 'COLABORADOR' && (
+                <Box
                     sx={{
-                        width: drawerOpen ? drawerWidth : collapsedDrawerWidth,
-                        flexShrink: 0,
-                        '& .MuiDrawer-paper': {
-                            width: drawerOpen ? drawerWidth : collapsedDrawerWidth,
-                            boxSizing: 'border-box',
-                            transition: 'width 0.3s', // Animación de transición
-                        },
+                        display: 'flex',
+                        justifyContent: 'center',
+                        backgroundColor: '#f5f5f5',
+                        paddingY: 1,
+                        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', // Agrega sombra
+                        marginTop: '64px' // Alinea debajo del AppBar
                     }}
-                    variant="permanent"
-                    anchor="left"
-                    open={drawerOpen} // Asegura que se abra o cierre basado en el estado
                 >
-                    <Toolbar /> {/* Esto asegura que el Drawer no cubra el AppBar */}
-                    <Divider />
-                    <List>
-                        <ListItem button component={Link} to="/colaborador/rendicion-gastos">
+                    <List sx={{ display: 'flex', flexDirection: 'row', padding: 0 }}>
+                        <ListItem button component={Link} to="/datos-recibo" sx={{ justifyContent: 'center' }}>
                             <ListItemIcon>
-                                <FolderIcon sx={{ color: '#8F3292' }} />  {/* Cambia el color del ícono a #8F3292 */}
+                                <FolderIcon sx={{ color: '#8F3292' }} />
                             </ListItemIcon>
-                            {drawerOpen && <ListItemText primary="Gastos Generales" sx={{ color: '#2E3192' }} />}  {/* Color del texto cambiado a #2E3192 */}
+                            <ListItemText primary="Gastos" sx={{ color: '#2E3192', textAlign: 'center' }} />
                         </ListItem>
-                        <ListItem button component={Link} to="/colaborador/historial">
+                        <ListItem button component={Link} to="/colaborador/historial" sx={{ justifyContent: 'center' }}>
                             <ListItemIcon>
-                                <ListAltIcon sx={{ color: '#8F3292' }} />  {/* Cambia el color del ícono a #8F3292 */}
+                                <ListAltIcon sx={{ color: '#8F3292' }} />
                             </ListItemIcon>
-                            {drawerOpen && <ListItemText primary="Historial" sx={{ color: '#2E3192' }} />}  {/* Color del texto cambiado a #2E3192 */}
+                            <ListItemText primary="Historial" sx={{ color: '#2E3192', textAlign: 'center' }} />
                         </ListItem>
-                        <ListItem button component={Link} to="/colaborador/anticipos-viajes">
+                        <ListItem button component={Link} to="/colaborador/anticipos-viajes" sx={{ justifyContent: 'center' }}>
                             <ListItemIcon>
-                                <PersonIcon sx={{ color: '#8F3292' }} />  {/* Cambia el color del ícono a #8F3292 */}
+                                <PersonIcon sx={{ color: '#8F3292' }} />
                             </ListItemIcon>
-                            {drawerOpen && <ListItemText primary="Anticipos Viajes" sx={{ color: '#2E3192' }} />}  {/* Color del texto cambiado a #2E3192 */}
+                            <ListItemText primary="Anticipo" sx={{ color: '#2E3192', textAlign: 'center' }} />
                         </ListItem>
-                        <ListItem button component={Link} to="/colaborador/anticipos-gastos-locales">
+                        {/* <ListItem button component={Link} to="/colaborador/anticipos-gastos-locales" sx={{ justifyContent: 'center' }}>
                             <ListItemIcon>
-                                <PersonIcon sx={{ color: '#8F3292' }} />  {/* Cambia el color del ícono a #8F3292 */}
+                                <PersonIcon sx={{ color: '#8F3292' }} />
                             </ListItemIcon>
-                            {drawerOpen && <ListItemText primary="Anticipos Gastos Locales" sx={{ color: '#2E3192' }} />}  {/* Color del texto cambiado a #2E3192 */}
-                        </ListItem>
+                            <ListItemText primary="Anticipos Gastos Locales" sx={{ color: '#2E3192', textAlign: 'center' }} />
+                        </ListItem> */}
                     </List>
-
-
-                </Drawer>
+                </Box>
             )}
 
             {/* Espacio reservado para el contenido principal de la página */}
@@ -168,9 +116,7 @@ const Navbar = () => {
                     flexGrow: 1,
                     bgcolor: 'background.default',
                     padding: 3,
-                    marginTop: '64px', // Espacio para que no cubra el AppBar superior
-                    marginLeft: user && user.role === 'COLABORADOR' ? (drawerOpen ? `${drawerWidth}px` : `${collapsedDrawerWidth}px`) : 0, // Ajusta el margen dependiendo del estado del Drawer
-                    transition: 'margin-left 0.3s', // Animación de transición
+                    marginTop: user && user.role === 'COLABORADOR' ? '128px' : '64px', // Ajusta el margen según si el menú está presente
                 }}
             >
                 {/* Aquí va el contenido de las páginas */}

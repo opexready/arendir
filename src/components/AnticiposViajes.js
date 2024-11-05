@@ -19,6 +19,7 @@ import axios from "axios";
 import "./AnticiposViajes.css";
 import { baseURL, api } from "../api";
 import ubigeoData from "../data/ubigeoData";
+import paisesSudamerica from "../data/paisesMundo";
 
 const AnticiposViajes = () => {
   const getCurrentDate = () => {
@@ -101,7 +102,7 @@ const AnticiposViajes = () => {
           tipo_documento: "ANT",
           tipo_anticipo: "VIAJES",
           numero_rendicion: rendicionData.nombre,
-          correlativo:"0001"
+          correlativo: "0001",
         });
       } catch (error) {
         console.error("Error al obtener los datos del usuario:", error);
@@ -265,18 +266,37 @@ const AnticiposViajes = () => {
               </>
             ) : (
               // Si es Viaje Internacional, muestra el campo de texto
+              // <TextField
+              //   variant="outlined"
+              //   margin="normal"
+              //   required
+              //   fullWidth
+              //   id="destino"
+              //   label="Destino Internacional"
+              //   name="destino"
+              //   value={formData.destino}
+              //   onChange={handleChange}
+              // />
+              //)}
               <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                id="destino"
-                label="Destino Internacional"
-                name="destino"
-                value={formData.destino}
-                onChange={handleChange}
-              />
-            )}
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="destino"
+              label="Destino Internacional"
+              name="destino"
+              select
+              value={formData.destino}
+              onChange={handleChange}
+            >
+              {paisesSudamerica.map((pais) => (
+                <MenuItem key={pais} value={pais}>
+                  {pais}
+                </MenuItem>
+              ))}
+            </TextField>
+          )}
 
             <TextField
               variant="outlined"

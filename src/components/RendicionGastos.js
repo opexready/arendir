@@ -11,13 +11,11 @@ import {
   MenuItem,
   Button,
 } from "@mui/material";
-import api from "../api"; // Importamos api desde api.js
+import api from "../api"; 
 
 const RendicionGastos = () => {
   const [category, setCategory] = useState("");
   const navigate = useNavigate();
-
-  // Array con las opciones de categorías y sus descripciones
   const categoryOptions = [
     { value: "63111", label: "Servicio transporte De carga" },
     { value: "63112", label: "Movilidad" },
@@ -69,92 +67,29 @@ const RendicionGastos = () => {
     { value: "6591", label: "Donaciones" },
     { value: "6592", label: "Sanciones administrativas" },
   ];
-
-  // Manejador para el cambio de categoría
   const handleCategoryChange = (event) => {
     setCategory(event.target.value);
   };
-
-  // Manejador del envío del formulario
   const handleSubmit = async () => {
     if (category) {
-      // Encuentra la categoría seleccionada
       const selectedOption = categoryOptions.find(
         (option) => option.value === category
       );
-
-      
-
-      //         if (selectedOption) {
-      //             const selectedRubro = selectedOption.label;
-
-      //             const userString = localStorage.getItem('user');
-      //             const user = userString ? JSON.parse(userString) : null;
-
-      //             if (!user) {
-      //                 console.error('El usuario no está disponible en localStorage');
-      //                 alert('Error: Usuario no autenticado');
-      //                 return;
-      //             }
-
-      //             const userId = user.id;
-      //             console.log('ID del usuario:', userId);
-
-      //             try {
-      //                 // Llamada a la API para obtener el "nombre" de la rendición
-      //                 const response = await api.post('/rendicion/', { user_id: userId });
-      //                 const { nombre } = response.data;
-
-      //                 // Imprimir en consola el campo "nombre" de la respuesta
-      //                 console.log('Nombre de la rendición:', nombre);
-
-      //                 if (category === "63112") {
-      //                     navigate('/colaborador/movilidad');
-      //                 } else {
-      //                     // Navegar a datos-recibo pasando los valores de cuenta contable, rubro y el "nombre" de la rendición
-      //                     navigate('/datos-recibo', {
-      //                         state: {
-      //                             selectedCuentaContable: category,
-      //                             selectedRubro: selectedRubro,
-      //                             numeroRendicion: nombre // Pasar el "nombre" de la rendición
-      //                         }
-      //                     });
-      //                 }
-      //             } catch (error) {
-      //                 console.error('Error al obtener el nombre de la rendición:', error);
-      //                 alert('Error al procesar la rendición.');
-      //             }
-      //         }
-      //     } else {
-      //         alert('Por favor, seleccione una categoría antes de enviar');
-      //     }
-      // };
-
       if (selectedOption) {
         const selectedRubro = selectedOption.label;
-
         const userString = localStorage.getItem("user");
         const user = userString ? JSON.parse(userString) : null;
-
         if (!user) {
-          console.error("El usuario no está disponible en localStorage");
           alert("Error: Usuario no autenticado");
           return;
         }
-
         const userId = user.id;
-        console.log("ID del usuario:", userId);
-
-        // Verificar si ya existe un numero_rendicion en localStorage
         const existingRendicion = localStorage.getItem("numero_rendicion");
-        if (existingRendicion) {
-            // Si existe un numero_rendicion, no se hace la llamada POST y se reutiliza
-            console.log("Usando numero_rendicion existente:", existingRendicion);
-        
-            if (category === "63112") {  // Verifica si es "Movilidad"
+        if (existingRendicion) {     
+            if (category === "63112") {  
                 navigate("/colaborador/movilidad", {
                     state: {
-                        numeroRendicion: existingRendicion, // Usamos el numero_rendicion existente
+                        numeroRendicion: existingRendicion, 
                     },
                 });
             } else {
@@ -162,31 +97,23 @@ const RendicionGastos = () => {
                     state: {
                         selectedCuentaContable: category,
                         selectedRubro: selectedRubro,
-                        numeroRendicion: existingRendicion, // Usamos el numero_rendicion existente
+                        numeroRendicion: existingRendicion, 
                     },
                 });
             }
         } else {
-          // Si no hay un numero_rendicion, se genera uno nuevo
           try {
-            // Llamada a la API para obtener el "nombre" de la rendición
             const response = await api.post("/rendicion/", { user_id: userId });
             const { nombre } = response.data;
-
-            // Almacenar el numero_rendicion en localStorage
             localStorage.setItem("numero_rendicion", nombre);
-
-            console.log("Nombre de la rendición:", nombre);
-
             navigate("/datos-recibo", {
               state: {
                 selectedCuentaContable: category,
                 selectedRubro: selectedRubro,
-                numeroRendicion: nombre, // Pasar el "nombre" de la rendición
+                numeroRendicion: nombre, 
               },
             });
           } catch (error) {
-            console.error("Error al obtener el nombre de la rendición:", error);
             alert("Error al procesar la rendición.");
           }
         }
@@ -195,7 +122,6 @@ const RendicionGastos = () => {
       alert("Por favor, seleccione una categoría antes de enviar");
     }
   };
-
   return (
     <Container maxWidth="sm" sx={{ mt: 5 }}>
       <Card>
@@ -206,16 +132,15 @@ const RendicionGastos = () => {
             align="center"
             gutterBottom
             sx={{
-              color: "#F15A29", // Color naranja
-              fontWeight: "bold", // Texto en negrita
-              textAlign: "center", // Centrado
-              margin: "0", // Elimina márgenes extra
-              fontSize: "1.5rem", // Ajusta el tamaño de la fuente si es necesario
+              color: "#F15A29", 
+              fontWeight: "bold", 
+              textAlign: "center", 
+              margin: "0",
+              fontSize: "1.5rem", 
             }}
           >
             Gastos Generales
           </Typography>
-
           <FormControl fullWidth variant="outlined" sx={{ marginBottom: 3 }}>
             <InputLabel id="category-label">Categoría</InputLabel>
             <Select
@@ -253,5 +178,4 @@ const RendicionGastos = () => {
     </Container>
   );
 };
-
 export default RendicionGastos;

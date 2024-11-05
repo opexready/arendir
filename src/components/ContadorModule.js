@@ -430,13 +430,13 @@ useEffect(() => {
                                     <TableCell>{documento.igv}</TableCell>
                                     <TableCell>{documento.inafecto}</TableCell> */}
                                     <TableCell>{documento.total}</TableCell>
-                                    {/* <TableCell>
+                                    <TableCell>
                                         {documento.archivo && (
                                             <Button variant="text" onClick={() => handleViewFile(documento)}>
                                                 <img src={lupaIcon} alt="Ver Archivo" style={{ width: 24 }} />
                                             </Button>
                                         )}
-                                    </TableCell> */}
+                                    </TableCell>
                                     <TableCell>
                                         <FormControl fullWidth>
                                             <Select
