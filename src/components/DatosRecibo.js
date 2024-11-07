@@ -214,6 +214,28 @@ const handleUpdate = async (e) => {
   }
 };
 
+const handleFinalizarRendicion = async () => {
+  try {
+    const userString = localStorage.getItem("user");
+    const user = userString ? JSON.parse(userString) : null;
+    const userId = user ? user.id : null;
+
+    if (!userId) {
+      alert("Error: Usuario no autenticado");
+      return;
+    }
+
+    const response = await axios.post(`${baseURL}/rendicion/`, {
+      user_id: userId,
+    });
+
+    // Puedes manejar la respuesta según sea necesario
+    alert(`Rendición creada con el nombre: ${response.data.nombre}`);
+  } catch (error) {
+    console.error("Error al finalizar la rendición:", error);
+    setError("Error al finalizar la rendición. Por favor, intente nuevamente.");
+  }
+};
 
 
 
@@ -663,7 +685,7 @@ useEffect(() => {
           <Button
             variant="contained"
             color="secondary"
-            onClick={handleContinueExpense2}
+            onClick={handleFinalizarRendicion}
           >
             Finalizar Rendición
           </Button>
@@ -1008,9 +1030,14 @@ useEffect(() => {
           <Button onClick={() => handleDialogClose(true)} color="primary">
             Adicionar Gasto
           </Button>
-          <Button onClick={() => handleDialogClose(false)} color="secondary">
-            Finalizar Rendición
-          </Button>
+          <Button onClick={async () => {
+        await handleFinalizarRendicion(); // Llama a la función para finalizar la rendición
+        handleDialogClose(false); // Luego cierra el diálogo
+      }} 
+      color="secondary"
+    >
+      Finalizar Rendición
+    </Button>
         </DialogActions>
       </Dialog>
       <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
