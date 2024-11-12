@@ -107,7 +107,7 @@ const AnticiposGastosLocales = () => {
     };
 
     return (
-        <Container maxWidth="sm" sx={{ marginTop: 10 }}>
+        <Container maxWidth="sm" sx={{ marginTop: -20}}>
             <Card sx={{ boxShadow: 3 }}>
                 <CardContent>
                     <Typography variant="h4" component="h1" align="center" gutterBottom sx={{ color: '#F15A29', fontWeight: 'bold', margin: '0', fontSize: '1.5rem' }}>

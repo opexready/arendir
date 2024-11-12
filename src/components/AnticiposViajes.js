@@ -14,24 +14,37 @@ import {
   CircularProgress,
   Backdrop,
   MenuItem,
+  TableContainer,
+  Paper,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
 } from "@mui/material";
 import axios from "axios";
 import "./AnticiposViajes.css";
 import { baseURL, api } from "../api";
 import ubigeoData from "../data/ubigeoData";
 import paisesSudamerica from "../data/paisesMundo";
+import { useNavigate } from "react-router-dom"; 
 
 const AnticiposViajes = () => {
   const getCurrentDate = () => {
     const today = new Date();
     const year = today.getFullYear();
-    const month = `0${today.getMonth() + 1}`.slice(-2); // Asegura dos dígitos
-    const day = `0${today.getDate()}`.slice(-2); // Asegura dos dígitos
+    const month = `0${today.getMonth() + 1}`.slice(-2); 
+    const day = `0${today.getDate()}`.slice(-2); 
     return `${year}-${month}-${day}`;
   };
 
+  const navigate = useNavigate();
+  const handleAnticipoGastosLocales = () => {
+    navigate("/anticipos-gastos-locales");
+  };
+
   const [formData, setFormData] = useState({
-    usuario: "", // El usuario autenticado
+    usuario: "", 
     dni: "",
     responsable: "",
     gerencia: "",
@@ -42,14 +55,14 @@ const AnticiposViajes = () => {
     motivo: "",
     empresa: "innova",
     estado: "POR APROBAR",
-    fecha_emision: "", // Guardaremos la fecha de viaje aquí
+    fecha_emision: "", 
     dias: "",
     moneda: "PEN",
     presupuesto: "",
     total: "",
     banco: "",
     numero_cuenta: "",
-    tipo_viaje: "NACIONAL", // Valor por defecto "NACIONAL"
+    tipo_viaje: "NACIONAL", 
     fecha_solicitud: getCurrentDate(),
   });
 
@@ -64,29 +77,21 @@ const AnticiposViajes = () => {
   const [provincias, setProvincias] = useState([]);
   const [distritos, setDistritos] = useState([]);
 
-  // Obtener la información del usuario autenticado al cargar el componente
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const response = await axios.get(`${baseURL}/users/me`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // Asegúrate de que el token esté en localStorage
+            Authorization: `Bearer ${localStorage.getItem("token")}`, 
           },
         });
-
         const userData = response.data;
-        // Actualiza los datos del formulario con la información del usuario
-        console.log("User ID:", userData.id); // <- Aquí está el log
-
-        // Llama a la API de rendición usando el user_id
+        console.log("User ID:", userData.id); 
         const rendicionResponse = await axios.get(`${baseURL}/rendicion/last`, {
           params: { user_id: userData.id },
         });
         const rendicionData = rendicionResponse.data;
-
-        // Imprime el campo "nombre" de la API de rendición
         console.log("Nombre de rendición:", rendicionData.nombre);
-
         setFormData({
           ...formData,
           usuario: userData.email,
@@ -95,7 +100,7 @@ const AnticiposViajes = () => {
           gerencia: userData.gerencia,
           area: userData.area,
           ceco: userData.ceco,
-          banco: userData.banco || "", // Si no hay banco, dejar vacío
+          banco: userData.banco || "", 
           numero_cuenta: userData.cuenta_bancaria || "",
           fecha_emision: getCurrentDate(),
           tipo_solicitud: "ANTICIPO",
@@ -108,27 +113,16 @@ const AnticiposViajes = () => {
         console.error("Error al obtener los datos del usuario:", error);
       }
     };
-
     fetchUserData();
-  }, []); // Se ejecuta solo una vez cuando el componente se monta
-
-  // const handleChange = (e) => {
-  //     const { name, value } = e.target;
-  //     setFormData({
-  //         ...formData,
-  //         [name]: value
-  //     });
-  // };
+  }, []); 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    // Si el campo actualizado es "presupuesto", actualizamos "total" con el mismo valor
     if (name === "presupuesto") {
       setFormData({
         ...formData,
         presupuesto: value,
-        total: value, // Reflejar el valor del presupuesto en el total
+        total: value, 
       });
     } else {
       setFormData({
@@ -194,315 +188,327 @@ const AnticiposViajes = () => {
     setOpenUbigeoDialog(false);
   };
 
+  const [showForm, setShowForm] = useState(false); 
+  const [records, setRecords] = useState([]); 
+  const handleViewFile = (fileLocation) => {
+    console.log("Ver archivo:", fileLocation);
+  };
+
+  const handleViewDetail = (documentId) => {
+    console.log("Ver detalles para documento:", documentId);
+  };
+
+  const handleEditRecord = (record) => {
+    console.log("Editar registro:", record);
+  };
+
+  const handleOpenConfirmDeleteDialog = (documentId) => {
+    console.log("Confirmar eliminación para documento:", documentId);
+  };
+
   return (
-    <Container maxWidth="sm" sx={{ marginTop: 10 }}>
-      <Card sx={{ boxShadow: 3 }}>
-        <CardContent>
-          <Typography
-            variant="h4"
-            component="h1"
-            align="center"
-            gutterBottom
-            sx={{
-              color: "#F15A29", // Color naranja
-              fontWeight: "bold", // Texto en negrita
-              margin: "0", // Elimina márgenes extra
-              fontSize: "1.5rem", // Ajusta el tamaño de la fuente si es necesario
-            }}
+    <Container maxWidth="sm" sx={{ marginTop: -20 }}>
+      {/* Botones para mostrar los formularios */}
+      <Container sx={{ marginBottom: 2 }}>
+        <Box display="flex" justifyContent="flex-end">
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ marginRight: 2 }}
+            onClick={() => setShowForm(true)} // Mostrar formulario
           >
-            Anticipos de Viajes
-          </Typography>
-
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            noValidate
-            sx={{ mt: 2 }}
+            Anticipo Viajes
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            sx={{ marginRight: 2 }}
+            onClick={handleAnticipoGastosLocales}
           >
-            {/* Tipo de Viaje */}
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="tipo_viaje"
-              label="Tipo de Viaje"
-              name="tipo_viaje"
-              select
-              value={tipoViaje}
-              onChange={handleTipoViajeChange}
-            >
-              <MenuItem value="NACIONAL">Viajes Nacionales</MenuItem>
-              <MenuItem value="INTERNACIONAL">Viajes Internacionales</MenuItem>
-            </TextField>
-
-            {/* Si es Viaje Nacional, muestra el popup de ubicación */}
-            {tipoViaje === "NACIONAL" ? (
-              <>
-                <Button
-                  variant="outlined"
-                  fullWidth
-                  onClick={() => setOpenUbigeoDialog(true)}
-                  sx={{
-                    mt: 2,
-                    mb: 2,
-                    color: "#2E3192", // Color del texto
-                    borderColor: "#2E3192", // Color del borde
-                    "&:hover": {
-                      backgroundColor: "#F15A29", // Color de fondo al hacer hover
-                      borderColor: "#F15A29", // Cambiar color de borde en hover
-                      color: "white", // Cambiar color del texto a blanco en hover
-                    },
-                  }}
-                >
-                  Seleccionar Destino (Nacional)
-                </Button>
-
-                <Typography variant="body1" sx={{ mb: 2 }}>
-                  {formData.destino
-                    ? `Destino seleccionado: ${formData.destino}`
-                    : "No se ha seleccionado destino."}
-                </Typography>
-              </>
-            ) : (
-              // Si es Viaje Internacional, muestra el campo de texto
-              // <TextField
-              //   variant="outlined"
-              //   margin="normal"
-              //   required
-              //   fullWidth
-              //   id="destino"
-              //   label="Destino Internacional"
-              //   name="destino"
-              //   value={formData.destino}
-              //   onChange={handleChange}
-              // />
-              //)}
-              <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="destino"
-              label="Destino Internacional"
-              name="destino"
-              select
-              value={formData.destino}
-              onChange={handleChange}
-            >
-              {paisesSudamerica.map((pais) => (
-                <MenuItem key={pais} value={pais}>
-                  {pais}
-                </MenuItem>
-              ))}
-            </TextField>
-          )}
-
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="motivo"
-              label="Breve Motivo"
-              name="motivo"
-              value={formData.motivo}
-              onChange={handleChange}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="fecha_viaje"
-              label="Fecha de Viaje"
-              name="fecha_emision" // Actualizado para que se guarde en fecha_emision
-              type="date"
-              InputLabelProps={{
-                shrink: true, // Esto asegura que la etiqueta se mantenga visible
-              }}
-              value={formData.fecha_emision} // Ahora utiliza fecha_emision
-              onChange={handleChange}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="dias"
-              label="Días"
-              name="dias"
-              type="number"
-              value={formData.dias}
-              onChange={handleChange}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="moneda"
-              label="Moneda"
-              name="moneda"
-              select
-              SelectProps={{
-                native: true,
-              }}
-              value={formData.moneda}
-              onChange={handleChange}
-            >
-              <option value="PEN">PEN</option>
-              <option value="USD">USD</option>
-            </TextField>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="presupuesto"
-              label="Presupuesto"
-              name="presupuesto"
-              type="number"
-              value={formData.presupuesto}
-              onChange={handleChange}
-            />
-            {/* <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="total"
-              label="Total"
-              name="total"
-              type="number"
-              value={formData.total}
-              onChange={handleChange}
-            /> */}
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="total"
-              label="Total"
-              name="total"
-              type="number"
-              value={formData.total}
-              onChange={(e) => {
-                const value = e.target.value;
-                setFormData({
-                  ...formData,
-                  total: value,
-                  importe_facturado: value, // Actualizar ambos valores
-                });
-              }}
-            />
-
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              disabled={isLoading}
+            Anticipo Gastos Locales
+          </Button>
+        </Box>
+      </Container>
+  
+      {/* Grilla: Siempre visible */}
+      <TableContainer component={Paper} sx={{ marginBottom: 4 }}>
+        <Table>
+          <TableHead>
+            <TableRow sx={{ backgroundColor: "#1F237A" }}>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                Número de Ítem
+              </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                Rubro
+              </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                Total
+              </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                Ver Archivo
+              </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                Detalle
+              </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                Editar
+              </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                Eliminar
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {records.map((record, index) => (
+              <TableRow key={record.id}>
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>{record.rubro}</TableCell>
+                <TableCell>{record.total}</TableCell>
+                <TableCell>
+                  {record.archivo && (
+                    <Button
+                      variant="text"
+                      onClick={() => handleViewFile(record.archivo)}
+                    >
+                      Ver
+                    </Button>
+                  )}
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="contained"
+                    color="info"
+                    onClick={() => handleViewDetail(record.id)}
+                  >
+                    Ver Detalle
+                  </Button>
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleEditRecord(record)}
+                  >
+                    Editar
+                  </Button>
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    onClick={() => handleOpenConfirmDeleteDialog(record.id)}
+                  >
+                    Eliminar
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+  
+      {/* Formulario: Solo visible si showForm es true */}
+      {showForm && (
+        <Card sx={{ boxShadow: 3 }}>
+          <CardContent>
+            <Typography
+              variant="h4"
+              component="h1"
+              align="center"
+              gutterBottom
               sx={{
-                mt: 3,
-                mb: 2,
-                backgroundColor: "#2E3192", // Color de fondo
-                "&:hover": {
-                  backgroundColor: "#1F237A", // Color de fondo en hover
-                },
-                color: "white", // Color del texto
-                "&:disabled": {
-                  backgroundColor: "#A5A5A5", // Color de fondo cuando está deshabilitado
-                  color: "#E0E0E0", // Color del texto cuando está deshabilitado
-                },
+                color: "#F15A29",
+                fontWeight: "bold",
+                margin: "0",
+                fontSize: "1.5rem",
               }}
             >
-              {isLoading ? "Enviando..." : "Solicitar"}
-            </Button>
-          </Box>
-        </CardContent>
-      </Card>
-
-      <Dialog
-        open={openUbigeoDialog}
-        onClose={() => setOpenUbigeoDialog(false)}
-      >
-        <DialogTitle>Seleccionar Destino Nacional</DialogTitle>
-        <DialogContent>
-          <TextField
-            select
-            label="Departamento"
-            fullWidth
-            value={selectedDepartamento}
-            onChange={handleDepartamentoChange}
-            sx={{ mb: 2 }}
-          >
-            {Object.keys(ubigeoData).map((departamento) => (
-              <MenuItem key={departamento} value={departamento}>
-                {departamento}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            select
-            label="Provincia"
-            fullWidth
-            value={selectedProvincia}
-            onChange={handleProvinciaChange}
-            disabled={!selectedDepartamento}
-            sx={{ mb: 2 }}
-          >
-            {provincias.map((provincia) => (
-              <MenuItem key={provincia} value={provincia}>
-                {provincia}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            select
-            label="Distrito"
-            fullWidth
-            value={selectedDistrito}
-            onChange={(e) => setSelectedDistrito(e.target.value)}
-            disabled={!selectedProvincia}
-          >
-            {distritos.map((distrito) => (
-              <MenuItem key={distrito} value={distrito}>
-                {distrito}
-              </MenuItem>
-            ))}
-          </TextField>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenUbigeoDialog(false)} color="secondary">
-            Cancelar
-          </Button>
-          <Button onClick={handleDestinoSelection} color="primary">
-            Seleccionar
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Registro Exitoso</DialogTitle>
-        <DialogContent>
-          <Typography>{responseMessage}</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            OK
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Backdrop
-        open={isLoading}
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
+              Anticipos de Viajes
+            </Typography>
+  
+            {/* Aquí todo tu contenido del formulario */}
+            <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
+              {/* Campos del formulario */}
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                id="tipo_viaje"
+                label="Tipo de Viaje"
+                name="tipo_viaje"
+                select
+                value={tipoViaje}
+                onChange={handleTipoViajeChange}
+              >
+                <MenuItem value="NACIONAL">Viajes Nacionales</MenuItem>
+                <MenuItem value="INTERNACIONAL">Viajes Internacionales</MenuItem>
+              </TextField>
+              {tipoViaje === "NACIONAL" ? (
+                <>
+                  <Button
+                    variant="outlined"
+                    fullWidth
+                    onClick={() => setOpenUbigeoDialog(true)}
+                    sx={{
+                      mt: 2,
+                      mb: 2,
+                      color: "#2E3192",
+                      borderColor: "#2E3192",
+                      "&:hover": {
+                        backgroundColor: "#F15A29",
+                        borderColor: "#F15A29",
+                        color: "white",
+                      },
+                    }}
+                  >
+                    Seleccionar Destino (Nacional)
+                  </Button>
+  
+                  <Typography variant="body1" sx={{ mb: 2 }}>
+                    {formData.destino
+                      ? `Destino seleccionado: ${formData.destino}`
+                      : "No se ha seleccionado destino."}
+                  </Typography>
+                </>
+              ) : (
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="destino"
+                  label="Destino Internacional"
+                  name="destino"
+                  select
+                  value={formData.destino}
+                  onChange={handleChange}
+                >
+                  {paisesSudamerica.map((pais) => (
+                    <MenuItem key={pais} value={pais}>
+                      {pais}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              )}
+  
+              {/* Resto de los campos */}
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                id="motivo"
+                label="Breve Motivo"
+                name="motivo"
+                value={formData.motivo}
+                onChange={handleChange}
+              />
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                id="fecha_viaje"
+                label="Fecha de Viaje"
+                name="fecha_emision"
+                type="date"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                value={formData.fecha_emision}
+                onChange={handleChange}
+              />
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                id="dias"
+                label="Días"
+                name="dias"
+                type="number"
+                value={formData.dias}
+                onChange={handleChange}
+              />
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                id="moneda"
+                label="Moneda"
+                name="moneda"
+                select
+                SelectProps={{
+                  native: true,
+                }}
+                value={formData.moneda}
+                onChange={handleChange}
+              >
+                <option value="PEN">PEN</option>
+                <option value="USD">USD</option>
+              </TextField>
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                id="presupuesto"
+                label="Presupuesto"
+                name="presupuesto"
+                type="number"
+                value={formData.presupuesto}
+                onChange={handleChange}
+              />
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                id="total"
+                label="Total"
+                name="total"
+                type="number"
+                value={formData.total}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setFormData({
+                    ...formData,
+                    total: value,
+                    importe_facturado: value,
+                  });
+                }}
+              />
+  
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                disabled={isLoading}
+                sx={{
+                  mt: 3,
+                  mb: 2,
+                  backgroundColor: "#2E3192",
+                  "&:hover": {
+                    backgroundColor: "#1F237A",
+                  },
+                  color: "white",
+                  "&:disabled": {
+                    backgroundColor: "#A5A5A5",
+                    color: "#E0E0E0",
+                  },
+                }}
+              >
+                {isLoading ? "Enviando..." : "Solicitar"}
+              </Button>
+            </Box>
+          </CardContent>
+        </Card>
+      )}
     </Container>
   );
+  
 };
 
 export default AnticiposViajes;

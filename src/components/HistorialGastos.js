@@ -95,7 +95,7 @@ const HistorialGastos = () => {
     };
 
     return (
-        <Container maxWidth="lg" sx={{ marginTop: 4 }}>
+        <Container maxWidth="lg" sx={{ marginTop: -20 }}>
             <Typography 
                 variant="h4" 
                 align="center" 

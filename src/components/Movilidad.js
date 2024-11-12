@@ -39,14 +39,10 @@ const Movilidad = () => {
     const [isLoading, setIsLoading] = useState(false); 
     const [open, setOpen] = useState(false); 
     const [openUbigeoDialog, setOpenUbigeoDialog] = useState(false); 
-
-    // Definir la función openUbigeoDialogForField
     const openUbigeoDialogForField = (isForOrigen) => {
         setIsOrigen(isForOrigen);
         setOpenUbigeoDialog(true);
     };
-
-    // Función que maneja cambios en el formulario
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prevState) => ({
@@ -99,22 +95,49 @@ const Movilidad = () => {
         setIsLoading(true);
 
         const token = localStorage.getItem('token');
-        const existingRendicion = localStorage.getItem("numero_rendicion");
-        if (!existingRendicion) {
-            console.error("Error: No se encontró numero_rendicion en localStorage.");
-            alert("Error: No se encontró un número de rendición.");
+        console.log("Token:", token);
+        console.log("Form Data:", formData);
+        let loggedInUser = '';
+        if (token) {
+            try {
+                const decodedToken = jwtDecode(token);
+                loggedInUser = decodedToken.sub;
+            } catch (error) {
+                console.error("Error al decodificar el token:", error);
+                alert("Token inválido. Por favor, inicie sesión nuevamente.");
+                setIsLoading(false);
+                return;
+            }
+        } else {
+            console.error("Token no encontrado en localStorage.");
             setIsLoading(false);
             return;
         }
 
-        let loggedInUser = '';
-        if (token) {
-            const decodedToken = jwtDecode(token);
-            loggedInUser = decodedToken.sub;
-        } else {
-            console.error("Token not found in localStorage.");
-            setIsLoading(false);
-            return;
+        // Obtener el numero_rendicion desde el endpoint
+        let numeroRendicion = "|";
+        try {
+            const userString = localStorage.getItem('user');
+            const user = userString ? JSON.parse(userString) : null;
+            const userId = user?.id;
+
+            if (userId) {
+                const response = await api.get(`/rendicion/last`, { params: { user_id: userId } });
+                if (response?.data?.nombre) {
+                    numeroRendicion = response.data.nombre;
+                } else {
+                    console.error('No se pudo obtener el valor de nombre de la última rendición.');
+                    alert('No se pudo obtener el valor de la última rendición. Continuando con un valor predeterminado.');
+                }
+            } else {
+                console.error('Error: Usuario no autenticado o ID de usuario no encontrado.');
+                alert('Error: Usuario no autenticado. Por favor, inicie sesión nuevamente.');
+                setIsLoading(false);
+                return;
+            }
+        } catch (error) {
+            console.error('Error al obtener la última rendición:', error);
+            alert('Error al obtener la última rendición. Usando valor predeterminado para numero_rendicion.');
         }
 
         const today = new Date().toISOString().split('T')[0]; 
@@ -124,16 +147,15 @@ const Movilidad = () => {
             fecha_emision: formData.fecha_emision ? formData.fecha_emision.toISOString().split('T')[0] : today,
             usuario: loggedInUser,
             correlativo: "00000001",
-            ruc:"00000000000",
+            ruc: "00000000000",
             dni: "524169325",
             gerencia: "COMERCIAL",
-            numero_rendicion: existingRendicion,
+            numero_rendicion: numeroRendicion,
             tipo_cambio: 1,
             afecto: 0,
             inafecto: 0,
             igv: 0,
             serie: "----"
-
         };
 
         try {
@@ -148,54 +170,41 @@ const Movilidad = () => {
         }
     };
 
-    // const handleClose = (registerAnother) => {
-    //     setOpen(false);
-    //     if (registerAnother) {
-    //         console.log("Iniciando un nuevo gasto, manteniendo el número de rendición actual.");
-    //     } else {
-    //         console.log("Finalizando la rendición.");
-    //         localStorage.removeItem("numero_rendicion");
-    //         navigate('/colaborador');
-    //     }
-    // };
-
     const handleClose = async (registerAnother) => {
         setOpen(false);
     
         if (registerAnother) {
             try {
-                // Obtén el user_id de la sesión
                 const userString = localStorage.getItem('user');
                 const user = userString ? JSON.parse(userString) : null;
-                const userId = user ? user.id : null;
+                const userId = user?.id;
     
-                if (userId) {
-                    // Realiza la solicitud GET al endpoint para obtener la última rendición
-                    const response = await api.get(`/rendicion/last`, { params: { user_id: userId } });
-    
-                    // Extrae y muestra el campo "nombre" en la consola
+                if (!userId) {
+                    console.error('Error: Usuario no autenticado o ID de usuario no encontrado.');
+                    alert('Error: Usuario no autenticado. Por favor, inicie sesión nuevamente.');
+                    return;
+                }
+                const response = await api.get(`/rendicion/last`, { params: { user_id: userId } });
+                if (response?.data?.nombre) {
                     const { nombre } = response.data;
                     console.log("Nombre de la última rendición:", nombre);
-    
-                    // Redirigir a la página de rendición de gastos
-                    navigate('/colaborador/rendicion-gastos');
+                    navigate('/datos-recibo');
                 } else {
-                    console.error('Error: Usuario no autenticado');
-                    alert('Error: Usuario no autenticado');
+                    console.error('Error: No se pudo obtener la información de la última rendición.');
+                    alert('Error: No se pudo obtener la última rendición. Intente nuevamente.');
                 }
             } catch (error) {
                 console.error('Error al obtener la última rendición:', error);
                 alert('Error al obtener la última rendición. Intente nuevamente.');
             }
         } else {
-            // Finalizar rendición y cerrar sesión
             localStorage.removeItem("numero_rendicion");
-            navigate('/colaborador'); // Redirigir al dashboard principal
+            navigate('/colaborador');
         }
     };
 
     return (
-        <Container maxWidth="sm" sx={{ marginTop: 10 }}>
+        <Container maxWidth="sm" sx={{ marginTop: -20 }}>
             <Card sx={{ boxShadow: 3 }}>
                 <CardContent>
                     <Typography variant="h4" component="div" align="center" gutterBottom>

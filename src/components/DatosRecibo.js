@@ -36,7 +36,6 @@ import lupaIcon from "../assets/lupa-icon.png";
 const DatosRecibo = () => {
   const categoryOptions = [
     { value: "63111", label: "Servicio transporte De carga" },
-    { value: "63112", label: "Movilidad" },
     { value: "6312", label: "Correos" },
     { value: "6313", label: "Alojamiento" },
     { value: "6314", label: "Alimentación" },
@@ -132,113 +131,100 @@ const DatosRecibo = () => {
   const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false);
   const [documentoIdToDelete, setDocumentoIdToDelete] = useState(null);
   const [formErrors, setFormErrors] = useState({});
+  const [documentDetail, setDocumentDetail] = useState(null);
+  const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+  const handleViewDetail = async (documentId) => {
+    try {
+      const response = await axios.get(`${baseURL}/documentos/${documentId}`);
+      setDocumentDetail(response.data);
+      setDetailDialogOpen(true);
+    } catch (error) {
+      console.error("Error al obtener los detalles del documento:", error);
+      setError("Error al obtener los detalles. Por favor, intente nuevamente.");
+    }
+  };
 
+  const handleCloseDetailDialog = () => {
+    setDetailDialogOpen(false);
+    setDocumentDetail(null);
+  };
 
-// Nuevo estado para manejar el detalle del documento
-const [documentDetail, setDocumentDetail] = useState(null);
-const [detailDialogOpen, setDetailDialogOpen] = useState(false);
-
-// Función para manejar la visualización del detalle
-const handleViewDetail = async (documentId) => {
-  try {
-    const response = await axios.get(`${baseURL}/documentos/${documentId}`);
-    setDocumentDetail(response.data); // Asigna los detalles obtenidos
-    setDetailDialogOpen(true); // Abre el diálogo
-  } catch (error) {
-    console.error("Error al obtener los detalles del documento:", error);
-    setError("Error al obtener los detalles. Por favor, intente nuevamente.");
-  }
-};
-
-// Función para cerrar el diálogo
-const handleCloseDetailDialog = () => {
-  setDetailDialogOpen(false);
-  setDocumentDetail(null);
-};
-
-
-
-  // Nuevo estado para controlar el registro seleccionado para edición
-const [editRecord, setEditRecord] = useState(null);
-// Nueva función para manejar la edición del registro seleccionado
-const handleEditRecord = (record) => {
-  setFormData({
-    fecha: record.fecha || "",
-    ruc: record.ruc || "",
-    tipoDoc: record.tipoDoc || "",
-    cuentaContable: record.cuenta_contable || "",
-    serie: record.serie || "",
-    numero: record.numero || "",
-    rubro: record.rubro || "",
-    moneda: record.moneda || "PEN",
-    afecto: record.afecto || "",
-    igv: record.igv || "",
-    inafecto: record.inafecto || "",
-    total: record.total || "",
-    archivo: record.archivo || "",
-  });
-  setEditRecord(record); // Establecer el registro en edición
-  setShowForm(true); // Mostrar el formulario
-};
-
-// Función para manejar la actualización del documento existente
-const handleUpdate = async (e) => {
-  e.preventDefault();
-  const errors = {};
-  if (!formData.archivo) {
-    errors.archivo = "Subir Recibo es obligatorio";
-  }
-  if (!formData.rubro) {
-    errors.rubro = "Rubro es obligatorio";
-  }
-
-  if (Object.keys(errors).length > 0) {
-    setFormErrors(errors);
-    return;
-  }
-
-  try {
-    // Realiza la solicitud de actualización a la API
-    await axios.put(`${baseURL}/documentos/${editRecord.id}`, formData, {
-      headers: {
-        "Content-Type": "application/json",
-      },
+  const [editRecord, setEditRecord] = useState(null);
+  const handleEditRecord = (record) => {
+    setFormData({
+      fecha: record.fecha || "",
+      ruc: record.ruc || "",
+      tipoDoc: record.tipoDoc || "",
+      cuentaContable: record.cuenta_contable || "",
+      serie: record.serie || "",
+      numero: record.numero || "",
+      rubro: record.rubro || "",
+      moneda: record.moneda || "PEN",
+      afecto: record.afecto || "",
+      igv: record.igv || "",
+      inafecto: record.inafecto || "",
+      total: record.total || "",
+      archivo: record.archivo || "",
     });
+    setEditRecord(record);
+    setShowForm(true);
+  };
 
-    alert("Documento actualizado con éxito");
-    setEditRecord(null); // Restablecer el registro en edición
-    setShowForm(false); // Ocultar el formulario
-    fetchRecords(); // Refrescar la lista de registros
-  } catch (error) {
-    setError("Error al actualizar el documento. Por favor, intente nuevamente.");
-  }
-};
-
-const handleFinalizarRendicion = async () => {
-  try {
-    const userString = localStorage.getItem("user");
-    const user = userString ? JSON.parse(userString) : null;
-    const userId = user ? user.id : null;
-
-    if (!userId) {
-      alert("Error: Usuario no autenticado");
-      return;
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    const errors = {};
+    if (!formData.archivo) {
+      errors.archivo = "Subir Recibo es obligatorio";
+    }
+    if (!formData.rubro) {
+      errors.rubro = "Rubro es obligatorio";
     }
 
-    const response = await axios.post(`${baseURL}/rendicion/`, {
-      user_id: userId,
-    });
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+    try {
+      await axios.put(`${baseURL}/documentos/${editRecord.id}`, formData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-    // Puedes manejar la respuesta según sea necesario
-    alert(`Rendición creada con el nombre: ${response.data.nombre}`);
-  } catch (error) {
-    console.error("Error al finalizar la rendición:", error);
-    setError("Error al finalizar la rendición. Por favor, intente nuevamente.");
-  }
-};
+      alert("Documento actualizado con éxito");
+      setEditRecord(null);
+      setShowForm(false);
+      fetchRecords();
+    } catch (error) {
+      setError(
+        "Error al actualizar el documento. Por favor, intente nuevamente."
+      );
+    }
+  };
 
+  const handleFinalizarRendicion = async () => {
+    try {
+      const userString = localStorage.getItem("user");
+      const user = userString ? JSON.parse(userString) : null;
+      const userId = user ? user.id : null;
 
+      if (!userId) {
+        alert("Error: Usuario no autenticado");
+        return;
+      }
 
+      const response = await axios.post(`${baseURL}/rendicion/`, {
+        user_id: userId,
+      });
+
+      alert(`Rendición creada con el nombre: ${response.data.nombre}`);
+    } catch (error) {
+      console.error("Error al finalizar la rendición:", error);
+      setError(
+        "Error al finalizar la rendición. Por favor, intente nuevamente."
+      );
+    }
+  };
 
   useEffect(() => {
     const fetchRendicion = async () => {
@@ -300,89 +286,45 @@ const handleFinalizarRendicion = async () => {
     }
   };
 
-//   useEffect(() => {
-//  // Función para obtener los registros (puedes ajustar según tu lógica de negocio)
-// const fetchRecords = async () => {
-//   try {
-//     setIsLoading(true);
-//     const userString = localStorage.getItem("user");
-//     const user = userString ? JSON.parse(userString) : null;
-//     const userId = user ? user.id : null;
-//     const username = user ? user.email : null;
+  const fetchRecords = async () => {
+    try {
+      setIsLoading(true);
+      const userString = localStorage.getItem("user");
+      const user = userString ? JSON.parse(userString) : null;
+      const userId = user ? user.id : null;
+      const username = user ? user.email : null;
 
-//     if (userId && username) {
-//       const response = await api.get("/documentos/", {
-//         params: {
-//           company_name: "innova",
-//           estado: "POR APROBAR",
-//           username: username,
-//           tipo_solicitud: "",
-//           tipo_anticipo: "",
-//           numero_rendicion: nombreRendicion,
-//           fecha_solicitud_from: "",
-//           fecha_solicitud_to: "",
-//           fecha_rendicion_from: "",
-//           fecha_rendicion_to: "",
-//         },
-//       });
-//       setRecords(response.data);
-//     } else {
-//       alert("Error: Usuario no autenticado");
-//     }
-//   } catch (error) {
-//     console.error("Error al obtener los registros:", error);
-//   } finally {
-//     setIsLoading(false);
-//   }
-// };
-
-
-//     if (nombreRendicion) {
-//       fetchRecords();
-//     }
-//   }, [nombreRendicion]);
-
-// Función para obtener los registros (moverla al nivel superior)
-const fetchRecords = async () => {
-  try {
-    setIsLoading(true);
-    const userString = localStorage.getItem("user");
-    const user = userString ? JSON.parse(userString) : null;
-    const userId = user ? user.id : null;
-    const username = user ? user.email : null;
-
-    if (userId && username) {
-      const response = await api.get("/documentos/", {
-        params: {
-          company_name: "innova",
-          estado: "POR APROBAR",
-          username: username,
-          tipo_solicitud: "",
-          tipo_anticipo: "",
-          numero_rendicion: nombreRendicion,
-          fecha_solicitud_from: "",
-          fecha_solicitud_to: "",
-          fecha_rendicion_from: "",
-          fecha_rendicion_to: "",
-        },
-      });
-      setRecords(response.data);
-    } else {
-      alert("Error: Usuario no autenticado");
+      if (userId && username) {
+        const response = await api.get("/documentos/", {
+          params: {
+            company_name: "innova",
+            estado: "POR APROBAR",
+            username: username,
+            tipo_solicitud: "",
+            tipo_anticipo: "",
+            numero_rendicion: nombreRendicion,
+            fecha_solicitud_from: "",
+            fecha_solicitud_to: "",
+            fecha_rendicion_from: "",
+            fecha_rendicion_to: "",
+          },
+        });
+        setRecords(response.data);
+      } else {
+        alert("Error: Usuario no autenticado");
+      }
+    } catch (error) {
+      console.error("Error al obtener los registros:", error);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error) {
-    console.error("Error al obtener los registros:", error);
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
-useEffect(() => {
-  if (nombreRendicion) {
-    fetchRecords(); // Llama a la función que ahora está definida fuera del useEffect
-  }
-}, [nombreRendicion]);
-
+  useEffect(() => {
+    if (nombreRendicion) {
+      fetchRecords();
+    }
+  }, [nombreRendicion]);
 
   useEffect(() => {
     if (formData.igv) {
@@ -682,22 +624,24 @@ useEffect(() => {
           >
             Nuevo Registro
           </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={handleFinalizarRendicion}
-          >
-            Finalizar Rendición
-          </Button>
           {showForm && (
             <Button
               variant="contained"
-              color="secondary"
-              onClick={() => alert("Movilidad seleccionada")}
+              color="warning"
+              sx={{ marginRight: 2 }}
+              onClick={() => navigate("/movilidad")}
             >
               Movilidad
             </Button>
           )}
+          <Button
+            variant="contained"
+            color="success"
+            sx={{ marginRight: 2 }}
+            onClick={handleFinalizarRendicion}
+          >
+            Finalizar Rendición
+          </Button>
         </Box>
       </Container>
       {showForm && (
@@ -914,21 +858,20 @@ useEffect(() => {
                 />
               ))}
 
-<Button
-  type="submit"
-  variant="contained"
-  color="primary"
-  fullWidth
-  onClick={editRecord ? handleUpdate : handleSubmit} // Alterna entre crear y editar
-  sx={{
-    marginTop: 4,
-    backgroundColor: "#2E3192",
-    "&:hover": { backgroundColor: "#1F237A" },
-  }}
->
-  {editRecord ? "Actualizar" : "Solicitar"} {/* Cambiar el texto del botón */}
-</Button>
-
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+                onClick={editRecord ? handleUpdate : handleSubmit}
+                sx={{
+                  marginTop: 4,
+                  backgroundColor: "#2E3192",
+                  "&:hover": { backgroundColor: "#1F237A" },
+                }}
+              >
+                {editRecord ? "Actualizar" : "Solicitar"}
+              </Button>
             </form>
           </CardContent>
         </Card>
@@ -1002,6 +945,7 @@ useEffect(() => {
                       variant="contained"
                       color="primary"
                       onClick={() => handleEditRecord(record)}
+                      disabled={record.rubro.toLowerCase() === "movilidad"}
                     >
                       Editar
                     </Button>
@@ -1030,14 +974,15 @@ useEffect(() => {
           <Button onClick={() => handleDialogClose(true)} color="primary">
             Adicionar Gasto
           </Button>
-          <Button onClick={async () => {
-        await handleFinalizarRendicion(); // Llama a la función para finalizar la rendición
-        handleDialogClose(false); // Luego cierra el diálogo
-      }} 
-      color="secondary"
-    >
-      Finalizar Rendición
-    </Button>
+          <Button
+            onClick={async () => {
+              await handleFinalizarRendicion();
+              handleDialogClose(false);
+            }}
+            color="secondary"
+          >
+            Finalizar Rendición
+          </Button>
         </DialogActions>
       </Dialog>
       <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
@@ -1071,36 +1016,45 @@ useEffect(() => {
           </Button>
         </DialogActions>
       </Dialog>
-      <Dialog open={detailDialogOpen} onClose={handleCloseDetailDialog} maxWidth="md" fullWidth>
-  <DialogTitle>Detalle del Documento</DialogTitle>
-  <DialogContent>
-    {documentDetail ? (
-      <TableContainer component={Paper}>
-        <Table>
-          <TableBody>
-            {Object.entries(documentDetail).map(([key, value]) => (
-              // Excluir campos específicos (id y archivo)
-              key !== "id" && key !== "archivo" && (
-                <TableRow key={key}>
-                  <TableCell sx={{ fontWeight: "bold" }}>{key}</TableCell>
-                  <TableCell>{value ? value.toString() : "-"}</TableCell>
-                </TableRow>
-              )
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    ) : (
-      <CircularProgress />
-    )}
-  </DialogContent>
-  <DialogActions>
-    <Button onClick={handleCloseDetailDialog} color="primary">
-      Cerrar
-    </Button>
-  </DialogActions>
-</Dialog>
-
+      <Dialog
+        open={detailDialogOpen}
+        onClose={handleCloseDetailDialog}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Detalle del Documento</DialogTitle>
+        <DialogContent>
+          {documentDetail ? (
+            <TableContainer component={Paper}>
+              <Table>
+                <TableBody>
+                  {Object.entries(documentDetail).map(
+                    ([key, value]) =>
+                      key !== "id" &&
+                      key !== "archivo" && (
+                        <TableRow key={key}>
+                          <TableCell sx={{ fontWeight: "bold" }}>
+                            {key}
+                          </TableCell>
+                          <TableCell>
+                            {value ? value.toString() : "-"}
+                          </TableCell>
+                        </TableRow>
+                      )
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          ) : (
+            <CircularProgress />
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDetailDialog} color="primary">
+            Cerrar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };
