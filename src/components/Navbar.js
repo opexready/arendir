@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Button, Box, List, ListItem, ListItemText, ListItemIcon } from '@mui/material';
-import FolderIcon from '@mui/icons-material/Folder';  
-import ListAltIcon from '@mui/icons-material/ListAlt';
-import PersonIcon from '@mui/icons-material/Person';
 import api from '../api';
 
 const Navbar = () => {
@@ -77,25 +74,41 @@ const Navbar = () => {
                     <List sx={{ display: 'flex', flexDirection: 'row', padding: 0 }}>
                         <ListItem button component={Link} to="/datos-recibo" sx={{ justifyContent: 'center' }}>
                             <ListItemIcon>
-                                <ListAltIcon sx={{ color: '#8F3292' }} />
+                                <img 
+                                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/GASTOS.png?alt=media&token=e9261ba0-d22f-4d13-8ff0-213b23feb977" 
+                                    alt="Gastos" 
+                                    style={{ height: '24px', width: '24px' }} 
+                                />
                             </ListItemIcon>
                             <ListItemText primary="Gastos" sx={{ color: '#2E3192', textAlign: 'center' }} />
                         </ListItem>
                         <ListItem button component={Link} to="/colaborador/anticipos-viajes" sx={{ justifyContent: 'center' }}>
                             <ListItemIcon>
-                                <ListAltIcon sx={{ color: '#8F3292' }} />
+                                <img 
+                                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/ANTICIPOS.png?alt=media&token=f5f00653-d2c4-4919-8c33-7eb353f0cf7b" 
+                                    alt="Anticipos" 
+                                    style={{ height: '24px', width: '24px' }} 
+                                />
                             </ListItemIcon>
                             <ListItemText primary="Anticipo" sx={{ color: '#2E3192', textAlign: 'center' }} />
                         </ListItem>
                         <ListItem button component={Link} to="/colaborador/historial" sx={{ justifyContent: 'center' }}>
                             <ListItemIcon>
-                                <ListAltIcon sx={{ color: '#8F3292' }} />
+                                <img 
+                                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/HISTORIAL.png?alt=media&token=fb09342e-37f7-4fc5-b268-2130731bd247" 
+                                    alt="Historial" 
+                                    style={{ height: '24px', width: '24px' }} 
+                                />
                             </ListItemIcon>
                             <ListItemText primary="Historial" sx={{ color: '#2E3192', textAlign: 'center' }} />
                         </ListItem>
                         <ListItem button component={Link} to="/colaborador/historial" sx={{ justifyContent: 'center' }}>
                             <ListItemIcon>
-                                <ListAltIcon sx={{ color: '#8F3292' }} />
+                                <img 
+                                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/DETALLE.png?alt=media&token=2de03c3c-1dc1-41f4-bbdf-b4c5e31857b7" 
+                                    alt="Detalle" 
+                                    style={{ height: '24px', width: '24px' }} 
+                                />
                             </ListItemIcon>
                             <ListItemText primary="Detalle" sx={{ color: '#2E3192', textAlign: 'center' }} />
                         </ListItem>
