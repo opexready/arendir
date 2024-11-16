@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
-import { Container, TextField, Button, Box, Typography, Alert } from '@mui/material';
+import { Container, TextField, Button, Box, Typography, Alert, AppBar, Toolbar } from '@mui/material';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -13,22 +13,17 @@ const Login = () => {
         e.preventDefault();
         setError('');
         try {
-            // Llamada a la API para obtener el token
             const response = await api.post('/token', { email, password });
-            localStorage.setItem('token', response.data.access_token);  // Guardamos el token en el localStorage
+            localStorage.setItem('token', response.data.access_token);
 
-            // Llamada a la API para obtener los datos del usuario
             const userResponse = await api.get('/users/me/', {
                 headers: {
-                    Authorization: `Bearer ${response.data.access_token}`  // Incluimos el token en los headers
+                    Authorization: `Bearer ${response.data.access_token}`
                 }
             });
             const user = userResponse.data;
-
-            // Guardar el usuario en el localStorage
             localStorage.setItem('user', JSON.stringify(user));
 
-            // Redirigir según el rol del usuario
             if (user.role === 'ADMINISTRACION') {
                 navigate('/administracion');
             } else if (user.role === 'APROBADOR') {
@@ -43,56 +38,96 @@ const Login = () => {
     };
 
     return (
-        <Container maxWidth="sm">
-            <Box sx={{ mt: '80px', textAlign: 'center' }}>  
-                <Typography variant="h4" component="h1" gutterBottom sx={{ color: '#F15A29', fontWeight: 'bold' }}>
+        <Container 
+            maxWidth={false}
+            sx={{ 
+                backgroundImage: 'url(https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/background1.png?alt=media&token=5feff8c0-6826-4cda-8851-05a2a9591c69)', 
+                backgroundSize: 'cover', 
+                backgroundPosition: 'center',
+                minHeight: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative',
+                padding: 0,
+                margin: 0
+            }}
+        >
+            <AppBar 
+                position="fixed" 
+                sx={{ 
+                    background: 'linear-gradient(90deg, #7B1FA2, #F99E1E)',
+                    zIndex: (theme) => theme.zIndex.drawer + 1
+                }}
+            >
+                <Toolbar sx={{ justifyContent: 'space-between' }}>
+                    <Typography variant="h6" sx={{ flexGrow: 1 }}>
+                        {/* Puedes agregar texto o dejarlo vacío */}
+                    </Typography>
+                    <img 
+                        src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/logoblanco2.png?alt=media&token=94ceb944-93e9-4361-83d3-75017559ab67" 
+                        alt="Logo" 
+                        style={{ height: '40px', cursor: 'pointer' }}  
+                        onClick={() => navigate('/')}  
+                    />
+                </Toolbar>
+            </AppBar>
+
+            <Box sx={{ position: 'absolute', bottom: '20px', left: '20px' }}>
+                <img 
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/iconoflecha.png?alt=media&token=a194d960-a3db-4b60-9436-6fea452060a0" 
+                    alt="Icono de flecha" 
+                    style={{ width: '40px', height: '40px' }}
+                />
+            </Box>
+            <Box sx={{ width: '100%', maxWidth: '400px', mt: '80px', backgroundColor: 'rgba(255, 255, 255, 0.9)', p: 4, borderRadius: '8px' }}>
+                <Typography variant="h4" component="h1" gutterBottom sx={{ color: '#F15A29', fontWeight: 'bold', textAlign: 'center' }}>
                     Bienvenido
                 </Typography>
-            </Box>
-            {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
-            <Box component="form" onSubmit={handleSubmit} sx={{ p: 4, backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
-                <TextField
-                    variant="outlined"
-                    margin="normal"
-                    required
-                    fullWidth
-                    id="email"
-                    label="Email"
-                    name="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    autoComplete="email"
-                    autoFocus
-                    InputLabelProps={{ shrink: true }}
-                />
-                <TextField
-                    variant="outlined"
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="password"
-                    label="Contraseña"
-                    type="password"
-                    id="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    autoComplete="current-password"
-                    InputLabelProps={{ shrink: true }}
-                />
-                <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    sx={{ 
-                        mt: 3, 
-                        mb: 2, 
-                        backgroundColor: '#2E3192',
-                        '&:hover': { backgroundColor: '#1F237A' }
-                    }}
-                >
-                    Iniciar Sesión
-                </Button>
+                {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+                <Box component="form" onSubmit={handleSubmit}>
+                    <TextField
+                        variant="outlined"
+                        margin="normal"
+                        required
+                        fullWidth
+                        id="email"
+                        label="Email"
+                        name="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        autoComplete="email"
+                        autoFocus
+                        InputLabelProps={{ shrink: true }}
+                    />
+                    <TextField
+                        variant="outlined"
+                        margin="normal"
+                        required
+                        fullWidth
+                        name="password"
+                        label="Contraseña"
+                        type="password"
+                        id="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        autoComplete="current-password"
+                        InputLabelProps={{ shrink: true }}
+                    />
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        sx={{ 
+                            mt: 3, 
+                            mb: 2, 
+                            backgroundColor: '#2E3192',
+                            '&:hover': { backgroundColor: '#1F237A' }
+                        }}
+                    >
+                        Iniciar Sesión
+                    </Button>
+                </Box>
             </Box>
         </Container>
     );
