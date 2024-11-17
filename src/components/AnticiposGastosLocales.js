@@ -3,7 +3,7 @@ import { Container, Card, CardContent, TextField, Button, Box, Typography, Dialo
 import axios from 'axios';
 import { baseURL, api } from '../api';
 import './AnticiposGastosLocales.css'; // Mantén tu archivo CSS personalizado si es necesario
-
+import { useNavigate } from "react-router-dom"; 
 const AnticiposGastosLocales = () => {
     const getCurrentDate = () => {
         const today = new Date();
@@ -105,9 +105,44 @@ const AnticiposGastosLocales = () => {
         setOpen(false);
         window.history.back();
     };
+    const navigate = useNavigate();
+    const [showForm, setShowForm] = useState(false); 
+    const handleAnticipoGastosLocales = () => {
+        navigate("/anticipos-gastos-locales");
+      };
+
+    
 
     return (
-        <Container maxWidth="sm" sx={{ marginTop: -20}}>
+        <Container sx={{ marginTop: -20}}>
+               <Container sx={{ marginBottom: 2 }}>
+        <Box display="flex" justifyContent="flex-end">
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ marginRight: 2 }}
+            onClick={() => setShowForm(true)} // Mostrar formulario
+          >
+            Anticipo Viajes
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            sx={{ marginRight: 2 }}
+            onClick={handleAnticipoGastosLocales}
+          >
+            Anticipo Gastos Locales
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            sx={{ marginRight: 2 }}
+            onClick={handleAnticipoGastosLocales}
+          >
+            Finalizar Anticipo
+          </Button>
+        </Box>
+      </Container>
             <Card sx={{ boxShadow: 3 }}>
                 <CardContent>
                     <Typography variant="h4" component="h1" align="center" gutterBottom sx={{ color: '#F15A29', fontWeight: 'bold', margin: '0', fontSize: '1.5rem' }}>

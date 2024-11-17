@@ -99,6 +99,7 @@ const DatosRecibo = () => {
   };
   const [records, setRecords] = useState([]);
   const location = useLocation();
+  const [confirmFinalizarDialogOpen, setConfirmFinalizarDialogOpen] = useState(false);
   const navigate = useNavigate();
   const { selectedCuentaContable, selectedRubro, numeroRendicion } =
     location.state || {};
@@ -202,29 +203,72 @@ const DatosRecibo = () => {
     }
   };
 
+  // const handleFinalizarRendicion = async () => {
+  //   try {
+  //     const userString = localStorage.getItem("user");
+  //     const user = userString ? JSON.parse(userString) : null;
+  //     const userId = user ? user.id : null;
+
+  //     if (!userId) {
+  //       alert("Error: Usuario no autenticado");
+  //       return;
+  //     }
+
+  //     const response = await axios.post(`${baseURL}/rendicion/`, {
+  //       user_id: userId,
+  //     });
+
+  //     alert(`Rendición creada con el nombre: ${response.data.nombre}`);
+  //   } catch (error) {
+  //     console.error("Error al finalizar la rendición:", error);
+  //     setError(
+  //       "Error al finalizar la rendición. Por favor, intente nuevamente."
+  //     );
+  //   }
+  // };
+
   const handleFinalizarRendicion = async () => {
     try {
       const userString = localStorage.getItem("user");
       const user = userString ? JSON.parse(userString) : null;
       const userId = user ? user.id : null;
-
+  
       if (!userId) {
         alert("Error: Usuario no autenticado");
         return;
       }
-
-      const response = await axios.post(`${baseURL}/rendicion/`, {
-        user_id: userId,
+  
+      // Paso 1: Obtener la última rendición
+      const lastRendicionResponse = await axios.get(`${baseURL}/rendicion/last`, {
+        params: {
+          user_id: userId,
+          tipo: "RENDICION",
+        },
       });
-
-      alert(`Rendición creada con el nombre: ${response.data.nombre}`);
+  
+      if (lastRendicionResponse.data && lastRendicionResponse.data.id) {
+        const rendicionId = lastRendicionResponse.data.id;
+  
+        // Paso 2: Actualizar la rendición obtenida a estado "ACTIVO"
+        await axios.put(`${baseURL}/rendicion/${rendicionId}`, {
+          estado: "PENDIENTE",
+        });
+  
+        // Paso 3: Crear una nueva rendición
+        const newRendicionResponse = await axios.post(`${baseURL}/rendicion/`, {
+          user_id: userId,
+        });
+  
+        // alert(`Nueva rendición creada con el nombre: ${newRendicionResponse.data.nombre}`);
+      } else {
+        // alert("No se encontró la última rendición para este usuario.");
+      }
     } catch (error) {
       console.error("Error al finalizar la rendición:", error);
-      setError(
-        "Error al finalizar la rendición. Por favor, intente nuevamente."
-      );
+      setError("Error al finalizar la rendición. Por favor, intente nuevamente.");
     }
   };
+  
 
   useEffect(() => {
     const fetchRendicion = async () => {
@@ -678,7 +722,7 @@ const DatosRecibo = () => {
             variant="contained"
             color="success"
             sx={{ marginRight: 2 }}
-            onClick={handleFinalizarRendicion}
+            onClick={() => setConfirmFinalizarDialogOpen(true)}
           >
             Finalizar Rendición
           </Button>
@@ -1095,6 +1139,34 @@ const DatosRecibo = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Dialog
+    open={confirmFinalizarDialogOpen}
+    onClose={() => setConfirmFinalizarDialogOpen(false)}
+  >
+    <DialogTitle>Confirmación</DialogTitle>
+    <DialogContent>
+      <DialogContentText>
+        ¿Estás seguro de finalizar la rendición de gastos?
+      </DialogContentText>
+    </DialogContent>
+    <DialogActions>
+      <Button onClick={() => setConfirmFinalizarDialogOpen(false)} color="primary">
+        No
+      </Button>
+      <Button
+        onClick={async () => {
+          setConfirmFinalizarDialogOpen(false);
+          await handleFinalizarRendicion();
+        }}
+        color="secondary"
+      >
+        Sí
+      </Button>
+    </DialogActions>
+  </Dialog>
+
+
     </Container>
   );
 };

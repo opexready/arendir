@@ -27,14 +27,15 @@ import "./AnticiposViajes.css";
 import { baseURL, api } from "../api";
 import ubigeoData from "../data/ubigeoData";
 import paisesSudamerica from "../data/paisesMundo";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
+import lupaIcon from "../assets/lupa-icon.png";
 
 const AnticiposViajes = () => {
   const getCurrentDate = () => {
     const today = new Date();
     const year = today.getFullYear();
-    const month = `0${today.getMonth() + 1}`.slice(-2); 
-    const day = `0${today.getDate()}`.slice(-2); 
+    const month = `0${today.getMonth() + 1}`.slice(-2);
+    const day = `0${today.getDate()}`.slice(-2);
     return `${year}-${month}-${day}`;
   };
 
@@ -44,7 +45,7 @@ const AnticiposViajes = () => {
   };
 
   const [formData, setFormData] = useState({
-    usuario: "", 
+    usuario: "",
     dni: "",
     responsable: "",
     gerencia: "",
@@ -55,14 +56,15 @@ const AnticiposViajes = () => {
     motivo: "",
     empresa: "innova",
     estado: "POR APROBAR",
-    fecha_emision: "", 
+    fecha_emision: "",
     dias: "",
     moneda: "PEN",
     presupuesto: "",
     total: "",
     banco: "",
     numero_cuenta: "",
-    tipo_viaje: "NACIONAL", 
+    tipo_viaje: "NACIONAL",
+    numero_rendicion: "",
     fecha_solicitud: getCurrentDate(),
   });
 
@@ -76,19 +78,80 @@ const AnticiposViajes = () => {
   const [selectedDistrito, setSelectedDistrito] = useState("");
   const [provincias, setProvincias] = useState([]);
   const [distritos, setDistritos] = useState([]);
+  const [ultimaSolicitud, setUltimaSolicitud] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  useEffect(() => {
+    const fetchDocumentos = async () => {
+      // Obtener userId y username del localStorage
+      const userString = localStorage.getItem("user");
+      const user = userString ? JSON.parse(userString) : null;
+      const userId = user ? user.id : null;
+      const username = user ? user.email : null;
+
+      // Extraer numero_rendicion usando el userId
+      let numeroRendicion = "";
+      try {
+        const response = await axios.get(`${baseURL}/rendicion/last`, {
+          params: { user_id: userId, tipo: "SOLICITUD" },
+        });
+        numeroRendicion = response.data.nombre;
+        setUltimaSolicitud(response.data.nombre);
+      } catch (error) {
+        console.error("Error al obtener la última solicitud:", error);
+      }
+
+      try {
+        const response = await axios.get(`${baseURL}/documentos/`, {
+          params: {
+            company_name: "innova",
+            estado: "POR APROBAR",
+            username: username,
+            tipo_solicitud: "",
+            tipo_anticipo: "",
+            numero_rendicion: numeroRendicion,
+            fecha_solicitud_from: "",
+            fecha_solicitud_to: "",
+            fecha_rendicion_from: "",
+            fecha_rendicion_to: "",
+          },
+        });
+        console.log("Resultado de la solicitud:", response.data);
+        setRecords(response.data); // Almacenar el resultado en `records`
+      } catch (error) {
+        console.error("Error al obtener los documentos:", error);
+      }
+    };
+
+    fetchDocumentos();
+  }, []);
+
+  useEffect(() => {
+    const fetchUltimaSolicitud = async () => {
+      try {
+        const response = await axios.get(`${baseURL}/rendicion/last`, {
+          params: { user_id: 22, tipo: "SOLICITUD" },
+        });
+        setUltimaSolicitud(response.data.nombre);
+      } catch (error) {
+        console.error("Error al obtener la última solicitud:", error);
+      }
+    };
+    fetchUltimaSolicitud();
+  }, []);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const response = await axios.get(`${baseURL}/users/me`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`, 
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
         const userData = response.data;
-        console.log("User ID:", userData.id); 
+        console.log("User ID:", userData.id);
         const rendicionResponse = await axios.get(`${baseURL}/rendicion/last`, {
-          params: { user_id: userData.id },
+          params: { user_id: 22, tipo: "SOLICITUD" },
         });
         const rendicionData = rendicionResponse.data;
         console.log("Nombre de rendición:", rendicionData.nombre);
@@ -100,7 +163,7 @@ const AnticiposViajes = () => {
           gerencia: userData.gerencia,
           area: userData.area,
           ceco: userData.ceco,
-          banco: userData.banco || "", 
+          banco: userData.banco || "",
           numero_cuenta: userData.cuenta_bancaria || "",
           fecha_emision: getCurrentDate(),
           tipo_solicitud: "ANTICIPO",
@@ -114,7 +177,7 @@ const AnticiposViajes = () => {
       }
     };
     fetchUserData();
-  }, []); 
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -122,7 +185,7 @@ const AnticiposViajes = () => {
       setFormData({
         ...formData,
         presupuesto: value,
-        total: value, 
+        total: value,
       });
     } else {
       setFormData({
@@ -134,6 +197,8 @@ const AnticiposViajes = () => {
 
   const handleTipoViajeChange = (e) => {
     const tipo = e.target.value;
+    console.log("aca esta el tipo");
+    console.log(tipo);
     setTipoViaje(tipo);
     setFormData({
       ...formData,
@@ -188,10 +253,12 @@ const AnticiposViajes = () => {
     setOpenUbigeoDialog(false);
   };
 
-  const [showForm, setShowForm] = useState(false); 
-  const [records, setRecords] = useState([]); 
+  const [showForm, setShowForm] = useState(false);
+  const [records, setRecords] = useState([]);
   const handleViewFile = (fileLocation) => {
-    console.log("Ver archivo:", fileLocation);
+    console.log("Archivo a visualizar:", fileLocation);
+    setSelectedFile(fileLocation);
+    setOpen(true);
   };
 
   const handleViewDetail = (documentId) => {
@@ -207,8 +274,9 @@ const AnticiposViajes = () => {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ marginTop: -20 }}>
+    <Container sx={{ marginTop: -20 }}>
       {/* Botones para mostrar los formularios */}
+
       <Container sx={{ marginBottom: 2 }}>
         <Box display="flex" justifyContent="flex-end">
           <Button
@@ -227,9 +295,19 @@ const AnticiposViajes = () => {
           >
             Anticipo Gastos Locales
           </Button>
+          <Button
+            variant="contained"
+            color="success"
+            sx={{ marginRight: 2 }}
+            onClick={handleAnticipoGastosLocales}
+          >
+            Finalizar Anticipo
+          </Button>
         </Box>
       </Container>
-  
+      <Typography variant="h6" gutterBottom>
+        SOLICITUD: {ultimaSolicitud}
+      </Typography>
       {/* Grilla: Siempre visible */}
       <TableContainer component={Paper} sx={{ marginBottom: 4 }}>
         <Table>
@@ -239,7 +317,7 @@ const AnticiposViajes = () => {
                 Número de Ítem
               </TableCell>
               <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                Rubro
+                Categoria
               </TableCell>
               <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                 Total
@@ -251,9 +329,6 @@ const AnticiposViajes = () => {
                 Detalle
               </TableCell>
               <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                Editar
-              </TableCell>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                 Eliminar
               </TableCell>
             </TableRow>
@@ -262,17 +337,29 @@ const AnticiposViajes = () => {
             {records.map((record, index) => (
               <TableRow key={record.id}>
                 <TableCell>{index + 1}</TableCell>
-                <TableCell>{record.rubro}</TableCell>
-                <TableCell>{record.total}</TableCell>
+                <TableCell>{record.tipo_anticipo}</TableCell>{" "}
+                {/* Mostrar tipo_anticipo */}
+                <TableCell>{record.total}</TableCell> {/* Mostrar total */}
                 <TableCell>
-                  {record.archivo && (
-                    <Button
-                      variant="text"
-                      onClick={() => handleViewFile(record.archivo)}
-                    >
-                      Ver
-                    </Button>
-                  )}
+                  {(() => {
+                    console.log("Valor de record.archivo:", record.archivo); // Para verificar el valor
+                    return (
+                      record.archivo && (
+                        <Button
+                          variant="text"
+                          onClick={() => handleViewFile(record.archivo)}
+                        >
+                          <span>Ver Archivo</span>{" "}
+                          {/* Texto temporal para verificar */}
+                          <img
+                            src={lupaIcon}
+                            alt="Ver Archivo"
+                            style={{ width: 24 }}
+                          />
+                        </Button>
+                      )
+                    );
+                  })()}
                 </TableCell>
                 <TableCell>
                   <Button
@@ -283,7 +370,7 @@ const AnticiposViajes = () => {
                     Ver Detalle
                   </Button>
                 </TableCell>
-                <TableCell>
+                {/* <TableCell>
                   <Button
                     variant="contained"
                     color="primary"
@@ -291,7 +378,7 @@ const AnticiposViajes = () => {
                   >
                     Editar
                   </Button>
-                </TableCell>
+                </TableCell> */}
                 <TableCell>
                   <Button
                     variant="contained"
@@ -306,7 +393,7 @@ const AnticiposViajes = () => {
           </TableBody>
         </Table>
       </TableContainer>
-  
+
       {/* Formulario: Solo visible si showForm es true */}
       {showForm && (
         <Card sx={{ boxShadow: 3 }}>
@@ -325,9 +412,14 @@ const AnticiposViajes = () => {
             >
               Anticipos de Viajes
             </Typography>
-  
+
             {/* Aquí todo tu contenido del formulario */}
-            <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
+            <Box
+              component="form"
+              onSubmit={handleSubmit}
+              noValidate
+              sx={{ mt: 2 }}
+            >
               {/* Campos del formulario */}
               <TextField
                 variant="outlined"
@@ -342,7 +434,9 @@ const AnticiposViajes = () => {
                 onChange={handleTipoViajeChange}
               >
                 <MenuItem value="NACIONAL">Viajes Nacionales</MenuItem>
-                <MenuItem value="INTERNACIONAL">Viajes Internacionales</MenuItem>
+                <MenuItem value="INTERNACIONAL">
+                  Viajes Internacionales
+                </MenuItem>
               </TextField>
               {tipoViaje === "NACIONAL" ? (
                 <>
@@ -364,7 +458,7 @@ const AnticiposViajes = () => {
                   >
                     Seleccionar Destino (Nacional)
                   </Button>
-  
+
                   <Typography variant="body1" sx={{ mb: 2 }}>
                     {formData.destino
                       ? `Destino seleccionado: ${formData.destino}`
@@ -391,7 +485,7 @@ const AnticiposViajes = () => {
                   ))}
                 </TextField>
               )}
-  
+
               {/* Resto de los campos */}
               <TextField
                 variant="outlined"
@@ -480,7 +574,7 @@ const AnticiposViajes = () => {
                   });
                 }}
               />
-  
+
               <Button
                 type="submit"
                 fullWidth
@@ -506,9 +600,29 @@ const AnticiposViajes = () => {
           </CardContent>
         </Card>
       )}
+
+      {/* Modal para ver el archivo */}
+      <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
+        <DialogTitle>Archivo del Documento</DialogTitle>
+        <DialogContent>
+          {selectedFile && (
+            <iframe
+              src={selectedFile}
+              width="100%"
+              height="600px"
+              title="Archivo del Documento"
+              frameBorder="0"
+            />
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cerrar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
-  
 };
 
 export default AnticiposViajes;
