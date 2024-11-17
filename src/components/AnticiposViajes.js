@@ -82,6 +82,8 @@ const AnticiposViajes = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [documentDetail, setDocumentDetail] = useState(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+  const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false);
+  const [documentoIdToDelete, setDocumentoIdToDelete] = useState(null);
 
   useEffect(() => {
     const fetchDocumentos = async () => {
@@ -285,8 +287,29 @@ const AnticiposViajes = () => {
     console.log("Editar registro:", record);
   };
 
-  const handleOpenConfirmDeleteDialog = (documentId) => {
-    console.log("Confirmar eliminación para documento:", documentId);
+  const handleOpenConfirmDeleteDialog = (documentoId) => {
+    setDocumentoIdToDelete(documentoId);
+    setConfirmDeleteDialogOpen(true);
+  };
+
+  const handleCloseConfirmDeleteDialog = () => {
+    setDocumentoIdToDelete(null);
+    setConfirmDeleteDialogOpen(false);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (documentoIdToDelete) {
+      try {
+        await axios.delete(`${baseURL}/documentos/${documentoIdToDelete}`);
+        setRecords(
+          records.filter((record) => record.id !== documentoIdToDelete)
+        );
+        handleCloseConfirmDeleteDialog();
+      } catch (error) {
+        console.error("Error al eliminar el documento:", error);
+        handleCloseConfirmDeleteDialog();
+      }
+    }
   };
 
   return (
@@ -364,7 +387,7 @@ const AnticiposViajes = () => {
                         <Button
                           variant="text"
                           onClick={() => handleViewFile(record.archivo)}
-                        >                   
+                        >
                           <img
                             src={lupaIcon}
                             alt="Ver Archivo"
@@ -671,6 +694,24 @@ const AnticiposViajes = () => {
         <DialogActions>
           <Button onClick={handleCloseDetailDialog} color="primary">
             Cerrar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={confirmDeleteDialogOpen}
+        onClose={handleCloseConfirmDeleteDialog}
+      >
+        <DialogTitle>Confirmación</DialogTitle>
+        <DialogContent>
+          <Typography>¿Desea eliminar este registro?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConfirmDeleteDialog} color="primary">
+            No
+          </Button>
+          <Button onClick={handleConfirmDelete} color="secondary">
+            Sí
           </Button>
         </DialogActions>
       </Dialog>
