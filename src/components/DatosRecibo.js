@@ -234,7 +234,10 @@ const DatosRecibo = () => {
         const userId = user ? user.id : null;
         if (userId) {
           const response = await api.get(`/rendicion/last`, {
-            params: { user_id: userId },
+            params: { 
+              user_id: userId,
+              tipo: 'RENDICION' // Puedes reemplazarlo con el valor que necesites
+          },
           });
           setNombreRendicion(response.data.nombre);
         } else {
@@ -595,7 +598,10 @@ const DatosRecibo = () => {
 
         if (userId) {
           const response = await api.get(`/rendicion/last`, {
-            params: { user_id: userId },
+            params: { 
+              user_id: userId,
+              tipo: 'RENDICION' // Puedes reemplazarlo con el valor que necesites
+          },
           });
           const { nombre } = response.data;
           navigate("/colaborador/datos-recibo");

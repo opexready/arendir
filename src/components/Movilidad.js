@@ -122,7 +122,11 @@ const Movilidad = () => {
             const userId = user?.id;
 
             if (userId) {
-                const response = await api.get(`/rendicion/last`, { params: { user_id: userId } });
+                const response = await api.get(`/rendicion/last`, { 
+                    params: { 
+                        user_id: userId,
+                        tipo: 'RENDICION' // Puedes reemplazarlo con el valor que necesites
+                    }, });
                 if (response?.data?.nombre) {
                     numeroRendicion = response.data.nombre;
                 } else {
@@ -184,7 +188,11 @@ const Movilidad = () => {
                     alert('Error: Usuario no autenticado. Por favor, inicie sesión nuevamente.');
                     return;
                 }
-                const response = await api.get(`/rendicion/last`, { params: { user_id: userId } });
+                const response = await api.get(`/rendicion/last`, { 
+                    params: { 
+                        user_id: userId,
+                        tipo: 'RENDICION' // Puedes reemplazarlo con el valor que necesites
+                    }, });
                 if (response?.data?.nombre) {
                     const { nombre } = response.data;
                     console.log("Nombre de la última rendición:", nombre);
