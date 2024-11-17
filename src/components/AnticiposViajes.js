@@ -80,6 +80,8 @@ const AnticiposViajes = () => {
   const [distritos, setDistritos] = useState([]);
   const [ultimaSolicitud, setUltimaSolicitud] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
+  const [documentDetail, setDocumentDetail] = useState(null);
+  const [detailDialogOpen, setDetailDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetchDocumentos = async () => {
@@ -261,8 +263,22 @@ const AnticiposViajes = () => {
     setOpen(true);
   };
 
-  const handleViewDetail = (documentId) => {
-    console.log("Ver detalles para documento:", documentId);
+  const handleViewDetail = async (documentId) => {
+    try {
+      const response = await axios.get(`${baseURL}/documentos/${documentId}`);
+      setDocumentDetail(response.data);
+      setDetailDialogOpen(true);
+    } catch (error) {
+      console.error("Error al obtener los detalles del documento:", error);
+      setResponseMessage(
+        "Error al obtener los detalles. Por favor, intente nuevamente."
+      );
+    }
+  };
+
+  const handleCloseDetailDialog = () => {
+    setDetailDialogOpen(false);
+    setDocumentDetail(null);
   };
 
   const handleEditRecord = (record) => {
@@ -348,9 +364,7 @@ const AnticiposViajes = () => {
                         <Button
                           variant="text"
                           onClick={() => handleViewFile(record.archivo)}
-                        >
-                          <span>Ver Archivo</span>{" "}
-                          {/* Texto temporal para verificar */}
+                        >                   
                           <img
                             src={lupaIcon}
                             alt="Ver Archivo"
@@ -617,6 +631,45 @@ const AnticiposViajes = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
+            Cerrar
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={detailDialogOpen}
+        onClose={handleCloseDetailDialog}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Detalle del Documento</DialogTitle>
+        <DialogContent>
+          {documentDetail ? (
+            <TableContainer component={Paper}>
+              <Table>
+                <TableBody>
+                  {Object.entries(documentDetail).map(
+                    ([key, value]) =>
+                      key !== "id" &&
+                      key !== "archivo" && (
+                        <TableRow key={key}>
+                          <TableCell sx={{ fontWeight: "bold" }}>
+                            {key}
+                          </TableCell>
+                          <TableCell>
+                            {value ? value.toString() : "-"}
+                          </TableCell>
+                        </TableRow>
+                      )
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          ) : (
+            <CircularProgress />
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDetailDialog} color="primary">
             Cerrar
           </Button>
         </DialogActions>
