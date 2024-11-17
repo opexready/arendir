@@ -234,10 +234,10 @@ const DatosRecibo = () => {
         const userId = user ? user.id : null;
         if (userId) {
           const response = await api.get(`/rendicion/last`, {
-            params: { 
+            params: {
               user_id: userId,
-              tipo: 'RENDICION' // Puedes reemplazarlo con el valor que necesites
-          },
+              tipo: "RENDICION", // Puedes reemplazarlo con el valor que necesites
+            },
           });
           setNombreRendicion(response.data.nombre);
         } else {
@@ -409,7 +409,8 @@ const DatosRecibo = () => {
       const formData = new FormData();
       formData.append("file", file);
       setIsLoading(true);
-
+      console.log(file);
+      console.log(formData);
       try {
         const decodeResponse = await axios.post(
           `${baseURL}/decode-qr/`,
@@ -421,16 +422,31 @@ const DatosRecibo = () => {
           }
         );
 
+        console.log(decodeResponse);
+
         if (decodeResponse.data.detail === "No QR code found in the image") {
           setError(
             "No se encontró un código QR en la imagen. Por favor, intente con otra imagen."
           );
         } else {
           const decodedRuc = decodeResponse.data.ruc;
-          const rucResponse = await axios.get(
-            `${baseURL}/consulta-ruc?ruc=${decodedRuc}`
-          );
-          const razonSocial = rucResponse.data.razonSocial;
+          console.log(decodedRuc);
+
+          let razonSocial = "Proveedor Desconocido"; // Valor por defecto
+          try {
+            const rucResponse = await axios.get(
+              `${baseURL}/consulta-ruc?ruc=${decodedRuc}`
+            );
+            razonSocial = rucResponse.data.razonSocial || razonSocial;
+          } catch (error) {
+            if (error.response && error.response.status === 404) {
+              console.warn(
+                "RUC no encontrado, utilizando valor por defecto para Razón Social."
+              );
+            } else {
+              throw error; // Si no es 404, lanzamos el error para manejarlo fuera
+            }
+          }
 
           setFormData((prevFormData) => ({
             ...prevFormData,
@@ -441,12 +457,30 @@ const DatosRecibo = () => {
             numero: decodeResponse.data.numero || "",
             igv: decodeResponse.data.igv || "",
             total: decodeResponse.data.total || "",
-            proveedor: razonSocial || "Proveedor Desconocido",
+            proveedor: razonSocial,
           }));
           setError("");
         }
       } catch (error) {
-        setError("Error al procesar el QR. Por favor, intente nuevamente.");
+        if (error.response) {
+          // El servidor respondió con un código de error (código de estado no 2xx)
+          console.error(
+            "Error de respuesta del servidor:",
+            error.response.data
+          );
+          setError(
+            "Error al procesar el QR: " +
+              (error.response.data.message || "Por favor, intente nuevamente.")
+          );
+        } else if (error.request) {
+          // La solicitud se hizo pero no se recibió respuesta
+          console.error("No se recibió respuesta:", error.request);
+          setError("No se recibió respuesta del servidor. Intente nuevamente.");
+        } else {
+          // Algo salió mal al configurar la solicitud
+          console.error("Error al configurar la solicitud:", error.message);
+          setError("Ocurrió un error. Intente nuevamente.");
+        }
       } finally {
         setIsLoading(false);
       }
@@ -598,10 +632,10 @@ const DatosRecibo = () => {
 
         if (userId) {
           const response = await api.get(`/rendicion/last`, {
-            params: { 
+            params: {
               user_id: userId,
-              tipo: 'RENDICION' // Puedes reemplazarlo con el valor que necesites
-          },
+              tipo: "RENDICION", // Puedes reemplazarlo con el valor que necesites
+            },
           });
           const { nombre } = response.data;
           navigate("/colaborador/datos-recibo");
