@@ -15,6 +15,7 @@ import {
   Backdrop,
   MenuItem,
   TableContainer,
+  DialogContentText,
   Paper,
   Table,
   TableHead,
@@ -312,102 +313,154 @@ const AnticiposViajes = () => {
     }
   };
 
-  return (
-    <Container sx={{ marginTop: -20 }}>
-      {/* Botones para mostrar los formularios */}
+  const [confirmFinalizarDialogOpen, setConfirmFinalizarDialogOpen] =
+    useState(false);
 
-      <Container sx={{ marginBottom: 2 }}>
-        <Box display="flex" justifyContent="flex-end">
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ marginRight: 2 }}
-            onClick={() => setShowForm(true)} // Mostrar formulario
-          >
-            Anticipo Viajes
-          </Button>
-          <Button
-            variant="contained"
-            color="success"
-            sx={{ marginRight: 2 }}
-            onClick={handleAnticipoGastosLocales}
-          >
-            Anticipo Gastos Locales
-          </Button>
-          <Button
-            variant="contained"
-            color="success"
-            sx={{ marginRight: 2 }}
-            onClick={handleAnticipoGastosLocales}
-          >
-            Finalizar Anticipo
-          </Button>
-        </Box>
-      </Container>
-      <Typography variant="h6" gutterBottom>
-        SOLICITUD: {ultimaSolicitud}
-      </Typography>
-      {/* Grilla: Siempre visible */}
-      <TableContainer component={Paper} sx={{ marginBottom: 4 }}>
-        <Table>
-          <TableHead>
-            <TableRow sx={{ backgroundColor: "#1F237A" }}>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                Número de Ítem
-              </TableCell>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                Categoria
-              </TableCell>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                Total
-              </TableCell>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                Ver Archivo
-              </TableCell>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                Detalle
-              </TableCell>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                Eliminar
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {records.map((record, index) => (
-              <TableRow key={record.id}>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>{record.tipo_anticipo}</TableCell>{" "}
-                {/* Mostrar tipo_anticipo */}
-                <TableCell>{record.total}</TableCell> {/* Mostrar total */}
-                <TableCell>
-                  {(() => {
-                    console.log("Valor de record.archivo:", record.archivo); // Para verificar el valor
-                    return (
-                      record.archivo && (
-                        <Button
-                          variant="text"
-                          onClick={() => handleViewFile(record.archivo)}
-                        >
-                          <img
-                            src={lupaIcon}
-                            alt="Ver Archivo"
-                            style={{ width: 24 }}
-                          />
-                        </Button>
-                      )
-                    );
-                  })()}
+  const handleOpenConfirmFinalizarDialog = () => {
+    setConfirmFinalizarDialogOpen(true);
+  };
+
+  const handleCloseConfirmFinalizarDialog = () => {
+    setConfirmFinalizarDialogOpen(false);
+  };
+
+  const handleFinalizarSolicitud = async () => {
+    try {
+      // Paso 1: Obtener la última rendición
+      const userString = localStorage.getItem("user");
+      const user = userString ? JSON.parse(userString) : null;
+      const userId = user ? user.id : null;
+
+      const lastRendicionResponse = await axios.get(
+        `${baseURL}/rendicion/last`,
+        {
+          params: {
+            user_id: userId,
+            tipo: "SOLICITUD",
+          },
+        }
+      );
+
+      if (lastRendicionResponse.data && lastRendicionResponse.data.id) {
+        const rendicionId = lastRendicionResponse.data.id;
+
+        // Paso 2: Actualizar la rendición obtenida a estado "PENDIENTE"
+        await axios.put(`${baseURL}/rendicion/${rendicionId}`, {
+          estado: "PENDIENTE",
+        });
+
+        // Paso 3: Crear una nueva rendición
+        const newRendicionResponse = await axios.post(`${baseURL}/solicitud/`, {
+          user_id: userId,
+        });
+
+        // Puedes manejar la respuesta según tus necesidades
+        console.log("Nueva rendición creada:", newRendicionResponse.data);
+      } else {
+        console.log("No se encontró la última rendición para este usuario.");
+      }
+    } catch (error) {
+      console.error("Error al finalizar la rendición:", error);
+      setResponseMessage(
+        "Error al finalizar la rendición. Por favor, intente nuevamente."
+      );
+    }
+  };
+
+  return (
+      <Container sx={{ marginTop: -20 }}>
+        <Container sx={{ marginBottom: 2 }}>
+          <Box display="flex" justifyContent="flex-end">
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ marginRight: 2 }}
+              onClick={() => setShowForm(true)} // Mostrar formulario
+            >
+              Anticipo Viajes
+            </Button>
+            <Button
+              variant="contained"
+              color="success"
+              sx={{ marginRight: 2 }}
+              onClick={handleAnticipoGastosLocales}
+            >
+              Anticipo Gastos Locales
+            </Button>
+            <Button
+              variant="contained"
+              color="warning"
+              sx={{ marginRight: 2 }}
+              onClick={handleOpenConfirmFinalizarDialog}
+            >
+              Finalizar Solicitud
+            </Button>
+          </Box>
+        </Container>
+        <Typography variant="h6" gutterBottom>
+          SOLICITUD: {ultimaSolicitud}
+        </Typography>
+        {/* Grilla: Siempre visible */}
+        <TableContainer component={Paper} sx={{ marginBottom: 4 }}>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ backgroundColor: "#1F237A" }}>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Número de Ítem
                 </TableCell>
-                <TableCell>
-                  <Button
-                    variant="contained"
-                    color="info"
-                    onClick={() => handleViewDetail(record.id)}
-                  >
-                    Ver Detalle
-                  </Button>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Categoria
                 </TableCell>
-                {/* <TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Total
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Ver Archivo
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Detalle
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Eliminar
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {records.map((record, index) => (
+                <TableRow key={record.id}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{record.tipo_anticipo}</TableCell>{" "}
+                  {/* Mostrar tipo_anticipo */}
+                  <TableCell>{record.total}</TableCell> {/* Mostrar total */}
+                  <TableCell>
+                    {(() => {
+                      console.log("Valor de record.archivo:", record.archivo); // Para verificar el valor
+                      return (
+                        record.archivo && (
+                          <Button
+                            variant="text"
+                            onClick={() => handleViewFile(record.archivo)}
+                          >
+                            <img
+                              src={lupaIcon}
+                              alt="Ver Archivo"
+                              style={{ width: 24 }}
+                            />
+                          </Button>
+                        )
+                      );
+                    })()}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="contained"
+                      color="info"
+                      onClick={() => handleViewDetail(record.id)}
+                    >
+                      Ver Detalle
+                    </Button>
+                  </TableCell>
+                  {/* <TableCell>
                   <Button
                     variant="contained"
                     color="primary"
@@ -416,306 +469,332 @@ const AnticiposViajes = () => {
                     Editar
                   </Button>
                 </TableCell> */}
-                <TableCell>
-                  <Button
-                    variant="contained"
-                    color="error"
-                    onClick={() => handleOpenConfirmDeleteDialog(record.id)}
-                  >
-                    Eliminar
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                  <TableCell>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={() => handleOpenConfirmDeleteDialog(record.id)}
+                    >
+                      Eliminar
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
 
-      {/* Formulario: Solo visible si showForm es true */}
-      {showForm && (
-        <Card sx={{ boxShadow: 3 }}>
-          <CardContent>
-            <Typography
-              variant="h4"
-              component="h1"
-              align="center"
-              gutterBottom
-              sx={{
-                color: "#F15A29",
-                fontWeight: "bold",
-                margin: "0",
-                fontSize: "1.5rem",
-              }}
-            >
-              Anticipos de Viajes
-            </Typography>
-
-            {/* Aquí todo tu contenido del formulario */}
-            <Box
-              component="form"
-              onSubmit={handleSubmit}
-              noValidate
-              sx={{ mt: 2 }}
-            >
-              {/* Campos del formulario */}
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                id="tipo_viaje"
-                label="Tipo de Viaje"
-                name="tipo_viaje"
-                select
-                value={tipoViaje}
-                onChange={handleTipoViajeChange}
+        {/* Formulario: Solo visible si showForm es true */}
+        {showForm && (
+          <Card sx={{ boxShadow: 3 }}>
+            <CardContent>
+              <Typography
+                variant="h4"
+                component="h1"
+                align="center"
+                gutterBottom
+                sx={{
+                  color: "#F15A29",
+                  fontWeight: "bold",
+                  margin: "0",
+                  fontSize: "1.5rem",
+                }}
               >
-                <MenuItem value="NACIONAL">Viajes Nacionales</MenuItem>
-                <MenuItem value="INTERNACIONAL">
-                  Viajes Internacionales
-                </MenuItem>
-              </TextField>
-              {tipoViaje === "NACIONAL" ? (
-                <>
-                  <Button
-                    variant="outlined"
-                    fullWidth
-                    onClick={() => setOpenUbigeoDialog(true)}
-                    sx={{
-                      mt: 2,
-                      mb: 2,
-                      color: "#2E3192",
-                      borderColor: "#2E3192",
-                      "&:hover": {
-                        backgroundColor: "#F15A29",
-                        borderColor: "#F15A29",
-                        color: "white",
-                      },
-                    }}
-                  >
-                    Seleccionar Destino (Nacional)
-                  </Button>
+                Anticipos de Viajes
+              </Typography>
 
-                  <Typography variant="body1" sx={{ mb: 2 }}>
-                    {formData.destino
-                      ? `Destino seleccionado: ${formData.destino}`
-                      : "No se ha seleccionado destino."}
-                  </Typography>
-                </>
-              ) : (
+              {/* Aquí todo tu contenido del formulario */}
+              <Box
+                component="form"
+                onSubmit={handleSubmit}
+                noValidate
+                sx={{ mt: 2 }}
+              >
+                {/* Campos del formulario */}
                 <TextField
                   variant="outlined"
                   margin="normal"
                   required
                   fullWidth
-                  id="destino"
-                  label="Destino Internacional"
-                  name="destino"
+                  id="tipo_viaje"
+                  label="Tipo de Viaje"
+                  name="tipo_viaje"
                   select
-                  value={formData.destino}
+                  value={tipoViaje}
+                  onChange={handleTipoViajeChange}
+                >
+                  <MenuItem value="NACIONAL">Viajes Nacionales</MenuItem>
+                  <MenuItem value="INTERNACIONAL">
+                    Viajes Internacionales
+                  </MenuItem>
+                </TextField>
+                {tipoViaje === "NACIONAL" ? (
+                  <>
+                    <Button
+                      variant="outlined"
+                      fullWidth
+                      onClick={() => setOpenUbigeoDialog(true)}
+                      sx={{
+                        mt: 2,
+                        mb: 2,
+                        color: "#2E3192",
+                        borderColor: "#2E3192",
+                        "&:hover": {
+                          backgroundColor: "#F15A29",
+                          borderColor: "#F15A29",
+                          color: "white",
+                        },
+                      }}
+                    >
+                      Seleccionar Destino (Nacional)
+                    </Button>
+
+                    <Typography variant="body1" sx={{ mb: 2 }}>
+                      {formData.destino
+                        ? `Destino seleccionado: ${formData.destino}`
+                        : "No se ha seleccionado destino."}
+                    </Typography>
+                  </>
+                ) : (
+                  <TextField
+                    variant="outlined"
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="destino"
+                    label="Destino Internacional"
+                    name="destino"
+                    select
+                    value={formData.destino}
+                    onChange={handleChange}
+                  >
+                    {paisesSudamerica.map((pais) => (
+                      <MenuItem key={pais} value={pais}>
+                        {pais}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                )}
+
+                {/* Resto de los campos */}
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="motivo"
+                  label="Breve Motivo"
+                  name="motivo"
+                  value={formData.motivo}
+                  onChange={handleChange}
+                />
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="fecha_viaje"
+                  label="Fecha de Viaje"
+                  name="fecha_emision"
+                  type="date"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  value={formData.fecha_emision}
+                  onChange={handleChange}
+                />
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="dias"
+                  label="Días"
+                  name="dias"
+                  type="number"
+                  value={formData.dias}
+                  onChange={handleChange}
+                />
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="moneda"
+                  label="Moneda"
+                  name="moneda"
+                  select
+                  SelectProps={{
+                    native: true,
+                  }}
+                  value={formData.moneda}
                   onChange={handleChange}
                 >
-                  {paisesSudamerica.map((pais) => (
-                    <MenuItem key={pais} value={pais}>
-                      {pais}
-                    </MenuItem>
-                  ))}
+                  <option value="PEN">PEN</option>
+                  <option value="USD">USD</option>
                 </TextField>
-              )}
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="presupuesto"
+                  label="Presupuesto"
+                  name="presupuesto"
+                  type="number"
+                  value={formData.presupuesto}
+                  onChange={handleChange}
+                />
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="total"
+                  label="Total"
+                  name="total"
+                  type="number"
+                  value={formData.total}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setFormData({
+                      ...formData,
+                      total: value,
+                      importe_facturado: value,
+                    });
+                  }}
+                />
 
-              {/* Resto de los campos */}
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                id="motivo"
-                label="Breve Motivo"
-                name="motivo"
-                value={formData.motivo}
-                onChange={handleChange}
-              />
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                id="fecha_viaje"
-                label="Fecha de Viaje"
-                name="fecha_emision"
-                type="date"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                value={formData.fecha_emision}
-                onChange={handleChange}
-              />
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                id="dias"
-                label="Días"
-                name="dias"
-                type="number"
-                value={formData.dias}
-                onChange={handleChange}
-              />
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                id="moneda"
-                label="Moneda"
-                name="moneda"
-                select
-                SelectProps={{
-                  native: true,
-                }}
-                value={formData.moneda}
-                onChange={handleChange}
-              >
-                <option value="PEN">PEN</option>
-                <option value="USD">USD</option>
-              </TextField>
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                id="presupuesto"
-                label="Presupuesto"
-                name="presupuesto"
-                type="number"
-                value={formData.presupuesto}
-                onChange={handleChange}
-              />
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                id="total"
-                label="Total"
-                name="total"
-                type="number"
-                value={formData.total}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setFormData({
-                    ...formData,
-                    total: value,
-                    importe_facturado: value,
-                  });
-                }}
-              />
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  disabled={isLoading}
+                  sx={{
+                    mt: 3,
+                    mb: 2,
+                    backgroundColor: "#2E3192",
+                    "&:hover": {
+                      backgroundColor: "#1F237A",
+                    },
+                    color: "white",
+                    "&:disabled": {
+                      backgroundColor: "#A5A5A5",
+                      color: "#E0E0E0",
+                    },
+                  }}
+                >
+                  {isLoading ? "Enviando..." : "Solicitar"}
+                </Button>
+              </Box>
+            </CardContent>
+          </Card>
+        )}
 
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                disabled={isLoading}
-                sx={{
-                  mt: 3,
-                  mb: 2,
-                  backgroundColor: "#2E3192",
-                  "&:hover": {
-                    backgroundColor: "#1F237A",
-                  },
-                  color: "white",
-                  "&:disabled": {
-                    backgroundColor: "#A5A5A5",
-                    color: "#E0E0E0",
-                  },
-                }}
-              >
-                {isLoading ? "Enviando..." : "Solicitar"}
-              </Button>
-            </Box>
-          </CardContent>
-        </Card>
-      )}
+        {/* Modal para ver el archivo */}
+        <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
+          <DialogTitle>Archivo del Documento</DialogTitle>
+          <DialogContent>
+            {selectedFile && (
+              <iframe
+                src={selectedFile}
+                width="100%"
+                height="600px"
+                title="Archivo del Documento"
+                frameBorder="0"
+              />
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="primary">
+              Cerrar
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog
+          open={detailDialogOpen}
+          onClose={handleCloseDetailDialog}
+          maxWidth="md"
+          fullWidth
+        >
+          <DialogTitle>Detalle del Documento</DialogTitle>
+          <DialogContent>
+            {documentDetail ? (
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableBody>
+                    {Object.entries(documentDetail).map(
+                      ([key, value]) =>
+                        key !== "id" &&
+                        key !== "archivo" && (
+                          <TableRow key={key}>
+                            <TableCell sx={{ fontWeight: "bold" }}>
+                              {key}
+                            </TableCell>
+                            <TableCell>
+                              {value ? value.toString() : "-"}
+                            </TableCell>
+                          </TableRow>
+                        )
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            ) : (
+              <CircularProgress />
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDetailDialog} color="primary">
+              Cerrar
+            </Button>
+          </DialogActions>
+        </Dialog>
 
-      {/* Modal para ver el archivo */}
-      <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
-        <DialogTitle>Archivo del Documento</DialogTitle>
-        <DialogContent>
-          {selectedFile && (
-            <iframe
-              src={selectedFile}
-              width="100%"
-              height="600px"
-              title="Archivo del Documento"
-              frameBorder="0"
-            />
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cerrar
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <Dialog
-        open={detailDialogOpen}
-        onClose={handleCloseDetailDialog}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle>Detalle del Documento</DialogTitle>
-        <DialogContent>
-          {documentDetail ? (
-            <TableContainer component={Paper}>
-              <Table>
-                <TableBody>
-                  {Object.entries(documentDetail).map(
-                    ([key, value]) =>
-                      key !== "id" &&
-                      key !== "archivo" && (
-                        <TableRow key={key}>
-                          <TableCell sx={{ fontWeight: "bold" }}>
-                            {key}
-                          </TableCell>
-                          <TableCell>
-                            {value ? value.toString() : "-"}
-                          </TableCell>
-                        </TableRow>
-                      )
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          ) : (
-            <CircularProgress />
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDetailDialog} color="primary">
-            Cerrar
-          </Button>
-        </DialogActions>
-      </Dialog>
+        <Dialog
+          open={confirmDeleteDialogOpen}
+          onClose={handleCloseConfirmDeleteDialog}
+        >
+          <DialogTitle>Confirmación</DialogTitle>
+          <DialogContent>
+            <Typography>¿Desea eliminar este registro?</Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseConfirmDeleteDialog} color="primary">
+              No
+            </Button>
+            <Button onClick={handleConfirmDelete} color="secondary">
+              Sí
+            </Button>
+          </DialogActions>
+        </Dialog>
 
-      <Dialog
-        open={confirmDeleteDialogOpen}
-        onClose={handleCloseConfirmDeleteDialog}
-      >
-        <DialogTitle>Confirmación</DialogTitle>
-        <DialogContent>
-          <Typography>¿Desea eliminar este registro?</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseConfirmDeleteDialog} color="primary">
-            No
-          </Button>
-          <Button onClick={handleConfirmDelete} color="secondary">
-            Sí
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+        <Dialog
+          open={confirmFinalizarDialogOpen}
+          onClose={handleCloseConfirmFinalizarDialog}
+        >
+          <DialogTitle>Confirmación</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              ¿Estás seguro de finalizar la rendición de gastos?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseConfirmFinalizarDialog} color="primary">
+              No
+            </Button>
+            <Button
+              onClick={async () => {
+                setConfirmFinalizarDialogOpen(false);
+                await handleFinalizarSolicitud(); // Llama a la función de finalizar solicitud
+              }}
+              color="secondary"
+            >
+              Sí
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Container>
   );
 };
 

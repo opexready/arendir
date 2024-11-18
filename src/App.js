@@ -13,6 +13,8 @@ import DatosRecibo from './components/DatosRecibo';
 import Movilidad from './components/Movilidad';
 import AnticiposViajes from './components/AnticiposViajes';
 import AnticiposGastosLocales from './components/AnticiposGastosLocales';
+import Historial from './components/Historial'; 
+import HistorialGastos from './components/HistorialGastos';// Importa tu nueva clase
 import api from './api';
 
 // Define el tema
@@ -55,11 +57,13 @@ function App() {
                                     <Route path="/administracion" element={<AdministracionModule user={user} />} />
                                     <Route path="/colaborador/*" element={<ColaboradorModule user={user} />} />
                                     <Route path="/movilidad" element={<Movilidad />} />
-                                    <Route path="/colaborador/anticipos-viajes" element={<AnticiposViajes />} />
+                                    <Route path="/anticipos-viajes" element={<AnticiposViajes />} />
                                     <Route path="/anticipos-gastos-locales" element={<AnticiposGastosLocales />} />
                                     <Route path="/admin" element={<AdminDashboard user={user} />} />
                                     <Route path="/rendicion-gastos" element={<RendicionGastos />} />
                                     <Route path="/datos-recibo" element={<DatosRecibo />} />
+                                    <Route path="/detalle" element={<HistorialGastos />} />
+                                    <Route path="/historial" element={<Historial />} /> {/* Nueva ruta para Historial */}
                                 </Routes>
                             </>
                         }

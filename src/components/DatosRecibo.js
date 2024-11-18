@@ -720,7 +720,7 @@ const DatosRecibo = () => {
           )}
           <Button
             variant="contained"
-            color="success"
+            color="warning"
             sx={{ marginRight: 2 }}
             onClick={() => setConfirmFinalizarDialogOpen(true)}
           >
@@ -1166,8 +1166,8 @@ const DatosRecibo = () => {
     </DialogActions>
   </Dialog>
 
+  </Container>
 
-    </Container>
   );
 };
 export default DatosRecibo;
