@@ -682,7 +682,7 @@ const DatosRecibo = () => {
             },
           });
           const { nombre } = response.data;
-          navigate("/colaborador/datos-recibo");
+          navigate("/datos-recibo");
         } else {
           alert("Error: Usuario no autenticado");
         }
@@ -1158,6 +1158,7 @@ const DatosRecibo = () => {
         onClick={async () => {
           setConfirmFinalizarDialogOpen(false);
           await handleFinalizarRendicion();
+          navigate("/colaborador");
         }}
         color="secondary"
       >

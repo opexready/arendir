@@ -47,12 +47,15 @@ const AnticiposGastosLocales = () => {
 
                 const userData = userResponse.data;
 
-                // Obtener el numero_rendicion llamando a la API /rendicion/last
-                const rendicionResponse = await axios.get(`${baseURL}/rendicion/last`, {
-                    params: { user_id: userData.id }
-                });
-
-                const rendicionData = rendicionResponse.data;
+                let numeroRendicion = "";
+                try {
+                  const rendicionResponse = await axios.get(`${baseURL}/rendicion/last`, {
+                    params: { user_id: userData.id, tipo: "SOLICITUD" }, // Ajusta el parámetro `tipo` según sea necesario
+                  });
+                  numeroRendicion = rendicionResponse.data.nombre;
+                } catch (error) {
+                  console.error("Error al obtener el numero_rendicion:", error);
+                }
 
                 setFormData({
                     ...formData,
@@ -67,7 +70,7 @@ const AnticiposGastosLocales = () => {
                     fecha_solicitud: getCurrentDate(),
                     fecha_emision: getCurrentDate(),
                     cuenta_contable: userData.cuenta_contable,
-                    numero_rendicion: rendicionData.nombre // Asignar el nombre del rendición al campo
+                    numero_rendicion: numeroRendicion, // Asignar el nombre del rendición al campo
                 });
             } catch (error) {
                 console.error('Error al obtener los datos del usuario:', error);

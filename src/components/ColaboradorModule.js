@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     icon: {
-        height: '128px',
+        height: '85px',
         marginBottom: theme.spacing(1),
     },
     floatingIcon: {
@@ -102,9 +102,14 @@ const ColaboradorModule = () => {
         >
             <Container className={classes.container}>
                 <Container sx={{ marginBottom: 1 }}>
-                    <Typography variant="h4" align="center" gutterBottom>
-                        SERVICIOS
-                    </Typography>
+                <Typography
+                    variant="h4"
+                    align="center"
+                    gutterBottom
+                    style={{ color: 'rgb(49, 39, 131)', fontWeight: 'bold' }}
+                >
+                    SERVICIOS
+                </Typography>
                     <Grid container spacing={4} justifyContent="center">
                         {options.map((option, index) => (
                             <Grid
@@ -121,7 +126,12 @@ const ColaboradorModule = () => {
                                         alt={option.label}
                                         className={classes.icon}
                                     />
-                                    <Typography variant="h6">{option.label}</Typography>
+                                    <Typography
+                                        variant="h6"
+                                        style={{ color: 'rgb(49, 39, 131)' }}
+                                    >
+                                        {option.label}
+                                    </Typography>
                                 </Box>
                             </Grid>
                         ))}

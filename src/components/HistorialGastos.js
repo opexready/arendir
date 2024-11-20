@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api';
+import axios from "axios";
 import { Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Select, MenuItem, FormControl, InputLabel, Typography, Paper, TextField, Button, Grid } from '@mui/material';
 
 const HistorialGastos = () => {
@@ -15,6 +16,25 @@ const HistorialGastos = () => {
     const [userId, setUserId] = useState(null); // Almacena el user_id numérico
     const [username, setUsername] = useState(''); // Almacena el email como username
     const [rendiciones, setRendiciones] = useState([]); // Estado para las rendiciones
+
+    const handleTipoSolicitudChange = async (e) => {
+        const selectedValue = e.target.value;
+        setTipoSolicitud(selectedValue);
+        
+        // Invertir la lógica de asignación si es necesario
+        let tipo;
+        if (selectedValue === "SOLICITUD") {
+            tipo = "SOLICITUD";
+        } else if (selectedValue === "RENDICION") {
+            tipo = "RENDICION";
+        } else {
+            tipo = "";
+        }
+        
+        if (tipo) {
+            await fetchRendiciones(tipo);
+        }
+    };
 
     // Obtener el user_id y email desde el endpoint /users/me
     const fetchUserData = async () => {
@@ -35,21 +55,38 @@ const HistorialGastos = () => {
     };
 
     // Obtener las rendiciones desde la API usando el user_id
-    const fetchRendiciones = async () => {
-        if (!userId) return; // Asegúrate de que userId esté definido
+    // const fetchRendiciones = async () => {
+    //     if (!userId) return; // Asegúrate de que userId esté definido
 
-        try {
-            const response = await api.get(`/rendicion/nombres?user_id=${userId}`, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-            setRendiciones(response.data); // Asignar las rendiciones al estado
-            console.log('Rendiciones:', response.data); // Verifica las rendiciones obtenidas
-        } catch (error) {
-            console.error('Error fetching rendiciones:', error);
+    //     try {
+    //         const response = await api.get(`/rendicion/nombres?user_id=${userId}`, {
+    //             headers: {
+    //                 Authorization: `Bearer ${localStorage.getItem('token')}`
+    //             }
+    //         });
+    //         setRendiciones(response.data); // Asignar las rendiciones al estado
+    //         console.log('Rendiciones:', response.data); // Verifica las rendiciones obtenidas
+    //     } catch (error) {
+    //         console.error('Error fetching rendiciones:', error);
+    //     }
+    // };
+
+    const fetchRendiciones = async (tipo) => {
+        if (tipo) {
+            try {
+                const response = await api.get(`/rendicion/nombres`, {
+                    params: { user_id: userId, tipo },
+                });
+                setRendiciones(response.data);
+            } catch (error) {
+                console.error('Error al obtener los nombres de rendición:', error);
+                setRendiciones([]);
+            }
+        } else {
+            setRendiciones([]);
         }
     };
+    
 
     useEffect(() => {
         fetchUserData(); // Llama a la función para obtener el user_id y el email al montar el componente
@@ -107,7 +144,7 @@ const HistorialGastos = () => {
                     fontSize: '1.5rem'  // Ajusta el tamaño de la fuente si es necesario
                 }}
             >
-                Historial de Gastos
+                Detalle de Gastos
             </Typography>
 
             <Paper elevation={3} sx={{ padding: 3, marginBottom: 4 }}>
@@ -138,11 +175,12 @@ const HistorialGastos = () => {
                                 id="tipoSolicitud"
                                 value={tipoSolicitud}
                                 label="Tipo de Solicitud"
-                                onChange={(e) => setTipoSolicitud(e.target.value)}
+                                // onChange={(e) => setTipoSolicitud(e.target.value)}
+                                onChange={handleTipoSolicitudChange}
                             >
                                 <MenuItem value="">Todos</MenuItem>
                                 <MenuItem value="RENDICION">RENDICIÓN</MenuItem>
-                                <MenuItem value="ANTICIPO">ANTICIPO</MenuItem>
+                                <MenuItem value="SOLICITUD">ANTICIPO</MenuItem>
                             </Select>
                         </FormControl>
                     </Grid>
