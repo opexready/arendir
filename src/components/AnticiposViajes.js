@@ -97,8 +97,8 @@ const AnticiposViajes = () => {
       // Extraer numero_rendicion usando el userId
       let numeroRendicion = "";
       try {
-        const response = await axios.get(`${baseURL}/rendicion/last`, {
-          params: { user_id: userId, tipo: "SOLICITUD" },
+        const response = await axios.get(`${baseURL}/solicitud/last`, {
+          params: { user_id: userId, tipo: "ANTICIPO" },
         });
         numeroRendicion = response.data.nombre;
         setUltimaSolicitud(response.data.nombre);
@@ -134,8 +134,8 @@ const AnticiposViajes = () => {
   useEffect(() => {
     const fetchUltimaSolicitud = async () => {
       try {
-        const response = await axios.get(`${baseURL}/rendicion/last`, {
-          params: { user_id: 22, tipo: "SOLICITUD" },
+        const response = await axios.get(`${baseURL}/solicitud/last`, {
+          params: { user_id: 22, tipo: "ANTICIPO" },
         });
         setUltimaSolicitud(response.data.nombre);
       } catch (error) {
@@ -155,8 +155,8 @@ const AnticiposViajes = () => {
         });
         const userData = response.data;
         console.log("User ID:", userData.id);
-        const rendicionResponse = await axios.get(`${baseURL}/rendicion/last`, {
-          params: { user_id: 22, tipo: "SOLICITUD" },
+        const rendicionResponse = await axios.get(`${baseURL}/solicitud/last`, {
+          params: { user_id: 22, tipo: "ANTICIPO" },
         });
         const rendicionData = rendicionResponse.data;
         console.log("Nombre de rendición:", rendicionData.nombre);
@@ -337,11 +337,11 @@ const AnticiposViajes = () => {
       }
 
       const lastRendicionResponse = await axios.get(
-        `${baseURL}/rendicion/last`,
+        `${baseURL}/solicitud/last`,
         {
           params: {
             user_id: userId,
-            tipo: "SOLICITUD",
+            tipo: "ANTICIPO",
           },
         }
       );
@@ -702,7 +702,7 @@ const AnticiposViajes = () => {
 
       {/* Modal para ver el archivo */}
       <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
-        <DialogTitle>Archivo del Documento</DialogTitle>
+        <DialogTitle>Anticipo registrado</DialogTitle>
         <DialogContent>
           {selectedFile && (
             <iframe

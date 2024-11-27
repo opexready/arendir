@@ -1,297 +1,261 @@
-import React, { useEffect, useState } from 'react';
-import api from '../api';
-import axios from "axios";
-import { Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Select, MenuItem, FormControl, InputLabel, Typography, Paper, TextField, Button, Grid } from '@mui/material';
+import React, { useEffect, useState } from "react";
+import {
+  Container,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+  Paper,
+  Button,
+  Grid,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Collapse,
+} from "@mui/material";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import api from "../api";
 
 const HistorialGastos = () => {
-    const [documentos, setDocumentos] = useState([]);
-    const [estado, setEstado] = useState('');
-    const [tipoSolicitud, setTipoSolicitud] = useState('');
-    const [tipoAnticipo, setTipoAnticipo] = useState('');
-    const [fechaSolicitudFrom, setFechaSolicitudFrom] = useState('');
-    const [fechaSolicitudTo, setFechaSolicitudTo] = useState('');
-    const [fechaRendicionFrom, setFechaRendicionFrom] = useState('');
-    const [fechaRendicionTo, setFechaRendicionTo] = useState('');
-    const [numeroRendicion, setNumeroRendicion] = useState('');
-    const [userId, setUserId] = useState(null); // Almacena el user_id numérico
-    const [username, setUsername] = useState(''); // Almacena el email como username
-    const [rendiciones, setRendiciones] = useState([]); // Estado para las rendiciones
+  const [rendiciones, setRendiciones] = useState([]);
+  const [estado, setEstado] = useState("");
+  const [tipo, setTipo] = useState("RENDICION");
+  const [fechaRegistroFrom, setFechaRegistroFrom] = useState("");
+  const [fechaRegistroTo, setFechaRegistroTo] = useState("");
+  const [openRendiciones, setOpenRendiciones] = useState({}); // Controla las filas abiertas
 
-    const handleTipoSolicitudChange = async (e) => {
-        const selectedValue = e.target.value;
-        setTipoSolicitud(selectedValue);
-        
-        // Invertir la lógica de asignación si es necesario
-        let tipo;
-        if (selectedValue === "SOLICITUD") {
-            tipo = "SOLICITUD";
-        } else if (selectedValue === "RENDICION") {
-            tipo = "RENDICION";
-        } else {
-            tipo = "";
+  const fetchRendiciones = async () => {
+    try {
+      const response = await api.get(
+        "http://localhost:8080/rendiciones/con-documentos/",
+        {
+          params: {
+            tipo: tipo || undefined,
+            estado: estado || undefined,
+            fecha_registro_from: fechaRegistroFrom || undefined,
+            fecha_registro_to: fechaRegistroTo || undefined,
+          },
         }
-        
-        if (tipo) {
-            await fetchRendiciones(tipo);
-        }
-    };
+      );
+      setRendiciones(response.data);
+      setOpenRendiciones({}); // Reinicia el estado de las filas abiertas
+    } catch (error) {
+      console.error("Error al obtener las rendiciones:", error);
+    }
+  };
 
-    // Obtener el user_id y email desde el endpoint /users/me
-    const fetchUserData = async () => {
-        try {
-            const response = await api.get('/users/me', {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}` // Incluye el token en la cabecera
-                }
-            });
-            const userData = response.data;
-            setUserId(userData.id); // Asigna el user_id
-            setUsername(userData.email); // Asigna el email como username
-            console.log('User ID:', userData.id);
-            console.log('Username (Email):', userData.email); // Verifica que se haya asignado correctamente
-        } catch (error) {
-            console.error('Error fetching user data:', error);
-        }
-    };
+  useEffect(() => {
+    fetchRendiciones(); // Cargar rendiciones al montar el componente
+  }, []);
 
-    // Obtener las rendiciones desde la API usando el user_id
-    // const fetchRendiciones = async () => {
-    //     if (!userId) return; // Asegúrate de que userId esté definido
+  const toggleRendicion = (id) => {
+    setOpenRendiciones((prev) => ({
+      ...prev,
+      [id]: !prev[id], // Alterna el estado de apertura de la fila
+    }));
+  };
 
-    //     try {
-    //         const response = await api.get(`/rendicion/nombres?user_id=${userId}`, {
-    //             headers: {
-    //                 Authorization: `Bearer ${localStorage.getItem('token')}`
-    //             }
-    //         });
-    //         setRendiciones(response.data); // Asignar las rendiciones al estado
-    //         console.log('Rendiciones:', response.data); // Verifica las rendiciones obtenidas
-    //     } catch (error) {
-    //         console.error('Error fetching rendiciones:', error);
-    //     }
-    // };
+  const headerStyle = {
+    backgroundColor: "#2E3192", // Color de fondo de la cabecera
+    color: "white", // Texto blanco
+    fontWeight: "bold", // Negrita
+  };
 
-    const fetchRendiciones = async (tipo) => {
-        if (tipo) {
-            try {
-                const response = await api.get(`/rendicion/nombres`, {
-                    params: { user_id: userId, tipo },
-                });
-                setRendiciones(response.data);
-            } catch (error) {
-                console.error('Error al obtener los nombres de rendición:', error);
-                setRendiciones([]);
-            }
-        } else {
-            setRendiciones([]);
-        }
-    };
-    
+  const rowStyle = {
+    backgroundColor: "#f3f3f3", // Fondo claro para las filas
+  };
 
-    useEffect(() => {
-        fetchUserData(); // Llama a la función para obtener el user_id y el email al montar el componente
-    }, []);
+  return (
+    <Container maxWidth="lg" sx={{ marginTop: -20 }}>
+      <Typography
+        variant="h4"
+        align="center"
+        gutterBottom
+        sx={{
+          color: "#F15A29",
+          fontWeight: "bold",
+          margin: "0",
+          fontSize: "1.5rem",
+        }}
+      >
+        Historial de Rendiciones
+      </Typography>
 
-    useEffect(() => {
-        if (userId) {
-            fetchRendiciones(); // Cargar rendiciones cuando se haya obtenido el userId
-        }
-    }, [userId]);
-
-    const fetchDocumentos = async () => {
-        try {
-            const response = await api.get('/documentos', {
-                params: {
-                    company_name: 'innova', // Suponiendo que se filtra por nombre de la empresa
-                    estado: estado,
-                    username: username, // Aquí se usa el email como username
-                    tipo_solicitud: tipoSolicitud,
-                    tipo_anticipo: tipoAnticipo,
-                    numero_rendicion: numeroRendicion,
-                    fecha_solicitud_from: fechaSolicitudFrom,
-                    fecha_solicitud_to: fechaSolicitudTo,
-                    fecha_rendicion_from: fechaRendicionFrom,
-                    fecha_rendicion_to: fechaRendicionTo,
-                },
-            });
-            setDocumentos(response.data);
-        } catch (error) {
-            console.error('Error fetching documentos:', error);
-        }
-    };
-
-    const handleSubmit = () => {
-        fetchDocumentos();
-    };
-
-    // Estilo personalizado para la cabecera de la tabla
-    const headerStyle = {
-        backgroundColor: '#2E3192', // Color de fondo de la cabecera
-        color: 'white', // Texto blanco
-        fontWeight: 'bold', // Negrita
-    };
-
-    return (
-        <Container maxWidth="lg" sx={{ marginTop: -20 }}>
-            <Typography 
-                variant="h4" 
-                align="center" 
-                gutterBottom 
-                sx={{ 
-                    color: '#F15A29',  // Color naranja
-                    fontWeight: 'bold',  // Texto en negrita
-                    margin: '0',  // Elimina márgenes extra
-                    fontSize: '1.5rem'  // Ajusta el tamaño de la fuente si es necesario
-                }}
+      {/* Filtros */}
+      <Paper elevation={3} sx={{ padding: 3, marginBottom: 4 }}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6} md={4}>
+            <FormControl fullWidth>
+              <InputLabel id="estado-label">Estado</InputLabel>
+              <Select
+                labelId="estado-label"
+                value={estado}
+                onChange={(e) => setEstado(e.target.value)}
+              >
+                <MenuItem value="">Todos</MenuItem>
+                <MenuItem value="CREADO">CREADO</MenuItem>
+                <MenuItem value="PREPARADO">PREPARADO</MenuItem>
+                <MenuItem value="PENDIENTE">PENDIENTE</MenuItem>
+                <MenuItem value="APROBADO">APROBADO</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <FormControl fullWidth>
+              <InputLabel id="tipo-label">Tipo</InputLabel>
+              <Select
+                labelId="tipo-label"
+                value={tipo}
+                onChange={(e) => setTipo(e.target.value)}
+              >
+                <MenuItem value="RENDICION">RENDICIÓN</MenuItem>
+                <MenuItem value="ANTICIPO">ANTICIPO</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField
+              label="Fecha Registro Desde"
+              type="date"
+              fullWidth
+              value={fechaRegistroFrom}
+              onChange={(e) => setFechaRegistroFrom(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField
+              label="Fecha Registro Hasta"
+              type="date"
+              fullWidth
+              value={fechaRegistroTo}
+              onChange={(e) => setFechaRegistroTo(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={fetchRendiciones}
+              sx={{
+                backgroundColor: "#2E3192",
+                "&:hover": { backgroundColor: "#1F237A" },
+                color: "white",
+              }}
             >
-                Detalle de Gastos
-            </Typography>
+              Aplicar Filtros
+            </Button>
+          </Grid>
+        </Grid>
+      </Paper>
 
-            <Paper elevation={3} sx={{ padding: 3, marginBottom: 4 }}>
-                <Grid container spacing={3}>
-                    {/* Filtros */}
-                    <Grid item xs={12} sm={6} md={4}>
-                        <FormControl fullWidth>
-                            <InputLabel id="estado-label">Filtrar por Estado</InputLabel>
-                            <Select
-                                labelId="estado-label"
-                                id="estadoSelect"
-                                value={estado}
-                                label="Filtrar por Estado"
-                                onChange={(e) => setEstado(e.target.value)}
-                            >
-                                <MenuItem value="">Todos</MenuItem>
-                                <MenuItem value="POR APROBAR">PENDIENTE</MenuItem>
-                                <MenuItem value="POR ABONAR">APROBADO</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Grid>
-
-                    <Grid item xs={12} sm={6} md={4}>
-                        <FormControl fullWidth>
-                            <InputLabel id="tipo-solicitud-label">Tipo de Solicitud</InputLabel>
-                            <Select
-                                labelId="tipo-solicitud-label"
-                                id="tipoSolicitud"
-                                value={tipoSolicitud}
-                                label="Tipo de Solicitud"
-                                // onChange={(e) => setTipoSolicitud(e.target.value)}
-                                onChange={handleTipoSolicitudChange}
-                            >
-                                <MenuItem value="">Todos</MenuItem>
-                                <MenuItem value="RENDICION">RENDICIÓN</MenuItem>
-                                <MenuItem value="SOLICITUD">ANTICIPO</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Grid>
-
-                    {/* Combo de Rendiciones */}
-                    <Grid item xs={12} sm={6} md={4}>
-                        <FormControl fullWidth>
-                            <InputLabel id="rendicion-label">Número de Rendición</InputLabel>
-                            <Select
-                                labelId="rendicion-label"
-                                id="rendicionSelect"
-                                value={numeroRendicion}
-                                label="Rendiciones"
-                                onChange={(e) => setNumeroRendicion(e.target.value)}
-                            >
-                                <MenuItem value="">Todas</MenuItem>
-                                {rendiciones.map((rendicion, index) => (
-                                    <MenuItem key={index} value={rendicion}>
-                                        {rendicion}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </Grid>
-
-                    {/* Fechas */}
-                    <Grid item xs={12} sm={6} md={4}>
-                        <TextField
-                            label="Fecha Solicitud Desde"
-                            type="date"
-                            fullWidth
-                            value={fechaSolicitudFrom}
-                            onChange={(e) => setFechaSolicitudFrom(e.target.value)}
-                            InputLabelProps={{ shrink: true }}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={4}>
-                        <TextField
-                            label="Fecha Solicitud Hasta"
-                            type="date"
-                            fullWidth
-                            value={fechaSolicitudTo}
-                            onChange={(e) => setFechaSolicitudTo(e.target.value)}
-                            InputLabelProps={{ shrink: true }}
-                        />
-                    </Grid>
-
-                    {/* Botón para aplicar filtros */}
-                    <Grid item xs={12}>
-                        <Button
-                            variant="contained"
-                            fullWidth
-                            onClick={handleSubmit}
-                            sx={{ 
-                                backgroundColor: '#2E3192',  // Color de fondo
-                                '&:hover': { backgroundColor: '#1F237A' },  // Color de fondo cuando se hace hover
-                                color: 'white',  // Color del texto
-                                marginTop: 2 
-                            }}
-                        >
-                            Aplicar Filtros
-                        </Button>
-                    </Grid>
-                </Grid>
-            </Paper>
-
-            {/* Tabla de resultados */}
-            <Paper elevation={3} sx={{ padding: 3 }}>
-                <TableContainer>
-                    <Table>
-                        <TableHead>
+      {/* Tabla de Rendiciones */}
+      <Paper elevation={3} sx={{ padding: 3 }}>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell style={headerStyle}>Nombre</TableCell>
+                <TableCell style={headerStyle}>Tipo</TableCell>
+                <TableCell style={headerStyle}>Estado</TableCell>
+                <TableCell style={headerStyle}>Fecha Registro</TableCell>
+                <TableCell style={headerStyle}>Fecha Actualización</TableCell>
+                <TableCell style={headerStyle}>Acciones</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rendiciones.map((rendicion) => (
+                <React.Fragment key={rendicion.rendicion.id}>
+                  <TableRow>
+                    <TableCell>{rendicion.rendicion.nombre}</TableCell>
+                    <TableCell>{rendicion.rendicion.tipo}</TableCell>
+                    <TableCell>{rendicion.rendicion.estado}</TableCell>
+                    <TableCell>{rendicion.rendicion.fecha_registro}</TableCell>
+                    <TableCell>
+                      {rendicion.rendicion.fecha_actualizacion || "N/A"}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        onClick={() =>
+                          toggleRendicion(rendicion.rendicion.id)
+                        }
+                        size="small"
+                        sx={{
+                          backgroundColor: "#F15A29",
+                          color: "white",
+                          "&:hover": { backgroundColor: "#D14A23" },
+                        }}
+                      >
+                        {openRendiciones[rendicion.rendicion.id] ? (
+                          <>
+                            Cerrar
+                            <ExpandLess />
+                          </>
+                        ) : (
+                          <>
+                            Abrir
+                            <ExpandMore />
+                          </>
+                        )}
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                  {/* Subnivel de documentos */}
+                  <TableRow>
+                    <TableCell
+                      colSpan={6}
+                      style={{ padding: 0, border: "none" }}
+                    >
+                      <Collapse
+                        in={openRendiciones[rendicion.rendicion.id]}
+                        timeout="auto"
+                        unmountOnExit
+                      >
+                        <Table size="small">
+                          <TableHead>
                             <TableRow>
-                                <TableCell align="center" style={headerStyle}>RUC</TableCell>
-                                <TableCell align="center" style={headerStyle}>Proveedor</TableCell>
-                                <TableCell align="center" style={headerStyle}>Fecha Emisión</TableCell>
-                                <TableCell align="center" style={headerStyle}>Moneda</TableCell>
-                                <TableCell align="center" style={headerStyle}>Tipo Documento</TableCell>
-                                <TableCell align="center" style={headerStyle}>Serie</TableCell>
-                                <TableCell align="center" style={headerStyle}>Correlativo</TableCell>
-                                <TableCell align="center" style={headerStyle}>Tipo Gasto</TableCell>
-                                <TableCell align="center" style={headerStyle}>Sub Total</TableCell>
-                                <TableCell align="center" style={headerStyle}>IGV</TableCell>
-                                <TableCell align="center" style={headerStyle}>No Gravadas</TableCell>
-                                <TableCell align="center" style={headerStyle}>Importe Facturado</TableCell>
-                                <TableCell align="center" style={headerStyle}>TC</TableCell>
+                              <TableCell style={headerStyle}>RUC</TableCell>
+                              <TableCell style={headerStyle}>Proveedor</TableCell>
+                              <TableCell style={headerStyle}>
+                                Fecha Emisión
+                              </TableCell>
+                              <TableCell style={headerStyle}>Moneda</TableCell>
+                              <TableCell style={headerStyle}>
+                                Tipo Documento
+                              </TableCell>
+                              <TableCell style={headerStyle}>Total</TableCell>
                             </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {documentos.map((documento) => (
-                                <TableRow key={documento.id}>
-                                    <TableCell align="center">{documento.ruc}</TableCell>
-                                    <TableCell align="center">{documento.proveedor}</TableCell>
-                                    <TableCell align="center">{documento.fecha_emision}</TableCell>
-                                    <TableCell align="center">{documento.moneda}</TableCell>
-                                    <TableCell align="center">{documento.tipo_documento}</TableCell>
-                                    <TableCell align="center">{documento.serie}</TableCell>
-                                    <TableCell align="center">{documento.correlativo}</TableCell>
-                                    <TableCell align="center">{documento.tipo_gasto}</TableCell>
-                                    <TableCell align="center">{documento.sub_total}</TableCell>
-                                    <TableCell align="center">{documento.igv}</TableCell>
-                                    <TableCell align="center">{documento.no_gravadas}</TableCell>
-                                    <TableCell align="center">{documento.importe_facturado}</TableCell>
-                                    <TableCell align="center">{documento.tc}</TableCell>
-                                </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {rendicion.documentos.map((doc) => (
+                              <TableRow key={doc.id} style={rowStyle}>
+                                <TableCell>{doc.ruc}</TableCell>
+                                <TableCell>{doc.proveedor}</TableCell>
+                                <TableCell>{doc.fecha_emision}</TableCell>
+                                <TableCell>{doc.moneda}</TableCell>
+                                <TableCell>{doc.tipo_documento}</TableCell>
+                                <TableCell>{doc.total}</TableCell>
+                              </TableRow>
                             ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            </Paper>
-        </Container>
-    );
+                          </TableBody>
+                        </Table>
+                      </Collapse>
+                    </TableCell>
+                  </TableRow>
+                </React.Fragment>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
+    </Container>
+  );
 };
 
 export default HistorialGastos;

@@ -1,5 +1,32 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+// import {
+//   Container,
+//   Card,
+//   CardContent,
+//   Typography,
+//   TextField,
+//   Button,
+//   Alert,
+//   MenuItem,
+//   CircularProgress,
+//   Dialog,
+//   DialogActions,
+//   DialogContent,
+//   DialogContentText,
+//   DialogTitle,
+//   Box,
+//   TableContainer,
+//   Paper,
+//   Table,
+//   TableHead,
+//   TableRow,
+//   TableCell,
+//   TableBody,
+//   FormControl,
+//   InputLabel,
+//   Select,
+// } from "@mui/material";
 import {
   Container,
   Card,
@@ -26,14 +53,18 @@ import {
   FormControl,
   InputLabel,
   Select,
+  FormGroup, // <== Importar FormGroup
+  FormControlLabel, // <== Importar FormControlLabel
+  Checkbox, // <== Importar Checkbox
 } from "@mui/material";
+
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import "./DatosRecibo.css";
 import api, { baseURL } from "../api";
 import lupaIcon from "../assets/lupa-icon.png";
 
-const DatosRecibo = () => {
+const DatosReciboTable = () => {
   const categoryOptions = [
     { value: "63111", label: "Servicio transporte De carga" },
     { value: "6312", label: "Correos" },
@@ -135,6 +166,43 @@ const DatosRecibo = () => {
   const [formErrors, setFormErrors] = useState({});
   const [documentDetail, setDocumentDetail] = useState(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+
+  const [solicitudOpciones, setSolicitudOpciones] = useState([]);
+  const [checkedOpciones, setCheckedOpciones] = useState([]);
+  
+
+  const fetchSolicitudOpciones = async () => {
+    try {
+      const userString = localStorage.getItem("user");
+      const user = userString ? JSON.parse(userString) : null;
+      const userId = user ? user.id : null;
+  
+      if (!userId) {
+        alert("Error: Usuario no autenticado");
+        return;
+      }
+  
+      const response = await axios.get(`${baseURL}/solicitud/nombres`, {
+        params: { user_id: userId, tipo: "ANTICIPO" },
+      });
+  
+      setSolicitudOpciones(response.data);
+      setError("");
+    } catch (error) {
+      console.error("Error al obtener las solicitudes:", error);
+      setError("Error al obtener las solicitudes. Por favor, intente nuevamente.");
+    }
+  };
+
+  useEffect(() => {
+    if (confirmFinalizarDialogOpen) {
+      fetchSolicitudOpciones();
+    }
+  }, [confirmFinalizarDialogOpen]);
+  
+  
+
+
   const handleViewDetail = async (documentId) => {
     try {
       const response = await axios.get(`${baseURL}/documentos/${documentId}`);
@@ -662,7 +730,7 @@ const DatosRecibo = () => {
         cuentaContable: selectedCuentaContable || "",
         serie: "",
         numero: "",
-        rubro: "",
+        rubro: selectedRubro || "",
         moneda: "PEN",
         afecto: "",
         igv: "",
@@ -703,113 +771,237 @@ const DatosRecibo = () => {
 
   return (
     <Container sx={{ marginTop: -20 }}>
-      <Typography variant="h6" gutterBottom>
-        RENDICIÓN: {nombreRendicion}
-      </Typography>
-      <Card sx={{ boxShadow: 10 }}>
-        <CardContent>
-          <div className="form-group row">
-            <div className="col-md-4">
-              <TextField
-                label="Buscar por RUC"
-                variant="outlined"
-                fullWidth
-                value={searchRuc}
-                onChange={handleSearchRucChange}
-                sx={{ marginBottom: 2 }}
-              />
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSearch}
-                sx={{
-                  backgroundColor: "#2E3192",
-                  "&:hover": { backgroundColor: "#1F237A" },
-                }}
-              >
-                Buscar
-              </Button>
-            </div>
+      <Container sx={{ marginBottom: 2 }}>
+        <Box display="flex" justifyContent="flex-end">
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ marginRight: 2 }}
+            onClick={() => navigate("/datos-recibo")}
+          >
+            Nuevo Registro
+          </Button>
 
-            <div className="col-md-4">
-              <Button
-                variant="outlined"
-                component="label"
-                fullWidth
-                sx={{
-                  marginTop: 2,
-                  borderColor: "#2E3192",
-                  color: "#2E3192",
-                  "&:hover": {
-                    backgroundColor: "#F15A29",
-                    borderColor: "#F15A29",
-                    color: "white",
-                  },
-                }}
-              >
-                Subir Recibo
-                <input type="file" hidden onChange={handleFileUpload} />
-              </Button>
-              {formErrors.archivo && (
-                <p style={{ color: "red", marginTop: "5px" }}>
-                  {formErrors.archivo}
-                </p>
-              )}
-            </div>
-            <div className="col-md-4">
-              <Button
-                variant="outlined"
-                component="label"
-                fullWidth
-                sx={{
-                  marginTop: 2,
-                  borderColor: "#2E3192",
-                  color: "#2E3192",
-                  "&:hover": {
-                    backgroundColor: "#F15A29",
-                    borderColor: "#F15A29",
-                    color: "white",
-                  },
-                }}
-              >
-                Escanear QR
-                <input type="file" hidden onChange={handleQrFileChange} />
-              </Button>
-            </div>
-          </div>
-
-          {isLoading ? (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                marginTop: "20px",
-              }}
+            <Button
+              variant="contained"
+              color="warning"
+              sx={{ marginRight: 2 }}
+              onClick={() => navigate("/movilidad")}
             >
-              <CircularProgress />
-            </div>
-          ) : (
-            <>
-              {error && <Alert severity="error">{error}</Alert>}
-              {searchResult && (
-                <Alert severity="success">
-                  <p>
-                    <strong>Razón Social:</strong> {searchResult.razonSocial}
-                  </p>
-                  <p>
-                    <strong>Dirección:</strong> {searchResult.direccion}
-                  </p>
-                  <p>
-                    <strong>Estado:</strong> {searchResult.estado}
-                  </p>
-                </Alert>
-              )}
-            </>
-          )}
+              Movilidad
+            </Button>
 
-          <form onSubmit={handleSubmit}>
-            {["fecha", "ruc", "cuentaContable", "serie", "numero"].map(
-              (field) => (
+          <Button
+            variant="contained"
+            color="success"
+            sx={{ marginRight: 2 }}
+            onClick={() => setConfirmFinalizarDialogOpen(true)}
+          >
+            Finalizar Rendición
+          </Button>
+        </Box>
+      </Container>
+      {showForm && (
+        <Card sx={{ boxShadow: 10 }}>
+          <CardContent>
+            <div className="form-group row">
+              <div className="col-md-4">
+                <TextField
+                  label="Buscar por RUC"
+                  variant="outlined"
+                  fullWidth
+                  value={searchRuc}
+                  onChange={handleSearchRucChange}
+                  sx={{ marginBottom: 2 }}
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSearch}
+                  sx={{
+                    backgroundColor: "#2E3192",
+                    "&:hover": { backgroundColor: "#1F237A" },
+                  }}
+                >
+                  Buscar
+                </Button>
+              </div>
+
+              <div className="col-md-4">
+                <Button
+                  variant="outlined"
+                  component="label"
+                  fullWidth
+                  sx={{
+                    marginTop: 2,
+                    borderColor: "#2E3192",
+                    color: "#2E3192",
+                    "&:hover": {
+                      backgroundColor: "#F15A29",
+                      borderColor: "#F15A29",
+                      color: "white",
+                    },
+                  }}
+                >
+                  Subir Recibo
+                  <input type="file" hidden onChange={handleFileUpload} />
+                </Button>
+                {formErrors.archivo && (
+                  <p style={{ color: "red", marginTop: "5px" }}>
+                    {formErrors.archivo}
+                  </p>
+                )}
+              </div>
+              <div className="col-md-4">
+                <Button
+                  variant="outlined"
+                  component="label"
+                  fullWidth
+                  sx={{
+                    marginTop: 2,
+                    borderColor: "#2E3192",
+                    color: "#2E3192",
+                    "&:hover": {
+                      backgroundColor: "#F15A29",
+                      borderColor: "#F15A29",
+                      color: "white",
+                    },
+                  }}
+                >
+                  Escanear QR
+                  <input type="file" hidden onChange={handleQrFileChange} />
+                </Button>
+              </div>
+            </div>
+
+            {isLoading ? (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: "20px",
+                }}
+              >
+                <CircularProgress />
+              </div>
+            ) : (
+              <>
+                {error && <Alert severity="error">{error}</Alert>}
+                {searchResult && (
+                  <Alert severity="success">
+                    <p>
+                      <strong>Razón Social:</strong> {searchResult.razonSocial}
+                    </p>
+                    <p>
+                      <strong>Dirección:</strong> {searchResult.direccion}
+                    </p>
+                    <p>
+                      <strong>Estado:</strong> {searchResult.estado}
+                    </p>
+                  </Alert>
+                )}
+              </>
+            )}
+
+            <form onSubmit={handleSubmit}>
+              {["fecha", "ruc", "cuentaContable", "serie", "numero"].map(
+                (field) => (
+                  <TextField
+                    key={field}
+                    label={field.charAt(0).toUpperCase() + field.slice(1)}
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    id={field}
+                    name={field}
+                    value={formData[field]}
+                    onChange={handleChange}
+                  />
+                )
+              )}
+
+              <FormControl
+                fullWidth
+                variant="outlined"
+                sx={{ marginBottom: 3 }}
+                error={!!formErrors.rubro}
+              >
+                <InputLabel id="category-label">Rubro</InputLabel>
+                <Select
+                  labelId="category-label"
+                  id="category"
+                  value={category}
+                  onChange={handleCategoryChange}
+                  label="Rubro"
+                >
+                  <MenuItem value="" disabled>
+                    Seleccione un rubro
+                  </MenuItem>
+                  {categoryOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+                {formErrors.rubro && (
+                  <p style={{ color: "red", marginTop: "5px" }}>
+                    {formErrors.rubro}
+                  </p>
+                )}
+              </FormControl>
+              <TextField
+                label="Tipo de Documento"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                id="tipoDoc"
+                name="tipoDoc"
+                value={formData.tipoDoc}
+                onChange={handleChange}
+                select
+              >
+                <MenuItem value="Factura">Factura</MenuItem>
+                <MenuItem value="Recibo por Honorarios">
+                  Recibo por Honorarios
+                </MenuItem>
+                <MenuItem value="Boleta de Venta">Boleta de Venta</MenuItem>
+                <MenuItem value="Boleto Aéreo">Boleto Aéreo</MenuItem>
+                <MenuItem value="Nota de Crédito">Nota de Crédito</MenuItem>
+                <MenuItem value="Nota de Débito">Nota de Débito</MenuItem>
+                <MenuItem value="Ticket o cinta emitido por máquina registradora">
+                  Ticket o cinta emitido por máquina registradora
+                </MenuItem>
+                <MenuItem value="Recibo Servicio Público">
+                  Recibo Servicio Público
+                </MenuItem>
+              </TextField>
+
+              <TextField
+                label="Moneda"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                id="moneda"
+                name="moneda"
+                value={formData.moneda}
+                onChange={handleChange}
+                select
+              >
+                <MenuItem value="PEN">PEN</MenuItem>
+                <MenuItem value="USD">USD</MenuItem>
+              </TextField>
+
+              <TextField
+                label="Afecto"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                id="afecto"
+                name="afecto"
+                value={formData.afecto}
+              />
+
+              {["igv", "inafecto", "total"].map((field) => (
                 <TextField
                   key={field}
                   label={field.charAt(0).toUpperCase() + field.slice(1)}
@@ -821,122 +1013,115 @@ const DatosRecibo = () => {
                   value={formData[field]}
                   onChange={handleChange}
                 />
-              )
-            )}
+              ))}
 
-            <FormControl
-              fullWidth
-              variant="outlined"
-              sx={{ marginBottom: 3 }}
-              error={!!formErrors.rubro}
-            >
-              <InputLabel id="category-label">Rubro</InputLabel>
-              <Select
-                labelId="category-label"
-                id="category"
-                value={category}
-                onChange={handleCategoryChange}
-                label="Rubro"
-              >
-                <MenuItem value="" disabled>
-                  Seleccione un rubro
-                </MenuItem>
-                {categoryOptions.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-              {formErrors.rubro && (
-                <p style={{ color: "red", marginTop: "5px" }}>
-                  {formErrors.rubro}
-                </p>
-              )}
-            </FormControl>
-            <TextField
-              label="Tipo de Documento"
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              id="tipoDoc"
-              name="tipoDoc"
-              value={formData.tipoDoc}
-              onChange={handleChange}
-              select
-            >
-              <MenuItem value="Factura">Factura</MenuItem>
-              <MenuItem value="Recibo por Honorarios">
-                Recibo por Honorarios
-              </MenuItem>
-              <MenuItem value="Boleta de Venta">Boleta de Venta</MenuItem>
-              <MenuItem value="Boleto Aéreo">Boleto Aéreo</MenuItem>
-              <MenuItem value="Nota de Crédito">Nota de Crédito</MenuItem>
-              <MenuItem value="Nota de Débito">Nota de Débito</MenuItem>
-              <MenuItem value="Ticket o cinta emitido por máquina registradora">
-                Ticket o cinta emitido por máquina registradora
-              </MenuItem>
-              <MenuItem value="Recibo Servicio Público">
-                Recibo Servicio Público
-              </MenuItem>
-            </TextField>
-
-            <TextField
-              label="Moneda"
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              id="moneda"
-              name="moneda"
-              value={formData.moneda}
-              onChange={handleChange}
-              select
-            >
-              <MenuItem value="PEN">PEN</MenuItem>
-              <MenuItem value="USD">USD</MenuItem>
-            </TextField>
-
-            <TextField
-              label="Afecto"
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              id="afecto"
-              name="afecto"
-              value={formData.afecto}
-            />
-
-            {["igv", "inafecto", "total"].map((field) => (
-              <TextField
-                key={field}
-                label={field.charAt(0).toUpperCase() + field.slice(1)}
-                variant="outlined"
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
                 fullWidth
-                margin="normal"
-                id={field}
-                name={field}
-                value={formData[field]}
-                onChange={handleChange}
-              />
-            ))}
+                onClick={editRecord ? handleUpdate : handleSubmit}
+                sx={{
+                  marginTop: 4,
+                  backgroundColor: "#2E3192",
+                  "&:hover": { backgroundColor: "#1F237A" },
+                }}
+              >
+                {editRecord ? "Actualizar" : "Solicitar"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      )}
 
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              fullWidth
-              onClick={editRecord ? handleUpdate : handleSubmit}
-              sx={{
-                marginTop: 4,
-                backgroundColor: "#2E3192",
-                "&:hover": { backgroundColor: "#1F237A" },
-              }}
-            >
-              {editRecord ? "Actualizar" : "Solicitar"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+      <Typography variant="h6" gutterBottom>
+        RENDICIÓN: {nombreRendicion}
+      </Typography>
 
+      {isLoading ? (
+        <CircularProgress />
+      ) : (
+        <TableContainer component={Paper} sx={{ marginBottom: 4 }}>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ backgroundColor: "#1F237A" }}>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Número de Ítem
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Rubro
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Total
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Ver Archivo
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Detalle
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Editar
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Eliminar
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {records.map((record, index) => (
+                <TableRow key={record.id}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{record.rubro}</TableCell>
+                  <TableCell>{record.total}</TableCell>
+                  <TableCell>
+                    {record.archivo && (
+                      <Button
+                        variant="text"
+                        onClick={() => handleViewFile(record.archivo)}
+                      >
+                        <img
+                          src={lupaIcon}
+                          alt="Ver Archivo"
+                          style={{ width: 24 }}
+                        />
+                      </Button>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="contained"
+                      color="success"
+                      onClick={() => handleViewDetail(record.id)}
+                    >
+                      Ver Detalle
+                    </Button>
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => handleEditRecord(record)}
+                      disabled={record.rubro.toLowerCase() === "movilidad"}
+                    >
+                      Editar
+                    </Button>
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={() => handleOpenConfirmDeleteDialog(record.id)}
+                    >
+                      Eliminar
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
       <Dialog open={dialogOpen} onClose={() => handleDialogClose(false)}>
         <DialogTitle>Datos enviados con éxito</DialogTitle>
         <DialogContent>
@@ -1028,7 +1213,7 @@ const DatosRecibo = () => {
         </DialogActions>
       </Dialog>
 
-      <Dialog
+      {/* <Dialog
         open={confirmFinalizarDialogOpen}
         onClose={() => setConfirmFinalizarDialogOpen(false)}
       >
@@ -1056,8 +1241,118 @@ const DatosRecibo = () => {
             Sí
           </Button>
         </DialogActions>
-      </Dialog>
+      </Dialog> */}
+      <Dialog
+  open={confirmFinalizarDialogOpen}
+  onClose={() => setConfirmFinalizarDialogOpen(false)}
+>
+  <DialogTitle>Seleccionar solicitudes</DialogTitle>
+  <DialogContent>
+    <DialogContentText>
+      Seleccione las solicitudes que desea incluir en la rendición.
+    </DialogContentText>
+
+    {/* Cargar la lista desde el endpoint */}
+    <FormGroup>
+      {solicitudOpciones.map((opcion) => (
+        <FormControlLabel
+          key={opcion.id}
+          control={
+            <Checkbox
+              checked={checkedOpciones.includes(opcion.id)}
+              onChange={() => {
+                setCheckedOpciones((prevChecked) =>
+                  prevChecked.includes(opcion.id)
+                    ? prevChecked.filter((item) => item !== opcion.id)
+                    : [...prevChecked, opcion.id]
+                );
+              }}
+            />
+          }
+          label={opcion.nombre} // Mostrar el nombre como descripción
+        />
+      ))}
+    </FormGroup>
+  </DialogContent>
+  <DialogActions>
+    <Button
+      onClick={() => setConfirmFinalizarDialogOpen(false)}
+      color="primary"
+    >
+      Cancelar
+    </Button>
+    {/* <Button
+      onClick={async () => {
+        console.log("Seleccionadas:", checkedOpciones);
+        setConfirmFinalizarDialogOpen(false);
+        // Aquí puedes manejar las solicitudes seleccionadas
+      }}
+      color="secondary"
+    >
+      Confirmar
+    </Button> */}
+    <Button
+  onClick={async () => {
+    try {
+      // Paso 1: Obtener el ID de la última rendición
+      const userString = localStorage.getItem("user");
+      const user = userString ? JSON.parse(userString) : null;
+      const userId = user ? user.id : null;
+
+      if (!userId) {
+        alert("Error: Usuario no autenticado");
+        return;
+      }
+
+      const lastRendicionResponse = await axios.get(`${baseURL}/rendicion/last`, {
+        params: { user_id: userId, tipo: "RENDICION" },
+      });
+
+      const rendicionId = lastRendicionResponse.data.id;
+
+      if (!rendicionId) {
+        alert("No se encontró una rendición activa");
+        return;
+      }
+
+      // Paso 2: Actualizar el estado de la rendición
+      await axios.put(`${baseURL}/rendicion/${rendicionId}`, {
+        estado: "PENDIENTE2",
+      });
+
+      // Paso 3: Actualizar el estado de cada solicitud seleccionada
+      for (const solicitudId of checkedOpciones) {
+        await axios.put(`${baseURL}/solicitud/${solicitudId}`, {
+          estado: "PENDIENTE2",
+        });
+
+        // Paso 4: Crear el registro en rendicion_solicitud
+        await axios.post(`${baseURL}/rendicion_solicitud`, {
+          rendicion_id: rendicionId,
+          solicitud_id: solicitudId,
+          estado: "Pendiente",
+        });
+      }
+
+      // Confirmación exitosa
+      alert("Rendición finalizada y solicitudes asociadas correctamente.");
+      setCheckedOpciones([]); // Limpiar las opciones seleccionadas
+      setConfirmFinalizarDialogOpen(false);
+      navigate("/colaborador");
+    } catch (error) {
+      console.error("Error al finalizar la rendición:", error);
+      alert("Ocurrió un error al procesar las solicitudes. Intente nuevamente.");
+    }
+  }}
+  color="secondary"
+>
+  Confirmar
+</Button>
+
+  </DialogActions>
+</Dialog>
+
     </Container>
   );
 };
-export default DatosRecibo;
+export default DatosReciboTable;

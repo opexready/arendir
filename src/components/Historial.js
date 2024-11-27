@@ -1,19 +1,78 @@
-import React from 'react';
-import { Container, Grid, Typography, Box, List, ListItem, ListItemText } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import {
+  Container,
+  Grid,
+  Typography,
+  Box,
+  List,
+  ListItem,
+  ListItemText,
+  CircularProgress,
+  Alert,
+} from '@mui/material';
+import axios from 'axios';
+import { baseURL } from '../api';
 
 const Historial = () => {
-  // Datos en duro para la lista de rendiciones y solicitudes
-  const rendiciones = [
-    { nombre: 'Rendición 1', estado: 'Aprobado' },
-    { nombre: 'Rendición 2', estado: 'Rechazado' },
-    { nombre: 'Rendición 3', estado: 'Aprobado' }
-  ];
+  const [rendiciones, setRendiciones] = useState([]);
+  const [solicitudes, setSolicitudes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const solicitudes = [
-    { nombre: 'Solicitud 1', estado: 'Aprobado' },
-    { nombre: 'Solicitud 2', estado: 'Rechazado' },
-    { nombre: 'Solicitud 3', estado: 'Aprobado' }
-  ];
+  useEffect(() => {
+    const fetchHistorialData = async () => {
+      try {
+        // Obtener datos del usuario desde la sesión
+        const userResponse = await axios.get(`${baseURL}/users/me`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        const userId = userResponse.data.id;
+
+        // Realizar llamadas a las APIs
+        const [rendicionesResponse, solicitudesResponse] = await Promise.all([
+          axios.get(`${baseURL}/rendiciones/nombres`, {
+            params: { user_id: userId, tipo: 'RENDICION' },
+          }),
+          axios.get(`${baseURL}/solicitud/nombres`, {
+            params: { user_id: userId, tipo: 'ANTICIPO' },
+          }),
+        ]);
+
+        // Actualizar estados con los datos obtenidos
+        setRendiciones(rendicionesResponse.data);
+        setSolicitudes(solicitudesResponse.data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error al obtener los datos del historial:', error);
+        setError('Hubo un error al cargar los datos. Por favor, intenta nuevamente.');
+        setLoading(false);
+      }
+    };
+
+    fetchHistorialData();
+  }, []);
+
+  if (loading) {
+    return (
+      <Container>
+        <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+          <CircularProgress />
+        </Box>
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container>
+        <Box display="flex" justifyContent="center" mt={4}>
+          <Alert severity="error">{error}</Alert>
+        </Box>
+      </Container>
+    );
+  }
 
   return (
     <Container sx={{ marginTop: -20 }}>

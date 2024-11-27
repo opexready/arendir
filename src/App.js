@@ -10,6 +10,7 @@ import AdminDashboard from './components/AdminDashboard';
 import RendicionGastos from './components/RendicionGastos';
 import LandingPage from './components/LandingPage';
 import DatosRecibo from './components/DatosRecibo';
+import DatosReciboTable from './components/DatosReciboTable';
 import Movilidad from './components/Movilidad';
 import AnticiposViajes from './components/AnticiposViajes';
 import AnticiposGastosLocales from './components/AnticiposGastosLocales';
@@ -62,6 +63,7 @@ function App() {
                                     <Route path="/admin" element={<AdminDashboard user={user} />} />
                                     <Route path="/rendicion-gastos" element={<RendicionGastos />} />
                                     <Route path="/datos-recibo" element={<DatosRecibo />} />
+                                    <Route path="/datos-recibo-table" element={<DatosReciboTable />} />
                                     <Route path="/detalle" element={<HistorialGastos />} />
                                     <Route path="/historial" element={<Historial />} /> {/* Nueva ruta para Historial */}
                                 </Routes>

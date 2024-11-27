@@ -78,7 +78,22 @@ const Navbar = () => {
                     }}
                 >
                     <List sx={{ display: 'flex', flexDirection: 'row', padding: 0 }}>
-                        <ListItem button component={Link} to="/datos-recibo" sx={{ justifyContent: 'center' }}>
+                        {/* <ListItem button component={Link} to="/datos-recibo" sx={{ justifyContent: 'center' }}>
+                            <ListItemIcon>
+                                <img 
+                                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/GASTOS.png?alt=media&token=e9261ba0-d22f-4d13-8ff0-213b23feb977" 
+                                    alt="Gastos" 
+                                    style={{ height: '24px', width: '24px' }} 
+                                />
+                            </ListItemIcon>
+                            <ListItemText primary="Gastos" sx={{ color: '#2E3192', textAlign: 'center' }} />
+                        </ListItem> */}
+                        <ListItem 
+                            button 
+                            component={Link} 
+                            to={{ pathname: '/datos-recibo-table', state: { reset: true } }} // Agregar `state`
+                            sx={{ justifyContent: 'center' }}
+                        >
                             <ListItemIcon>
                                 <img 
                                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/GASTOS.png?alt=media&token=e9261ba0-d22f-4d13-8ff0-213b23feb977" 
@@ -88,6 +103,7 @@ const Navbar = () => {
                             </ListItemIcon>
                             <ListItemText primary="Gastos" sx={{ color: '#2E3192', textAlign: 'center' }} />
                         </ListItem>
+
                         <ListItem button component={Link} to="/anticipos-viajes" sx={{ justifyContent: 'center' }}>
                             <ListItemIcon>
                                 <img 

@@ -64,7 +64,7 @@ const ColaboradorModule = () => {
         {
             label: 'Gastos',
             iconUrl: 'https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/icono5.png?alt=media&token=47cf0d9b-4a7c-46d4-bbc4-4e171a40e6aa',
-            link: '/datos-recibo',
+            link: '/datos-recibo-table',
         },
         {
             label: 'Anticipo',

@@ -50,7 +50,7 @@ const AnticiposGastosLocales = () => {
                 let numeroRendicion = "";
                 try {
                   const rendicionResponse = await axios.get(`${baseURL}/rendicion/last`, {
-                    params: { user_id: userData.id, tipo: "SOLICITUD" }, // Ajusta el parámetro `tipo` según sea necesario
+                    params: { user_id: userData.id, tipo: "ANTICIPO" }, // Ajusta el parámetro `tipo` según sea necesario
                   });
                   numeroRendicion = rendicionResponse.data.nombre;
                 } catch (error) {
