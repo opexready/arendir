@@ -132,10 +132,13 @@ const AnticiposViajes = () => {
   }, []);
 
   useEffect(() => {
+    const userString = localStorage.getItem("user");
+    const user = userString ? JSON.parse(userString) : null;
+    const userId = user ? user.id : null;
     const fetchUltimaSolicitud = async () => {
       try {
         const response = await axios.get(`${baseURL}/solicitud/last`, {
-          params: { user_id: 22, tipo: "ANTICIPO" },
+          params: { user_id: userId, tipo: "ANTICIPO" },
         });
         setUltimaSolicitud(response.data.nombre);
       } catch (error) {
@@ -155,8 +158,11 @@ const AnticiposViajes = () => {
         });
         const userData = response.data;
         console.log("User ID:", userData.id);
+        const userString = localStorage.getItem("user");
+        const user = userString ? JSON.parse(userString) : null;
+        const userId = user ? user.id : null;
         const rendicionResponse = await axios.get(`${baseURL}/solicitud/last`, {
-          params: { user_id: 22, tipo: "ANTICIPO" },
+          params: { user_id: userId, tipo: "ANTICIPO" },
         });
         const rendicionData = rendicionResponse.data;
         console.log("Nombre de rendición:", rendicionData.nombre);

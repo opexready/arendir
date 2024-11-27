@@ -191,7 +191,7 @@ const Movilidad = () => {
                 const response = await api.get(`/rendicion/last`, { 
                     params: { 
                         user_id: userId,
-                        tipo: 'RENDICION' // Puedes reemplazarlo con el valor que necesites
+                        tipo: 'RENDICION' 
                     }, });
                 if (response?.data?.nombre) {
                     const { nombre } = response.data;
@@ -206,8 +206,8 @@ const Movilidad = () => {
                 alert('Error al obtener la última rendición. Intente nuevamente.');
             }
         } else {
-            localStorage.removeItem("numero_rendicion");
-            navigate('/colaborador');
+           // localStorage.removeItem("numero_rendicion");
+            navigate('/datos-recibo-table');
         }
     };
 
@@ -311,7 +311,7 @@ const Movilidad = () => {
                         Adicionar Gasto
                     </Button>
                     <Button onClick={() => handleClose(false)} color="secondary">
-                        Finalizar Rendición
+                        Volver
                     </Button>
                 </DialogActions>
             </Dialog>

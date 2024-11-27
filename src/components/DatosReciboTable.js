@@ -1246,10 +1246,10 @@ const DatosReciboTable = () => {
   open={confirmFinalizarDialogOpen}
   onClose={() => setConfirmFinalizarDialogOpen(false)}
 >
-  <DialogTitle>Seleccionar solicitudes</DialogTitle>
+  <DialogTitle>Seleccionar Anticipos</DialogTitle>
   <DialogContent>
     <DialogContentText>
-      Seleccione las solicitudes que desea incluir en la rendición.
+      Seleccione las anticipos que incluirán esta rendición
     </DialogContentText>
 
     {/* Cargar la lista desde el endpoint */}

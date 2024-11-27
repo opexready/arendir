@@ -204,30 +204,6 @@ const DatosRecibo = () => {
     }
   };
 
-  // const handleFinalizarRendicion = async () => {
-  //   try {
-  //     const userString = localStorage.getItem("user");
-  //     const user = userString ? JSON.parse(userString) : null;
-  //     const userId = user ? user.id : null;
-
-  //     if (!userId) {
-  //       alert("Error: Usuario no autenticado");
-  //       return;
-  //     }
-
-  //     const response = await axios.post(`${baseURL}/rendicion/`, {
-  //       user_id: userId,
-  //     });
-
-  //     alert(`Rendición creada con el nombre: ${response.data.nombre}`);
-  //   } catch (error) {
-  //     console.error("Error al finalizar la rendición:", error);
-  //     setError(
-  //       "Error al finalizar la rendición. Por favor, intente nuevamente."
-  //     );
-  //   }
-  // };
-
   const handleFinalizarRendicion = async () => {
     try {
       const userString = localStorage.getItem("user");
@@ -696,8 +672,8 @@ const DatosRecibo = () => {
         alert("Error al obtener la última rendición. Intente nuevamente.");
       }
     } else {
-      localStorage.removeItem("numero_rendicion");
-      navigate("/colaborador");
+      // localStorage.removeItem("numero_rendicion");
+      navigate("/datos-recibo-table");
     }
   };
 
@@ -948,12 +924,12 @@ const DatosRecibo = () => {
           </Button>
           <Button
             onClick={async () => {
-              await handleFinalizarRendicion();
+             // await handleFinalizarRendicion();
               handleDialogClose(false);
             }}
             color="secondary"
           >
-            Finalizar Rendición
+            Volver
           </Button>
         </DialogActions>
       </Dialog>
