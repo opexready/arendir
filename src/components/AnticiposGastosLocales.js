@@ -114,6 +114,10 @@ const AnticiposGastosLocales = () => {
         navigate("/anticipos-gastos-locales");
       };
 
+      const handleAnticipoViajes = () => {
+        navigate("/anticipos-viajes");
+      };
+
     
 
     return (
@@ -124,7 +128,7 @@ const AnticiposGastosLocales = () => {
             variant="contained"
             color="primary"
             sx={{ marginRight: 2 }}
-            onClick={() => setShowForm(true)} // Mostrar formulario
+            onClick={handleAnticipoViajes}
           >
             Anticipo Viajes
           </Button>
@@ -138,11 +142,11 @@ const AnticiposGastosLocales = () => {
           </Button>
           <Button
             variant="contained"
-            color="success"
+            color="warning"
             sx={{ marginRight: 2 }}
             onClick={handleAnticipoGastosLocales}
           >
-            Finalizar Anticipo
+            Finalizar Solicitud
           </Button>
         </Box>
       </Container>

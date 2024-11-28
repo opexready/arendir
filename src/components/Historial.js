@@ -13,6 +13,7 @@ import {
 import axios from 'axios';
 import { baseURL } from '../api';
 
+
 const Historial = () => {
   const [rendiciones, setRendiciones] = useState([]);
   const [solicitudes, setSolicitudes] = useState([]);

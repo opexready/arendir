@@ -31,7 +31,7 @@ import paisesSudamerica from "../data/paisesMundo";
 import { useNavigate } from "react-router-dom";
 import lupaIcon from "../assets/lupa-icon.png";
 
-const AnticiposViajes = () => {
+const AnticipoTable = () => {
   const getCurrentDate = () => {
     const today = new Date();
     const year = today.getFullYear();
@@ -44,6 +44,11 @@ const AnticiposViajes = () => {
   const handleAnticipoGastosLocales = () => {
     navigate("/anticipos-gastos-locales");
   };
+
+  const handleAnticipoViajes = () => {
+    navigate("/anticipos-viajes");
+  };
+
 
   const [formData, setFormData] = useState({
     usuario: "",
@@ -356,7 +361,7 @@ const AnticiposViajes = () => {
         const rendicionId = lastRendicionResponse.data.id;
 
         // Paso 2: Actualizar la rendición obtenida a estado "PENDIENTE"
-        await axios.put(`${baseURL}/rendicion/${rendicionId}`, {
+        await axios.put(`${baseURL}/solicitud/${rendicionId}`, {
           estado: "PENDIENTE",
         });
 
@@ -386,7 +391,8 @@ const AnticiposViajes = () => {
             variant="contained"
             color="primary"
             sx={{ marginRight: 2 }}
-            onClick={() => setShowForm(true)} // Mostrar formulario
+           // onClick={() => setShowForm(true)} // Mostrar formulario handleAnticipoViajes
+            onClick={handleAnticipoViajes}
           >
             Anticipo Viajes
           </Button>
@@ -411,213 +417,92 @@ const AnticiposViajes = () => {
       <Typography variant="h6" gutterBottom>
         SOLICITUD: {ultimaSolicitud}
       </Typography>
-        <Card sx={{ boxShadow: 3 }}>
-          <CardContent>
-            <Typography
-              variant="h4"
-              component="h1"
-              align="center"
-              gutterBottom
-              sx={{
-                color: "#F15A29",
-                fontWeight: "bold",
-                margin: "0",
-                fontSize: "1.5rem",
-              }}
-            >
-              Anticipos de Viajes
-            </Typography>
-
-            {/* Aquí todo tu contenido del formulario */}
-            <Box
-              component="form"
-              onSubmit={handleSubmit}
-              noValidate
-              sx={{ mt: 2 }}
-            >
-              {/* Campos del formulario */}
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                id="tipo_viaje"
-                label="Tipo de Viaje"
-                name="tipo_viaje"
-                select
-                value={tipoViaje}
-                onChange={handleTipoViajeChange}
-              >
-                <MenuItem value="NACIONAL">Viajes Nacionales</MenuItem>
-                <MenuItem value="INTERNACIONAL">
-                  Viajes Internacionales
-                </MenuItem>
-              </TextField>
-              {tipoViaje === "NACIONAL" ? (
-                <>
+      {/* Grilla: Siempre visible */}
+      {!showForm && (
+        <TableContainer component={Paper} sx={{ marginBottom: 4 }}>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ backgroundColor: "#1F237A" }}>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Número de Ítem
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Categoria
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Total
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Ver Archivo
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Detalle
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Eliminar
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {records.map((record, index) => (
+                <TableRow key={record.id}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{record.tipo_anticipo}</TableCell>{" "}
+                  {/* Mostrar tipo_anticipo */}
+                  <TableCell>{record.total}</TableCell> {/* Mostrar total */}
+                  <TableCell>
+                    {(() => {
+                      console.log("Valor de record.archivo:", record.archivo); // Para verificar el valor
+                      return (
+                        record.archivo && (
+                          <Button
+                            variant="text"
+                            onClick={() => handleViewFile(record.archivo)}
+                          >
+                            <img
+                              src={lupaIcon}
+                              alt="Ver Archivo"
+                              style={{ width: 24 }}
+                            />
+                          </Button>
+                        )
+                      );
+                    })()}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="contained"
+                      color="info"
+                      onClick={() => handleViewDetail(record.id)}
+                    >
+                      Ver Detalle
+                    </Button>
+                  </TableCell>
+                  {/* <TableCell>
                   <Button
-                    variant="outlined"
-                    fullWidth
-                    onClick={() => {
-                      console.log("Botón de selección de destino clickeado");
-                      setOpenUbigeoDialog(true);
-                    }}
-                    sx={{
-                      mt: 2,
-                      mb: 2,
-                      color: "#2E3192",
-                      borderColor: "#2E3192",
-                      "&:hover": {
-                        backgroundColor: "#F15A29",
-                        borderColor: "#F15A29",
-                        color: "white",
-                      },
-                    }}
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleEditRecord(record)}
                   >
-                    Seleccionar Destino (Nacional)
+                    Editar
                   </Button>
-
-                  <Typography variant="body1" sx={{ mb: 2 }}>
-                    {formData.destino
-                      ? `Destino seleccionado: ${formData.destino}`
-                      : "No se ha seleccionado destino."}
-                  </Typography>
-                </>
-              ) : (
-                <TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="destino"
-                  label="Destino Internacional"
-                  name="destino"
-                  select
-                  value={formData.destino}
-                  onChange={handleChange}
-                >
-                  {paisesSudamerica.map((pais) => (
-                    <MenuItem key={pais} value={pais}>
-                      {pais}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              )}
-
-              {/* Resto de los campos */}
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                id="motivo"
-                label="Breve Motivo"
-                name="motivo"
-                value={formData.motivo}
-                onChange={handleChange}
-              />
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                id="fecha_viaje"
-                label="Fecha de Viaje"
-                name="fecha_emision"
-                type="date"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                value={formData.fecha_emision}
-                onChange={handleChange}
-              />
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                id="dias"
-                label="Días"
-                name="dias"
-                type="number"
-                value={formData.dias}
-                onChange={handleChange}
-              />
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                id="moneda"
-                label="Moneda"
-                name="moneda"
-                select
-                SelectProps={{
-                  native: true,
-                }}
-                value={formData.moneda}
-                onChange={handleChange}
-              >
-                <option value="PEN">PEN</option>
-                <option value="USD">USD</option>
-              </TextField>
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                id="presupuesto"
-                label="Presupuesto"
-                name="presupuesto"
-                type="number"
-                value={formData.presupuesto}
-                onChange={handleChange}
-              />
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                id="total"
-                label="Total"
-                name="total"
-                type="number"
-                value={formData.total}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setFormData({
-                    ...formData,
-                    total: value,
-                    importe_facturado: value,
-                  });
-                }}
-              />
-
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                disabled={isLoading}
-                sx={{
-                  mt: 3,
-                  mb: 2,
-                  backgroundColor: "#2E3192",
-                  "&:hover": {
-                    backgroundColor: "#1F237A",
-                  },
-                  color: "white",
-                  "&:disabled": {
-                    backgroundColor: "#A5A5A5",
-                    color: "#E0E0E0",
-                  },
-                }}
-              >
-                {isLoading ? "Enviando..." : "Solicitar"}
-              </Button>
-            </Box>
-          </CardContent>
-        </Card>
-
+                </TableCell> */}
+                  <TableCell>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={() => handleOpenConfirmDeleteDialog(record.id)}
+                    >
+                      Eliminar
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
+ 
 
       {/* Modal para ver el archivo */}
       <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
@@ -787,4 +672,4 @@ const AnticiposViajes = () => {
   );
 };
 
-export default AnticiposViajes;
+export default AnticipoTable;

@@ -104,7 +104,7 @@ const Navbar = () => {
                             <ListItemText primary="Gastos" sx={{ color: '#2E3192', textAlign: 'center' }} />
                         </ListItem>
 
-                        <ListItem button component={Link} to="/anticipos-viajes" sx={{ justifyContent: 'center' }}>
+                        <ListItem button component={Link} to="/anticipo-table" sx={{ justifyContent: 'center' }}>
                             <ListItemIcon>
                                 <img 
                                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/ANTICIPOS.png?alt=media&token=f5f00653-d2c4-4919-8c33-7eb353f0cf7b" 

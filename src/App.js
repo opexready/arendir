@@ -13,6 +13,7 @@ import DatosRecibo from './components/DatosRecibo';
 import DatosReciboTable from './components/DatosReciboTable';
 import Movilidad from './components/Movilidad';
 import AnticiposViajes from './components/AnticiposViajes';
+import AnticipoTable from './components/AnticipoTable';
 import AnticiposGastosLocales from './components/AnticiposGastosLocales';
 import Historial from './components/Historial'; 
 import HistorialGastos from './components/HistorialGastos';// Importa tu nueva clase
@@ -59,6 +60,7 @@ function App() {
                                     <Route path="/colaborador/*" element={<ColaboradorModule user={user} />} />
                                     <Route path="/movilidad" element={<Movilidad />} />
                                     <Route path="/anticipos-viajes" element={<AnticiposViajes />} />
+                                    <Route path="/anticipo-table" element={<AnticipoTable />} />
                                     <Route path="/anticipos-gastos-locales" element={<AnticiposGastosLocales />} />
                                     <Route path="/admin" element={<AdminDashboard user={user} />} />
                                     <Route path="/rendicion-gastos" element={<RendicionGastos />} />

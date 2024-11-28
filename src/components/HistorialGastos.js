@@ -19,7 +19,8 @@ import {
   Collapse,
 } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
-import api from "../api";
+import axios from "axios";
+import { baseURL } from "../api";
 
 const HistorialGastos = () => {
   const [rendiciones, setRendiciones] = useState([]);
@@ -31,17 +32,18 @@ const HistorialGastos = () => {
 
   const fetchRendiciones = async () => {
     try {
-      const response = await api.get(
-        "http://localhost:8080/rendiciones/con-documentos/",
-        {
-          params: {
-            tipo: tipo || undefined,
-            estado: estado || undefined,
-            fecha_registro_from: fechaRegistroFrom || undefined,
-            fecha_registro_to: fechaRegistroTo || undefined,
-          },
-        }
-      );
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`${baseURL}/rendiciones/con-documentos/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          tipo: tipo || undefined,
+          estado: estado || undefined,
+          fecha_registro_from: fechaRegistroFrom || undefined,
+          fecha_registro_to: fechaRegistroTo || undefined,
+        },
+      });
       setRendiciones(response.data);
       setOpenRendiciones({}); // Reinicia el estado de las filas abiertas
     } catch (error) {
@@ -221,7 +223,9 @@ const HistorialGastos = () => {
                           <TableHead>
                             <TableRow>
                               <TableCell style={headerStyle}>RUC</TableCell>
-                              <TableCell style={headerStyle}>Proveedor</TableCell>
+                              <TableCell style={headerStyle}>
+                                Proveedor
+                              </TableCell>
                               <TableCell style={headerStyle}>
                                 Fecha Emisión
                               </TableCell>
