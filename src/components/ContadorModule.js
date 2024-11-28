@@ -1,499 +1,347 @@
-import React, { useEffect, useState } from 'react';
-import { baseURL } from '../api';   
+import React, { useEffect, useState } from "react";
 import {
-    Container,
-    Grid,
-    Typography,
-    Button,
-    Select,
-    MenuItem,
-    FormControl,
-    TextField,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Modal,
-    Box
-} from '@mui/material';
-import api, { getUsersByCompanyAndRole, getNumerosRendicion } from '../api';
-import lupaIcon from '../assets/lupa-icon.png'; // Asegúrate de tener esta imagen en la carpeta 'assets'
+  Container,
+  Grid,
+  Typography,
+  Button,
+  Select,
+  MenuItem,
+  FormControl,
+  TextField,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Collapse,
+} from "@mui/material";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import axios from "axios";
+import { baseURL, getUsersByCompanyAndRole } from "../api";
 
 const ContadorModule = () => {
-    const [user, setUser] = useState(null);
-    const [documentos, setDocumentos] = useState([]);
-    const [colaboradores, setColaboradores] = useState([]);
-    const [numerosRendicion, setNumerosRendicion] = useState([]);
-    const [empresa, setEmpresa] = useState('');
-    const [selectedDocumento, setSelectedDocumento] = useState(null);
-    const [showModal, setShowModal] = useState(false);
-    const [selectedColaborador, setSelectedColaborador] = useState(null);
-    const [filtros, setFiltros] = useState({
-        colaborador: '',
-        estado: 'POR APROBAR',
-        tipo_solicitud: 'RENDICION',
-        numero_rendicion: '',
-        fechaDesde: '2024-08-01',
-        fechaHasta: new Date().toISOString().split('T')[0],
-        fechaEmisionDesde: '',
-        fechaEmisionHasta: ''
-    });
+  const [rendiciones, setRendiciones] = useState([]);
+  const [openRendiciones, setOpenRendiciones] = useState({});
+  const [colaboradores, setColaboradores] = useState([]);
+  const [empresa, setEmpresa] = useState("");
+  const [filtros, setFiltros] = useState({
+    colaborador: "",
+    estado: "POR APROBAR",
+    tipo_solicitud: "RENDICION",
+    fechaDesde: "",
+    fechaHasta: "",
+  });
 
-    // Obtener el usuario y establecer la empresa una sola vez
-    useEffect(() => {
-        const fetchUser = async () => {
-            const response = await api.get('/users/me/');
-            setUser(response.data);
-            setEmpresa(response.data.company_name);
-        };
-        fetchUser();
-    }, []);
+  // Obtener empresa y colaboradores al cargar el componente
+  useEffect(() => {
+    const fetchUserAndColaboradores = async () => {
+      try {
+        const userResponse = await axios.get(`${baseURL}/users/me/`);
+        setEmpresa(userResponse.data.company_name);
 
-    // Obtener colaboradores una vez que la empresa esté disponible
-    useEffect(() => {
-        const fetchColaboradores = async () => {
-            if (empresa) {
-                const colaboradores = await getUsersByCompanyAndRole(empresa, 'COLABORADOR');
-                setColaboradores(colaboradores);
-            }
-        };
-        fetchColaboradores();
-    }, [empresa]);
-
-    // Obtener números de rendición cuando se seleccione un colaborador
-    // Obtener números de rendición cuando se seleccione un colaborador
-useEffect(() => {
-    const fetchNumerosRendicion = async () => {
-        if (filtros.colaborador) {
-            try {
-                const response = await getNumerosRendicion(filtros.colaborador);
-                console.log(response);  // para verificar la estructura de la respuesta
-                if (response.data) {
-                    setNumerosRendicion(response.data);  // Aquí tomamos la propiedad 'data' de la respuesta
-                }
-            } catch (error) {
-                console.error('Error al obtener números de rendición:', error);
-            }
-        } else {
-            setNumerosRendicion([]);
-        }
+        const colaboradoresResponse = await getUsersByCompanyAndRole(
+          userResponse.data.company_name,
+          "COLABORADOR"
+        );
+        setColaboradores(colaboradoresResponse);
+      } catch (error) {
+        console.error("Error al cargar empresa y colaboradores:", error);
+      }
     };
-    fetchNumerosRendicion();
-}, [filtros.colaborador]);
+    fetchUserAndColaboradores();
+  }, []);
 
+  const fetchRendiciones = async () => {
+    try {
+      const response = await axios.get(`${baseURL}/rendiciones/con-documentos/`, {
+        params: {
+          tipo: filtros.tipo_solicitud || undefined,
+          estado: filtros.estado || undefined,
+          colaborador: filtros.colaborador || undefined,
+          fecha_registro_from: filtros.fechaDesde || undefined,
+          fecha_registro_to: filtros.fechaHasta || undefined,
+        },
+      });
+      setRendiciones(response.data);
+      setOpenRendiciones({});
+    } catch (error) {
+      console.error("Error al obtener las rendiciones:", error);
+    }
+  };
 
-    // Función para buscar los documentos utilizando los filtros
-    const fetchDocumentos = async () => {
-        try {
-            if (empresa) {
-                const response = await api.get(`/documentos`, {
-                    params: {
-                        company_name: empresa,
-                        estado: filtros.estado,
-                        username: filtros.colaborador,
-                        tipo_solicitud: filtros.tipo_solicitud,
-                        numero_rendicion: filtros.numero_rendicion,
-                        fecha_solicitud_from: filtros.fechaDesde,
-                        fecha_solicitud_to: filtros.fechaHasta,
-                        fecha_rendicion_from: filtros.fechaEmisionDesde,
-                        fecha_rendicion_to: filtros.fechaEmisionHasta
-                    },
-                });
-                setDocumentos(response.data);
-            }
-        } catch (error) {
-            console.error('Error fetching documentos:', error);
-        }
-    };
+  const updateEstadoDocumento = async (documentoId, nuevoEstado) => {
+    try {
+      await axios.put(`${baseURL}/documentos/${documentoId}`, { estado: nuevoEstado });
+      setRendiciones((prevRendiciones) =>
+        prevRendiciones.map((rendicion) => ({
+          ...rendicion,
+          documentos: rendicion.documentos.map((doc) =>
+            doc.id === documentoId ? { ...doc, estado: nuevoEstado } : doc
+          ),
+        }))
+      );
+    } catch (error) {
+      console.error("Error al actualizar el estado:", error);
+    }
+  };
 
-    // Actualizar los filtros sin desencadenar la búsqueda
-    const handleFiltroChange = (e) => {
-        const { name, value } = e.target;
-        setFiltros({
-            ...filtros,
-            [name]: value,
-        });
+  useEffect(() => {
+    fetchRendiciones();
+  }, []);
 
-        if (name === 'colaborador' && value) {
-            const colaborador = colaboradores.find(col => col.email === value);
-            setSelectedColaborador(colaborador);
-        } else if (name === 'colaborador' && !value) {
-            setSelectedColaborador(null);
-        }
-    };
+  const handleFiltroChange = (e) => {
+    const { name, value } = e.target;
+    setFiltros((prevFiltros) => ({ ...prevFiltros, [name]: value }));
+  };
 
-    // Ejecutar la búsqueda de documentos solo cuando se haga clic en "Filtrar"
-    const handleFiltrarClick = () => {
-        fetchDocumentos();
-    };
+  const handleFiltrarClick = () => {
+    fetchRendiciones();
+  };
 
-    const handleEstadoChange = async (documentoId, nuevoEstado) => {
-        if (!documentoId) {
-            console.error('documentoId is undefined');
-            return;
-        }
+  const toggleRendicion = (id) => {
+    setOpenRendiciones((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
 
-        // Función para obtener la fecha actual
-        const getCurrentDate = () => {
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = (`0${today.getMonth() + 1}`).slice(-2); // Asegura dos dígitos
-            const day = (`0${today.getDate()}`).slice(-2); // Asegura dos dígitos
-            return `${year}-${month}-${day}`;
-        };
+  const headerStyle = {
+    backgroundColor: "#2E3192",
+    color: "white",
+    fontWeight: "bold",
+  };
 
-        const fechaRendicion = getCurrentDate();  // Obtener la fecha actual
+  const rowStyle = {
+    backgroundColor: "#f3f3f3",
+  };
 
-        try {
-            await api.put(`/documentos/${documentoId}`, { 
-                estado: nuevoEstado, 
-                fecha_rendicion: fechaRendicion  // Enviar también la fecha de rendición
-            });
-            setDocumentos(prevDocumentos =>
-                prevDocumentos.map(doc =>
-                    doc.id === documentoId ? { ...doc, estado: nuevoEstado, fecha_rendicion: fechaRendicion } : doc
-                )
-            );
-        } catch (error) {
-            console.error('Error updating estado:', error);
-        }
-    };
+  return (
+    <Container maxWidth="lg" sx={{ mt: 4 }}>
+      <Typography
+        variant="h4"
+        align="center"
+        gutterBottom
+        sx={{ color: "#F15A29", fontWeight: "bold", fontSize: "1.5rem" }}
+      >
+        Módulo de Contador - Rendiciones
+      </Typography>
 
-    const handleViewFile = (documento) => {
-        setSelectedDocumento(documento);
-        setShowModal(true);
-    };
+      {/* Filtros */}
+      <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={4}>
+            <FormControl fullWidth>
+              <Select
+                name="colaborador"
+                value={filtros.colaborador || ""}
+                onChange={handleFiltroChange}
+                displayEmpty
+              >
+                <MenuItem value="">
+                  <em>Todos los Colaboradores</em>
+                </MenuItem>
+                {colaboradores.map((colaborador) => (
+                  <MenuItem key={colaborador.id} value={colaborador.email}>
+                    {colaborador.full_name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <FormControl fullWidth>
+              <Select
+                name="estado"
+                value={filtros.estado || ""}
+                onChange={handleFiltroChange}
+                displayEmpty
+              >
+                <MenuItem value="">
+                  <em>Todos los Estados</em>
+                </MenuItem>
+                <MenuItem value="POR APROBAR">POR APROBAR</MenuItem>
+                <MenuItem value="APROBADO">APROBADO</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <FormControl fullWidth>
+              <Select
+                name="tipo_solicitud"
+                value={filtros.tipo_solicitud || ""}
+                onChange={handleFiltroChange}
+                displayEmpty
+              >
+                <MenuItem value="RENDICION">RENDICIÓN</MenuItem>
+                <MenuItem value="ANTICIPO">ANTICIPO</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              label="Fecha Desde"
+              type="date"
+              name="fechaDesde"
+              value={filtros.fechaDesde || ""}
+              onChange={handleFiltroChange}
+              InputLabelProps={{ shrink: true }}
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              label="Fecha Hasta"
+              type="date"
+              name="fechaHasta"
+              value={filtros.fechaHasta || ""}
+              onChange={handleFiltroChange}
+              InputLabelProps={{ shrink: true }}
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Button
+              variant="contained"
+              onClick={handleFiltrarClick}
+              sx={{
+                backgroundColor: "#2E3192",
+                "&:hover": { backgroundColor: "#1F237A" },
+                color: "white",
+              }}
+              fullWidth
+            >
+              Filtrar
+            </Button>
+          </Grid>
+        </Grid>
+      </Paper>
 
-    const handleCloseModal = () => {
-        setShowModal(false);
-        setSelectedDocumento(null);
-    };
-
-    const handleDownloadFile = (fileLocation) => {
-        const link = document.createElement('a');
-        link.href = fileLocation; // Usa directamente la URL de Google Cloud Storage
-        link.setAttribute('download', fileLocation.split('/').pop()); // Extraer el nombre del archivo para la descarga
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
-    
-    const handleExportExcel = async () => {
-        const params = {
-            company_name: empresa,
-            estado: filtros.estado,
-            username: filtros.colaborador,
-        };
-        const response = await api.get('/documentos/export/excel', { params, responseType: 'blob' });
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', 'documentos.xlsx');
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
-
-    const handleExportPDF = async () => {
-        const params = {
-            company_name: empresa,
-            estado: filtros.estado,
-            username: filtros.colaborador,
-            numero_rendicion: filtros.numero_rendicion
-        };
-        try {
-            const response = await api.get('/documentos/export/pdf', { params, responseType: 'blob' });
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', `documentos_${filtros.numero_rendicion}.pdf`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        } catch (error) {
-            console.error("Error exporting PDF:", error);
-        }
-    };
-
-    return (
-        <Box sx={{ mt: 8, p: 2, bgcolor: 'white' }}>  {/* Ajuste de margen superior */}
-            <Container maxWidth="lg">
-                {selectedColaborador && (
-                    <Box mb={4} p={2} sx={{ border: '1px solid #ccc', borderRadius: 2 }}>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12} sm={4}>
-                                <Typography variant="body1"><strong>Nombre:</strong> {selectedColaborador.full_name}</Typography>
-                            </Grid>
-                            <Grid item xs={12} sm={4}>
-                                <Typography variant="body1"><strong>Email:</strong> {selectedColaborador.email}</Typography>
-                            </Grid>
-                            <Grid item xs={12} sm={4}>
-                                <Typography variant="body1"><strong>Compañía:</strong> {selectedColaborador.company_name}</Typography>
-                            </Grid>
-                            <Grid item xs={12} sm={12} sx={{ textAlign: 'right' }}>
-                                <Button variant="contained" color="error" sx={{ mr: 2 }} onClick={handleExportPDF}>
-                                    Exportar PDF
-                                </Button>
-                                <Button variant="contained" color="success" onClick={handleExportExcel}>
-                                    Exportar Excel
-                                </Button>
-                            </Grid>
-                        </Grid>
-                    </Box>
-                )}
-                <FormControl fullWidth sx={{ mb: 4 }}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} sm={3}>
-                        <Select
-                                labelId="colaborador-label"
-                                name="colaborador"
-                                value={filtros.colaborador || ''}
-                                onChange={handleFiltroChange}
-                                fullWidth
-                                displayEmpty
-                                renderValue={(selected) => {
-                                    if (selected === '') {
-                                        return <em>Todos los Colaboradores</em>;
-                                    }
-                                    return colaboradores.find(colaborador => colaborador.email === selected)?.full_name || '';
-                                }}
-                            >
-                                <MenuItem value="">
-                                    <em>Todos los Colaboradores</em> {/* Nueva opción para seleccionar todos */}
-                                </MenuItem>
-                                {colaboradores.map(colaborador => (
-                                    <MenuItem key={colaborador.id} value={colaborador.email}>
-                                        {colaborador.full_name}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </Grid>
-                        <Grid item xs={12} sm={3}>
-                        <Select
-                                labelId="estado-label"
-                                name="estado"
-                                value={filtros.estado || ''}
-                                onChange={handleFiltroChange}
-                                fullWidth
-                                displayEmpty
-                                renderValue={(selected) => {
-                                    if (selected === '') {
-                                        return <em>Todos los Estados</em>;
-                                    }
-                                    return selected;
-                                }}
-                            >
-                                <MenuItem value="">
-                                    <em>Todos los Estados</em>
-                                </MenuItem>
-                                <MenuItem value="POR APROBAR">POR APROBAR</MenuItem>
-                                <MenuItem value="POR ABONAR">APROBADO</MenuItem>
-    
-                            </Select>
-                        </Grid>
-                        <Grid item xs={12} sm={3}>
-                        <Select
-                                labelId="tipo_solicitud-label"
-                                name="tipo_solicitud"
-                                value={filtros.tipo_solicitud || ''}
-                                onChange={handleFiltroChange}
-                                fullWidth
-                                displayEmpty
-                                renderValue={(selected) => {
-                                    if (selected === '') {
-                                        return <em>Todos los Tipos de Solicitud</em>;
-                                    }
-                                    return selected;
-                                }}
-                            >
-                                <MenuItem value="">
-                                    <em>Todos los Tipos de Solicitud</em>
-                                </MenuItem>
-                                <MenuItem value="ANTICIPO">ANTICIPO</MenuItem>
-                                <MenuItem value="RENDICION">RENDICION</MenuItem>
-                            </Select>
-                        </Grid>
-                        <Grid item xs={12} sm={3}>
-                            <TextField
-                                label="Fecha Desde"
-                                type="date"
-                                name="fechaDesde"
-                                value={filtros.fechaDesde || ''}
-                                onChange={handleFiltroChange}
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                                fullWidth
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={3}>
-                            <TextField
-                                label="Fecha Hasta"
-                                type="date"
-                                name="fechaHasta"
-                                value={filtros.fechaHasta || ''}
-                                onChange={handleFiltroChange}
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                                fullWidth
-                            />
-                        </Grid>
-
-                        {/* Mostrar el combo de numero_rendicion solo si hay un colaborador seleccionado */}
-                        {filtros.colaborador && (
-                            <Grid item xs={12} sm={3}>
-                                <Select
-                                    labelId="numero_rendicion-label"
-                                    name="numero_rendicion"
-                                    value={filtros.numero_rendicion || ''}
-                                    onChange={handleFiltroChange}
-                                    fullWidth
-                                    displayEmpty
-                                    renderValue={(selected) => {
-                                        if (selected === '') {
-                                            return <em>Seleccionar Número de Rendición</em>;
-                                        }
-                                        return selected;
-                                    }}
-                                >
-                                    <MenuItem value="" disabled>
-                                        <em>Seleccionar Número de Rendición</em>
-                                    </MenuItem>
-                                    {numerosRendicion.length > 0 && numerosRendicion.map((numero, index) => (
-                                        <MenuItem key={index} value={numero}>
-                                            {numero}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </Grid>
+      {/* Tabla de Rendiciones */}
+      <Paper elevation={3} sx={{ p: 3 }}>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell style={headerStyle}>Nombre</TableCell>
+                <TableCell style={headerStyle}>Tipo</TableCell>
+                <TableCell style={headerStyle}>Estado</TableCell>
+                <TableCell style={headerStyle}>Fecha Registro</TableCell>
+                <TableCell style={headerStyle}>Fecha Actualización</TableCell>
+                <TableCell style={headerStyle}>Acciones</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rendiciones.map((rendicion) => (
+                <React.Fragment key={rendicion.rendicion.id}>
+                  <TableRow>
+                    <TableCell>{rendicion.rendicion.nombre}</TableCell>
+                    <TableCell>{rendicion.rendicion.tipo}</TableCell>
+                    <TableCell>{rendicion.rendicion.estado}</TableCell>
+                    <TableCell>{rendicion.rendicion.fecha_registro}</TableCell>
+                    <TableCell>
+                      {rendicion.rendicion.fecha_actualizacion || "N/A"}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        onClick={() => toggleRendicion(rendicion.rendicion.id)}
+                        size="small"
+                        sx={{
+                          backgroundColor: "#F15A29",
+                          color: "white",
+                          "&:hover": { backgroundColor: "#D14A23" },
+                        }}
+                      >
+                        {openRendiciones[rendicion.rendicion.id] ? (
+                          <>
+                            Cerrar
+                            <ExpandLess />
+                          </>
+                        ) : (
+                          <>
+                            Abrir
+                            <ExpandMore />
+                          </>
                         )}
-                    </Grid>
-                </FormControl>
-
-                <Button 
-                    variant="contained" 
-                    onClick={handleFiltrarClick} 
-                    sx={{ 
-                        mb: 4, 
-                        backgroundColor: '#2E3192',  // Color de fondo principal
-                        '&:hover': { 
-                            backgroundColor: '#1F237A',  // Color de fondo en hover
-                        },
-                        color: 'white',  // Color del texto
-                    }}
-                >
-                    Filtrar
-                </Button>
-
-                <TableContainer>
-                    <Table>
-                        <TableHead sx={{ backgroundColor: '#2E3192' }}> {/* Fondo de la cabecera en azul oscuro */}
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell colSpan={6} style={{ padding: 0, border: "none" }}>
+                      <Collapse
+                        in={openRendiciones[rendicion.rendicion.id]}
+                        timeout="auto"
+                        unmountOnExit
+                      >
+                        <Table size="small">
+                          <TableHead>
                             <TableRow>
-                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Item</TableCell>
-                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Fecha</TableCell>
-                                {/* <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>RUC</TableCell> */}
-                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Tipo Doc</TableCell>
-                                {/* <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Cuenta Contable</TableCell>
-                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Serie</TableCell> */}
-                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Correlativo</TableCell>
-                                {/* <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rubro</TableCell> */}
-                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Moneda</TableCell>
-                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Tipo de Cambio</TableCell>
-                                {/* <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Afecto</TableCell>
-                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>IGV</TableCell>
-                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Inafecto</TableCell> */}
-                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Total</TableCell>
-                                {/* <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Archivo</TableCell> */}
-                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Actualizar Estado</TableCell>
+                              <TableCell style={headerStyle}>RUC</TableCell>
+                              <TableCell style={headerStyle}>Proveedor</TableCell>
+                              <TableCell style={headerStyle}>
+                                Fecha Emisión
+                              </TableCell>
+                              <TableCell style={headerStyle}>Moneda</TableCell>
+                              <TableCell style={headerStyle}>
+                                Tipo Documento
+                              </TableCell>
+                              <TableCell style={headerStyle}>Total</TableCell>
+                              <TableCell style={headerStyle}>Estado</TableCell>
+                              <TableCell style={headerStyle}>Empresa</TableCell>
+                              <TableCell style={headerStyle}>Archivo</TableCell>
                             </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {documentos.filter(doc =>
-                                (!filtros.colaborador || (doc.usuario && doc.usuario.includes(filtros.colaborador))) &&
-                                (!filtros.estado || (doc.estado && doc.estado.includes(filtros.estado)))
-                            ).map((documento, index) => (
-                                <TableRow key={documento.id}>
-                                    <TableCell>{index + 1}</TableCell>
-                                    <TableCell>{documento.fecha_emision}</TableCell>
-                                    {/* <TableCell>{documento.ruc}</TableCell> */}
-                                    <TableCell>{documento.tipo_documento}</TableCell>
-                                    {/* <TableCell>{documento.cuenta_contable}</TableCell>
-                                    <TableCell>{documento.serie}</TableCell> */}
-                                    <TableCell>{documento.correlativo}</TableCell>
-                                    {/* <TableCell>{documento.rubro}</TableCell> */}
-                                    <TableCell>{documento.moneda}</TableCell>
-                                    <TableCell>{documento.tipo_cambio}</TableCell>
-                                    {/* <TableCell>{documento.afecto}</TableCell>
-                                    <TableCell>{documento.igv}</TableCell>
-                                    <TableCell>{documento.inafecto}</TableCell> */}
-                                    <TableCell>{documento.total}</TableCell>
-                                    <TableCell>
-                                        {documento.archivo && (
-                                            <Button variant="text" onClick={() => handleViewFile(documento)}>
-                                                <img src={lupaIcon} alt="Ver Archivo" style={{ width: 24 }} />
-                                            </Button>
-                                        )}
-                                    </TableCell>
-                                    <TableCell>
-                                        <FormControl fullWidth>
-                                            <Select
-                                                value={documento.estado || ""}
-                                                onChange={(e) => handleEstadoChange(documento.id, e.target.value)}
-                                                displayEmpty
-                                            >
-                                                <MenuItem value="" disabled>
-                                                    <em>Selecciona un Estado</em>
-                                                </MenuItem>
-                                                <MenuItem value="POR ABONAR">APROBADO</MenuItem>
-                                                <MenuItem value="RECHAZADO">RECHAZADO</MenuItem>
-                                                <MenuItem value="POR APROBAR">POR APROBAR</MenuItem> {/* Agregar todas las opciones posibles */}
-                                            </Select>
-                                        </FormControl>
-                                    </TableCell>
-                                </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {rendicion.documentos.map((doc) => (
+                              <TableRow key={doc.id} style={rowStyle}>
+                                <TableCell>{doc.ruc}</TableCell>
+                                <TableCell>{doc.proveedor}</TableCell>
+                                <TableCell>{doc.fecha_emision}</TableCell>
+                                <TableCell>{doc.moneda}</TableCell>
+                                <TableCell>{doc.tipo_documento}</TableCell>
+                                <TableCell>{doc.total}</TableCell>
+                                <TableCell>
+                                  <FormControl fullWidth>
+                                    <Select
+                                      value={doc.estado}
+                                      onChange={(e) =>
+                                        updateEstadoDocumento(doc.id, e.target.value)
+                                      }
+                                      displayEmpty
+                                    >
+                                      <MenuItem value="POR APROBAR">POR APROBAR</MenuItem>
+                                      <MenuItem value="APROBADO">APROBADO</MenuItem>
+                                      <MenuItem value="RECHAZADO">RECHAZADO</MenuItem>
+                                    </Select>
+                                  </FormControl>
+                                </TableCell>
+                                <TableCell>{doc.empresa}</TableCell>
+                                <TableCell>
+                                  <Button
+                                    component="a"
+                                    href={doc.archivo}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    Ver Archivo
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
                             ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-
-
-                <Modal open={showModal} onClose={handleCloseModal}>
-                    <Box sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: '80%',
-                        bgcolor: 'background.paper',
-                        boxShadow: 24,
-                        p: 4
-                    }}>
-                        <Typography variant="h6" component="h2">
-                            Archivo del Documento
-                        </Typography>
-                        {selectedDocumento && selectedDocumento.archivo && (
-                            <iframe
-                             //    src={`http://localhost:8000/documentos/view/?file_location=${encodeURIComponent(selectedDocumento.archivo)}`}
-                                src={`${baseURL}/documentos/view/?file_location=${encodeURIComponent(selectedDocumento.archivo)}`}
-                                width="100%"
-                                height="600px"
-                                title="Archivo del Documento"
-                                frameBorder="0"
-                            />
-                        )}
-                        <Box sx={{ mt: 2, textAlign: 'right' }}>
-                            <Button variant="contained" color="primary" onClick={() => handleDownloadFile(selectedDocumento.archivo)}>
-                                Descargar Archivo
-                            </Button>
-                        </Box>
-                    </Box>
-                </Modal>
-            </Container>
-        </Box>
-    );
+                          </TableBody>
+                        </Table>
+                      </Collapse>
+                    </TableCell>
+                  </TableRow>
+                </React.Fragment>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
+    </Container>
+  );
 };
 
 export default ContadorModule;
