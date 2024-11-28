@@ -1,3 +1,65 @@
+/* Barra superior azul */
+/* Barra superior */
+
+@font-face {
+    font-family: 'MyriadPro';
+    src: url('../assets/fonts/MyriadPro-Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: 'Ubuntu';
+    src: url('../assets/fonts/Ubuntu-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: 'Ubuntu';
+    src: url('../assets/fonts/Ubuntu-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+  }
+  
+
+
+.top-bar {
+    font-family: 'UbuntuLight';
+    background-color: #FF6E40; /* Fondo naranja */
+    color: white; /* Texto blanco */
+    text-align: center; /* Centra el texto */
+    padding: 10px 0; /* Espaciado interno */
+    font-size: 20px; /* Tamaño de fuente */
+    font-weight: 500; /* Peso de fuente medio */
+}
+
+.top-bar strong {
+    font-weight: bold;
+}
+
+/* Enlace con degradado */
+.top-bar a {
+    display: inline-block;
+    background: linear-gradient(90deg, #FF6E40, #FF007B); /* Degradado de colores */
+    color: white; /* Texto blanco */
+    padding: 5px 15px; /* Tamaño interno del botón */
+    border-radius: 20px; /* Bordes redondeados */
+    text-decoration: none; /* Sin subrayado */
+    font-weight: bold; /* Negrita */
+    margin-left: 5px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Animación suave */
+}
+
+/* Efecto hover para el enlace */
+.top-bar a:hover {
+    transform: scale(1.1); /* Agranda ligeramente el botón */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Sombra al pasar el cursor */
+    text-decoration: none; /* Asegura que no haya subrayado */
+}
+
+
+
 /* Global Styles */
 * {
     margin: 0;
@@ -24,7 +86,7 @@ body {
 }
 
 .header img {
-    height: 60px;
+    height: 80px;
 }
 
 .nav-links {
@@ -35,8 +97,10 @@ body {
 }
 
 .nav-links a {
+    font-family: 'UbuntuBold', sans-serif;
+    font-weight: bold;
     text-decoration: none;
-    font-weight: 500;
+    /* font-weight: 500; */
     color: #aaa;
     font-size: 18px;
 }
@@ -51,14 +115,14 @@ body {
     gap: 15px;
 }
 
-.social-icons a {
+.social-iconss a {
     color: #1F3A93;
     font-size: 20px;
     text-decoration: none;
     transition: color 0.3s;
 }
 
-.social-icons a:hover {
+.social-iconss a:hover {
     color: #FF6E40;
 }
 
@@ -72,7 +136,7 @@ body {
     text-decoration: none;
     padding: 10px 20px;
     border-radius: 20px;
-    font-weight: 500;
+    font-weight: 600;
     font-size: 16px;
     transition: background-color 0.3s ease;
 }
@@ -199,53 +263,23 @@ body {
 
 
 /* Formulario de login */
-.login-form {
+.text-form {
     position: absolute;
     top: 50%;
     left: 10%;
     transform: translateY(-50%);
-    background-color: #FF6E40;
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    width: 300px;
-    color: #fff;
-}
-
-.login-form h3 {
-    margin-bottom: 15px;
-    font-size: 22px;
-    color: #fff;
-    text-align: center;
-}
-
-.login-form input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: none;
-    border-radius: 5px;
-    font-size: 14px;
-}
-
-.login-form .btn-submit {
-    background-color: #32469B;
-    color: white;
-    padding: 10px;
-    width: 100%;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    margin-bottom: 10px;
-}
-
-.login-form a {
-    color: #fff;
-    font-size: 14px;
-    text-decoration: underline;
-    display: block;
-    text-align: center;
-    margin-bottom: 10px;
+    background-color: transparent; /* Sin fondo */
+    padding: 0; /* Sin espaciado interno */
+    border-radius: 0; /* Sin bordes redondeados */
+    box-shadow: none; /* Sin sombra */
+    color: #fff; /* Color del texto */
+    font-family: 'UbuntuBold', sans-serif;
+    font-size: 60px; /* Tamaño del texto */
+    line-height: 1; /* Reduce la separación entre líneas */
+    width: 50%; /* Ajusta el ancho a la mitad de la pantalla */
+    text-align: left; /* Alinea el texto a la izquierda */
+    word-wrap: break-word; /* Permite que el texto se ajuste automáticamente a nuevas líneas */
+    font-weight: bold; /* Texto en negrita */
 }
 
 /* Info Section */
@@ -265,9 +299,6 @@ body {
     overflow: hidden;
 }
 
-
-
-
 .info-background {
     display: flex;
     justify-content: space-between;
@@ -282,8 +313,8 @@ body {
 .info-content2 {
     flex: 1;
     color: #fff;
-    font-size: 28px;
-    font-weight: bold;
+    font-size: 20px;
+    font-family: 'UbuntuBold', sans-serif;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
     text-align: left;
     padding: 20px;
@@ -295,11 +326,21 @@ body {
     width: 350px;
     height: auto;
     margin-left: 700px;
-    margin-top:-200px;
+    margin-top:-350px;
     padding: 1px;
 }
 
 .logo-container {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    opacity: 0;
+    animation: fadeIn 2s ease-in forwards;
+}
+
+.logo-container2 {
     position: absolute;
     bottom: 10px;
     left: 50%;
@@ -323,38 +364,23 @@ body {
     height: auto;
 }
 
-/* Feature Section */
-/* .feature-section {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 50px;
-    background-color: white;
-    color: #333;
-    height: auto;
-}
-
-.feature-image {
-    max-width: 30%;
-    height: auto;
-}
-
-
-
-
-.right-content h2 {
-    font-size: 28px;
-    font-weight: bold;
-    line-height: 1.5;
-}
-
-.right-content p {
-    font-size: 16px;
-    line-height: 1.5;
-    margin-top: 20px;
+/* .info-logo2 {
+  width: 150px;
+  height: auto;
+  text-align: center;
 } */
 
-/* Feature Section */
+.container_logo2 {
+  display: flex;
+  justify-content: center; /* Centra horizontalmente */
+  align-items: center; /* Opcional: centra también verticalmente */
+}
+
+.info-logo2 {
+  width: 150px; /* Ajusta el ancho al tamaño deseado */
+  height: auto; /* Mantén la proporción del logo */
+}
+
 .feature-section {
     background-color: #fff;
     padding: 50px 0;
@@ -374,8 +400,18 @@ body {
 }
 
 .feature-image {
-    max-width: 50%;
+    max-width: 100%;
     height: auto;
+}
+
+.right-title {
+    font-size: 28px;
+    font-weight: bold;
+    line-height: 1.5;
+    margin-bottom: 20px;
+    color: #F15A29; /* Color naranja */
+    font-family: 'UbuntuBold', sans-serif;
+    text-align: right;
 }
 
 .right-content {
@@ -389,66 +425,212 @@ body {
     line-height: 1.5;
     margin-bottom: 20px;
     color: #F15A29; /* Color naranja */
+    font-family: 'UbuntuBold', sans-serif;
 }
 
 .right-content p {
     font-size: 16px;
     line-height: 1.5;
+    font-family: 'UbuntuBold', sans-serif;
 }
 
-/* Footer */
-.footer {
-    background-color: #1F3A93;
-    color: #fff;
+/* Planes Section */
+.plans-section {
+  background: linear-gradient(90deg, #ff8c00, #ff007b); /* Fondo degradado */
+  color: white;
+  padding: 60px 20px;
+}
+
+.plans-container {
+  display: grid;
+  grid-template-columns: 1fr 3fr; /* Dos columnas: 1 para el título y 3 para las tarjetas */
+  gap: 20px; /* Espaciado entre las columnas */
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.plans-title {
+  text-align: center;
+}
+
+.plans-title h2 {
+  font-size: 48px;
+  font-weight: bold;
+}
+
+.plans-grid {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px; /* Espaciado entre las tarjetas */
+}
+
+.plan {
+  background: white;
+  color: #333;
+  border-radius: 15px;
+  padding: 30px 20px;
+  width: 100%;
+  max-width: 300px; /* Asegura un tamaño máximo */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.plan h3 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ff007b;
+  margin-bottom: 15px;
+}
+
+.plan p {
+  font-size: 16px;
+  margin: 10px 0;
+}
+
+.plan-button {
+  background-color: #ff007b;
+  color: white;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 20px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.plan-button:hover {
+  background-color: #e6006f;
+}
+
+.plan-price {
+  font-size: 22px;
+  font-weight: bold;
+  margin-top: 20px;
+  color: #ff007b;
+}
+
+
+.discount-badge {
+  background: #ffd700;
+  color: #333;
+  padding: 10px 25px;
+  border-radius: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 40px;
+  display: inline-block;
+}
+
+  
+
+/* Socios estratégicos Section */
+.partners-section {
+    background-color: #ffffff;
+    color: #ff6e40;
+    padding: 50px 20px;
+    text-align: center;
+  }
+  
+  .partners-header h2 {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .partners-logos {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .partner-logo {
+    width: 150px;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .partner-logo:hover {
+    transform: scale(1.1);
+  }
+  
+  /* Nuevo Footer */
+  .new-footer {
+    background-color: #1f3a93;
+    color: white;
     padding: 40px 20px;
+  }
+  
+  .footer-container {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-}
-
-.footer .logo img {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .footer-logo img {
     width: 150px;
-}
-
-.footer .section {
+    margin-bottom: 20px;
+  }
+  
+  .footer-section {
     flex: 1;
-    margin: 20px;
-}
-
-.footer .section h4 {
+    margin: 10px;
+  }
+  
+  .footer-section h4 {
     font-size: 18px;
     margin-bottom: 10px;
-}
-
-.footer .section ul {
+  }
+  
+  .footer-section ul {
     list-style: none;
-}
-
-.footer .section ul li a {
-    color: #fff;
+  }
+  
+  .footer-section ul li {
+    margin-bottom: 5px;
+  }
+  
+  .footer-section ul li a {
+    color: white;
     text-decoration: none;
     transition: color 0.3s;
-}
-
-.footer .section ul li a:hover {
-    color: #FF6E40;
-}
-
-.footer .social-icons {
+  }
+  
+  .footer-section ul li a:hover {
+    color: #ff6e40;
+  }
+  
+  .social-icons {
     display: flex;
     gap: 15px;
-}
-
-.footer .social-icons a {
-    color: #fff;
+  }
+  
+  .social-icons a {
+    color: white;
     font-size: 20px;
-    text-decoration: none;
     transition: color 0.3s;
-}
-
-.footer .social-icons a:hover {
-    color: #FF6E40;
-}
+  }
+  
+  .social-icons a:hover {
+    color: #ff6e40;
+  }
+  
+  .whatsapp-link {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .whatsapp-link i {
+    margin-right: 5px;
+  }
+  
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
