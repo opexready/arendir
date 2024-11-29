@@ -69,7 +69,7 @@ const ColaboradorModule = () => {
         {
             label: 'Anticipo',
             iconUrl: 'https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/icono6.png?alt=media&token=d7be0aa0-a6a7-4d74-8d81-a8d7aed9b0aa',
-            link: '/anticipos-viajes',
+            link: '/anticipo-table',
         },
         {
             label: 'Historial',

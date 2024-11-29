@@ -28,8 +28,8 @@ const ContadorModule = () => {
   const [empresa, setEmpresa] = useState("");
   const [filtros, setFiltros] = useState({
     colaborador: "",
-    estado: "POR APROBAR",
-    tipo_solicitud: "RENDICION",
+    estado: "",
+    tipo_solicitud: "",
     fechaDesde: "",
     fechaHasta: "",
   });
@@ -38,24 +38,49 @@ const ContadorModule = () => {
   useEffect(() => {
     const fetchUserAndColaboradores = async () => {
       try {
-        const userResponse = await axios.get(`${baseURL}/users/me/`);
+        // Obtener el token desde localStorage o donde esté almacenado
+        const token = localStorage.getItem("token"); // Cambiar si usas sessionStorage u otra opción
+        console.log(token);
+        if (!token) {
+          console.error("Token no encontrado.");
+          return;
+        }
+  
+        // Configurar encabezados para enviar el token
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+        console.log(headers);
+        // Solicitud para obtener datos del usuario actual
+        const userResponse = await axios.get("/users/me/", { headers });
+        console.log("Usuario actual:", userResponse.data);
         setEmpresa(userResponse.data.company_name);
-
-        const colaboradoresResponse = await getUsersByCompanyAndRole(
-          userResponse.data.company_name,
-          "COLABORADOR"
+  
+        // Solicitud para obtener los colaboradores
+        const colaboradoresResponse = await axios.get(
+          `/users/by-company-and-role/`,
+          {
+            params: {
+              company_name: userResponse.data.company_name,
+              role: "COLABORADOR",
+            },
+            headers, // Encabezados también se incluyen aquí
+          }
         );
-        setColaboradores(colaboradoresResponse);
+        console.log("Colaboradores:", colaboradoresResponse.data);
+        setColaboradores(colaboradoresResponse.data);
       } catch (error) {
         console.error("Error al cargar empresa y colaboradores:", error);
       }
     };
+  
     fetchUserAndColaboradores();
   }, []);
+  
 
   const fetchRendiciones = async () => {
     try {
-      const response = await axios.get(`${baseURL}/rendiciones/con-documentos/`, {
+      const response = await axios.get(`${baseURL}/rendiciones-solicitudes/con-documentos/`, {
         params: {
           tipo: filtros.tipo_solicitud || undefined,
           estado: filtros.estado || undefined,
@@ -161,7 +186,7 @@ const ContadorModule = () => {
                 <MenuItem value="">
                   <em>Todos los Estados</em>
                 </MenuItem>
-                <MenuItem value="POR APROBAR">POR APROBAR</MenuItem>
+                <MenuItem value="PENDIENTE">POR APROBAR</MenuItem>
                 <MenuItem value="APROBADO">APROBADO</MenuItem>
               </Select>
             </FormControl>
