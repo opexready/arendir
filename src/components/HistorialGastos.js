@@ -102,7 +102,7 @@ const HistorialGastos = () => {
                 <MenuItem value="">Todos</MenuItem>
                 <MenuItem value="CREADO">CREADO</MenuItem>
                 <MenuItem value="PREPARADO">PREPARADO</MenuItem>
-                <MenuItem value="PENDIENTE">PENDIENTE</MenuItem>
+                <MenuItem value="POR APROBAR">POR APROBAR</MenuItem>
                 <MenuItem value="APROBADO">APROBADO</MenuItem>
               </Select>
             </FormControl>

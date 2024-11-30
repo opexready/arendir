@@ -245,30 +245,6 @@ const DatosReciboTable = () => {
     }
   };
 
-  // const handleFinalizarRendicion = async () => {
-  //   try {
-  //     const userString = localStorage.getItem("user");
-  //     const user = userString ? JSON.parse(userString) : null;
-  //     const userId = user ? user.id : null;
-
-  //     if (!userId) {
-  //       alert("Error: Usuario no autenticado");
-  //       return;
-  //     }
-
-  //     const response = await axios.post(`${baseURL}/rendicion/`, {
-  //       user_id: userId,
-  //     });
-
-  //     alert(`Rendición creada con el nombre: ${response.data.nombre}`);
-  //   } catch (error) {
-  //     console.error("Error al finalizar la rendición:", error);
-  //     setError(
-  //       "Error al finalizar la rendición. Por favor, intente nuevamente."
-  //     );
-  //   }
-  // };
-
   const handleFinalizarRendicion = async () => {
     try {
       const userString = localStorage.getItem("user");
@@ -280,7 +256,6 @@ const DatosReciboTable = () => {
         return;
       }
 
-      // Paso 1: Obtener la última rendición
       const lastRendicionResponse = await axios.get(
         `${baseURL}/rendicion/last`,
         {
@@ -294,19 +269,16 @@ const DatosReciboTable = () => {
       if (lastRendicionResponse.data && lastRendicionResponse.data.id) {
         const rendicionId = lastRendicionResponse.data.id;
 
-        // Paso 2: Actualizar la rendición obtenida a estado "ACTIVO"
         await axios.put(`${baseURL}/rendicion/${rendicionId}`, {
-          estado: "PENDIENTE",
+          estado: "POR APROBAR",
         });
 
-        // Paso 3: Crear una nueva rendición
         const newRendicionResponse = await axios.post(`${baseURL}/rendicion/`, {
           user_id: userId,
         });
 
-        // alert(`Nueva rendición creada con el nombre: ${newRendicionResponse.data.nombre}`);
       } else {
-        // alert("No se encontró la última rendición para este usuario.");
+
       }
     } catch (error) {
       console.error("Error al finalizar la rendición:", error);
@@ -326,7 +298,7 @@ const DatosReciboTable = () => {
           const response = await api.get(`/rendicion/last`, {
             params: {
               user_id: userId,
-              tipo: "RENDICION", // Puedes reemplazarlo con el valor que necesites
+              tipo: "RENDICION", 
             },
           });
           setNombreRendicion(response.data.nombre);
@@ -1254,20 +1226,10 @@ const DatosReciboTable = () => {
     >
       Cancelar
     </Button>
-    {/* <Button
-      onClick={async () => {
-        console.log("Seleccionadas:", checkedOpciones);
-        setConfirmFinalizarDialogOpen(false);
-        // Aquí puedes manejar las solicitudes seleccionadas
-      }}
-      color="secondary"
-    >
-      Confirmar
-    </Button> */}
     <Button
+
   onClick={async () => {
     try {
-      // Paso 1: Obtener el ID de la última rendición
       const userString = localStorage.getItem("user");
       const user = userString ? JSON.parse(userString) : null;
       const userId = user ? user.id : null;
@@ -1287,29 +1249,28 @@ const DatosReciboTable = () => {
         alert("No se encontró una rendición activa");
         return;
       }
-
-      // Paso 2: Actualizar el estado de la rendición
       await axios.put(`${baseURL}/rendicion/${rendicionId}`, {
-        estado: "PENDIENTE2",
+        estado: "POR APROBAR",
       });
 
-      // Paso 3: Actualizar el estado de cada solicitud seleccionada
       for (const solicitudId of checkedOpciones) {
         await axios.put(`${baseURL}/solicitud/${solicitudId}`, {
-          estado: "PENDIENTE2",
+          estado: "POR APROBAR",
         });
 
-        // Paso 4: Crear el registro en rendicion_solicitud
         await axios.post(`${baseURL}/rendicion_solicitud`, {
           rendicion_id: rendicionId,
           solicitud_id: solicitudId,
-          estado: "Pendiente",
+          estado: "POR APROBAR",
+        });
+
+        const newRendicionResponse = await axios.post(`${baseURL}/rendicion/`, {
+          user_id: userId,
         });
       }
 
-      // Confirmación exitosa
       alert("Rendición finalizada y solicitudes asociadas correctamente.");
-      setCheckedOpciones([]); // Limpiar las opciones seleccionadas
+      setCheckedOpciones([]); 
       setConfirmFinalizarDialogOpen(false);
       navigate("/colaborador");
     } catch (error) {

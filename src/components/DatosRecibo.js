@@ -130,6 +130,7 @@ const DatosRecibo = () => {
   const [open, setOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [nombreRendicion, setNombreRendicion] = useState("");
+  const [idRendicion, setIdRendicion] = useState("");
   const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false);
   const [documentoIdToDelete, setDocumentoIdToDelete] = useState(null);
   const [formErrors, setFormErrors] = useState({});
@@ -231,7 +232,7 @@ const DatosRecibo = () => {
 
         // Paso 2: Actualizar la rendición obtenida a estado "ACTIVO"
         await axios.put(`${baseURL}/rendicion/${rendicionId}`, {
-          estado: "PENDIENTE",
+          estado: "POR APROBAR",
         });
 
         // Paso 3: Crear una nueva rendición
@@ -265,6 +266,7 @@ const DatosRecibo = () => {
             },
           });
           setNombreRendicion(response.data.nombre);
+          setIdRendicion(response.data.id);
         } else {
           alert("Error: Usuario no autenticado");
         }
@@ -325,7 +327,7 @@ const DatosRecibo = () => {
       if (userId && username) {
         const response = await api.get("/documentos/", {
           params: {
-            company_name: "innova",
+            company_name: user.company_name,
             estado: "POR APROBAR",
             username: username,
             tipo_solicitud: "",
@@ -353,6 +355,12 @@ const DatosRecibo = () => {
       fetchRecords();
     }
   }, [nombreRendicion]);
+
+  useEffect(() => {
+    if (idRendicion) {
+      fetchRecords();
+    }
+  }, [idRendicion]);
 
   useEffect(() => {
     if (formData.igv) {
@@ -570,13 +578,20 @@ const DatosRecibo = () => {
       console.error("Token not found in localStorage.");
     }
 
+    const userString = localStorage.getItem("user");
+    const user = userString ? JSON.parse(userString) : null;
+    const userId = user ? user.id : null;
+    const username = user ? user.email : null;
+    const company_name = user ? user.company_name : null;
+    const gerencia = user ? user.gerencia : null;
+
     const todayDate = new Date().toISOString().split("T")[0];
 
     const requestData = {
       fecha_solicitud: todayDate,
-      dni: formData.dni || "12345678",
+      dni: user.dni,
       usuario: loggedInUser,
-      gerencia: "Gerencia de Finanzas",
+      gerencia: gerencia,
       ruc: formData.ruc,
       proveedor: formData.proveedor || "Proveedor Desconocido",
       fecha_emision: formData.fecha,
@@ -596,7 +611,7 @@ const DatosRecibo = () => {
       detalle: "Pago por servicios de consultoría",
       estado: "POR APROBAR",
       tipo_solicitud: "RENDICION",
-      empresa: "innova",
+      empresa: user.company_name,
       archivo: formData.archivo,
       tipo_cambio: formData.moneda === "USD" ? tipoCambio : 1,
       afecto: parseFloat(formData.afecto) || 0.0,
@@ -604,6 +619,8 @@ const DatosRecibo = () => {
       rubro: formData.rubro,
       cuenta_contable: parseInt(formData.cuentaContable, 10),
       numero_rendicion: nombreRendicion,
+      id_user:userId,
+      id_numero_rendicion:idRendicion,
     };
 
     try {

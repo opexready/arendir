@@ -34,37 +34,49 @@ const ContadorModule = () => {
     fechaHasta: "",
   });
 
+  const updateEstadoRendicion = async (id, tipo, nuevoEstado) => {
+    try {
+      if (tipo === "RENDICION") {
+        await axios.put(`${baseURL}/rendicion/${id}`, { estado: nuevoEstado });
+      } else if (tipo === "ANTICIPO") {
+        await axios.put(`${baseURL}/solicitud/${id}`, { estado: nuevoEstado });
+      }
+      setRendiciones((prevRendiciones) =>
+        prevRendiciones.map((rendicion) =>
+          rendicion.rendicion.id === id
+            ? {
+                ...rendicion,
+                rendicion: { ...rendicion.rendicion, estado: nuevoEstado },
+              }
+            : rendicion
+        )
+      );
+    } catch (error) {
+      console.error("Error al actualizar el estado de la rendición:", error);
+    }
+  };
+
   // Obtener empresa y colaboradores al cargar el componente
   useEffect(() => {
     const fetchUserAndColaboradores = async () => {
       try {
         // Obtener el token desde localStorage o donde esté almacenado
-        const token = localStorage.getItem("token"); // Cambiar si usas sessionStorage u otra opción
-        console.log(token);
-        if (!token) {
-          console.error("Token no encontrado.");
-          return;
-        }
-  
-        // Configurar encabezados para enviar el token
-        const headers = {
-          Authorization: `Bearer ${token}`,
-        };
-        console.log(headers);
-        // Solicitud para obtener datos del usuario actual
-        const userResponse = await axios.get("/users/me/", { headers });
-        console.log("Usuario actual:", userResponse.data);
-        setEmpresa(userResponse.data.company_name);
-  
-        // Solicitud para obtener los colaboradores
+
+        const userString = localStorage.getItem("user");
+        const user = userString ? JSON.parse(userString) : null;
+        const userId = user ? user.id : null;
+        const username = user ? user.email : null;
+        const userCompany = user ? user.company_name : null;
+        console.log("user", user);
+
         const colaboradoresResponse = await axios.get(
-          `/users/by-company-and-role/`,
+          `${baseURL}/users/by-company-and-role/`,
           {
             params: {
-              company_name: userResponse.data.company_name,
+              company_name: userCompany,
               role: "COLABORADOR",
             },
-            headers, // Encabezados también se incluyen aquí
+            // headers,
           }
         );
         console.log("Colaboradores:", colaboradoresResponse.data);
@@ -73,22 +85,24 @@ const ContadorModule = () => {
         console.error("Error al cargar empresa y colaboradores:", error);
       }
     };
-  
+
     fetchUserAndColaboradores();
   }, []);
-  
 
   const fetchRendiciones = async () => {
     try {
-      const response = await axios.get(`${baseURL}/rendiciones-solicitudes/con-documentos/`, {
-        params: {
-          tipo: filtros.tipo_solicitud || undefined,
-          estado: filtros.estado || undefined,
-          colaborador: filtros.colaborador || undefined,
-          fecha_registro_from: filtros.fechaDesde || undefined,
-          fecha_registro_to: filtros.fechaHasta || undefined,
-        },
-      });
+      const response = await axios.get(
+        `${baseURL}/rendiciones-solicitudes/con-documentos/`,
+        {
+          params: {
+            tipo: filtros.tipo_solicitud || undefined,
+            estado: filtros.estado || undefined,
+            colaborador: filtros.colaborador || undefined,
+            fecha_registro_from: filtros.fechaDesde || undefined,
+            fecha_registro_to: filtros.fechaHasta || undefined,
+          },
+        }
+      );
       setRendiciones(response.data);
       setOpenRendiciones({});
     } catch (error) {
@@ -98,7 +112,9 @@ const ContadorModule = () => {
 
   const updateEstadoDocumento = async (documentoId, nuevoEstado) => {
     try {
-      await axios.put(`${baseURL}/documentos/${documentoId}`, { estado: nuevoEstado });
+      await axios.put(`${baseURL}/documentos/${documentoId}`, {
+        estado: nuevoEstado,
+      });
       setRendiciones((prevRendiciones) =>
         prevRendiciones.map((rendicion) => ({
           ...rendicion,
@@ -150,7 +166,7 @@ const ContadorModule = () => {
         gutterBottom
         sx={{ color: "#F15A29", fontWeight: "bold", fontSize: "1.5rem" }}
       >
-        Módulo de Contador - Rendiciones
+        Módulo de Aprobador - Rendiciones y Anticipos
       </Typography>
 
       {/* Filtros */}
@@ -186,7 +202,7 @@ const ContadorModule = () => {
                 <MenuItem value="">
                   <em>Todos los Estados</em>
                 </MenuItem>
-                <MenuItem value="PENDIENTE">POR APROBAR</MenuItem>
+                <MenuItem value="POR APROBAR">POR APROBAR</MenuItem>
                 <MenuItem value="APROBADO">APROBADO</MenuItem>
               </Select>
             </FormControl>
@@ -199,6 +215,9 @@ const ContadorModule = () => {
                 onChange={handleFiltroChange}
                 displayEmpty
               >
+                <MenuItem value="">
+                  <em>Tipos los tipos</em>
+                </MenuItem>
                 <MenuItem value="RENDICION">RENDICIÓN</MenuItem>
                 <MenuItem value="ANTICIPO">ANTICIPO</MenuItem>
               </Select>
@@ -249,7 +268,8 @@ const ContadorModule = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell style={headerStyle}>Nombre</TableCell>
+                <TableCell style={headerStyle}>Código</TableCell>
+                <TableCell style={headerStyle}>Colaborador</TableCell>
                 <TableCell style={headerStyle}>Tipo</TableCell>
                 <TableCell style={headerStyle}>Estado</TableCell>
                 <TableCell style={headerStyle}>Fecha Registro</TableCell>
@@ -262,8 +282,28 @@ const ContadorModule = () => {
                 <React.Fragment key={rendicion.rendicion.id}>
                   <TableRow>
                     <TableCell>{rendicion.rendicion.nombre}</TableCell>
+                    <TableCell>{rendicion.rendicion.nombre_usuario}</TableCell>
                     <TableCell>{rendicion.rendicion.tipo}</TableCell>
-                    <TableCell>{rendicion.rendicion.estado}</TableCell>
+                    {/* <TableCell>{rendicion.rendicion.estado}</TableCell> */}
+                    <TableCell>
+                      <FormControl fullWidth>
+                        <Select
+                          value={rendicion.rendicion.estado}
+                          onChange={(e) =>
+                            updateEstadoRendicion(
+                              rendicion.rendicion.id,
+                              rendicion.rendicion.tipo,
+                              e.target.value
+                            )
+                          }
+                        >
+                          <MenuItem value="POR APROBAR">POR APROBAR</MenuItem>
+                          <MenuItem value="APROBADO">APROBADO</MenuItem>
+                          <MenuItem value="RECHAZADO">RECHAZADO</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </TableCell>
+
                     <TableCell>{rendicion.rendicion.fecha_registro}</TableCell>
                     <TableCell>
                       {rendicion.rendicion.fecha_actualizacion || "N/A"}
@@ -293,7 +333,10 @@ const ContadorModule = () => {
                     </TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell colSpan={6} style={{ padding: 0, border: "none" }}>
+                    <TableCell
+                      colSpan={6}
+                      style={{ padding: 0, border: "none" }}
+                    >
                       <Collapse
                         in={openRendiciones[rendicion.rendicion.id]}
                         timeout="auto"
@@ -303,7 +346,9 @@ const ContadorModule = () => {
                           <TableHead>
                             <TableRow>
                               <TableCell style={headerStyle}>RUC</TableCell>
-                              <TableCell style={headerStyle}>Proveedor</TableCell>
+                              <TableCell style={headerStyle}>
+                                Proveedor
+                              </TableCell>
                               <TableCell style={headerStyle}>
                                 Fecha Emisión
                               </TableCell>
@@ -331,13 +376,22 @@ const ContadorModule = () => {
                                     <Select
                                       value={doc.estado}
                                       onChange={(e) =>
-                                        updateEstadoDocumento(doc.id, e.target.value)
+                                        updateEstadoDocumento(
+                                          doc.id,
+                                          e.target.value
+                                        )
                                       }
                                       displayEmpty
                                     >
-                                      <MenuItem value="POR APROBAR">POR APROBAR</MenuItem>
-                                      <MenuItem value="APROBADO">APROBADO</MenuItem>
-                                      <MenuItem value="RECHAZADO">RECHAZADO</MenuItem>
+                                      <MenuItem value="POR APROBAR">
+                                        POR APROBAR
+                                      </MenuItem>
+                                      <MenuItem value="APROBADO">
+                                        APROBADO
+                                      </MenuItem>
+                                      <MenuItem value="RECHAZADO">
+                                        RECHAZADO
+                                      </MenuItem>
                                     </Select>
                                   </FormControl>
                                 </TableCell>

@@ -362,7 +362,7 @@ const AnticipoTable = () => {
 
         // Paso 2: Actualizar la rendición obtenida a estado "PENDIENTE"
         await axios.put(`${baseURL}/solicitud/${rendicionId}`, {
-          estado: "PENDIENTE",
+          estado: "POR APROBAR",
         });
 
         // Paso 3: Crear una nueva rendición

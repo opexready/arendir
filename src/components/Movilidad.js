@@ -20,7 +20,7 @@ const Movilidad = () => {
         tipo_gasto: 'LOCAL',
         gastoDeducible: '',
         gastoNoDeducible: '',
-        empresa: 'innova',
+        empresa: '',
         moneda: 'PEN',
         total: '',
         cuenta_contable: 63112,
@@ -116,6 +116,7 @@ const Movilidad = () => {
 
         // Obtener el numero_rendicion desde el endpoint
         let numeroRendicion = "|";
+        let idRendicion;
         try {
             const userString = localStorage.getItem('user');
             const user = userString ? JSON.parse(userString) : null;
@@ -129,6 +130,7 @@ const Movilidad = () => {
                     }, });
                 if (response?.data?.nombre) {
                     numeroRendicion = response.data.nombre;
+                    idRendicion = response.data.id;
                 } else {
                     console.error('No se pudo obtener el valor de nombre de la última rendición.');
                     alert('No se pudo obtener el valor de la última rendición. Continuando con un valor predeterminado.');
@@ -145,6 +147,9 @@ const Movilidad = () => {
         }
 
         const today = new Date().toISOString().split('T')[0]; 
+        const userString = localStorage.getItem("user");
+        const user = userString ? JSON.parse(userString) : null;
+   
         const dataToSend = { 
             ...formData, 
             fecha_solicitud: today,
@@ -152,14 +157,17 @@ const Movilidad = () => {
             usuario: loggedInUser,
             correlativo: "00000001",
             ruc: "00000000000",
-            dni: "524169325",
-            gerencia: "COMERCIAL",
+            dni: user.dni,
+            gerencia: user.gerencia,
             numero_rendicion: numeroRendicion,
             tipo_cambio: 1,
             afecto: 0,
             inafecto: 0,
             igv: 0,
-            serie: "----"
+            serie: "----",
+            id_user:user.id,
+            id_numero_rendicion:idRendicion,
+            empresa: user.company_name,
         };
 
         try {

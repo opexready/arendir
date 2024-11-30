@@ -19,7 +19,7 @@ const AnticiposGastosLocales = () => {
         gerencia: '',
         tipo_anticipo: 'GASTOS LOCALES',
         tipo_solicitud: 'ANTICIPO',
-        empresa: 'innova',
+        empresa: '',
         estado: 'POR APROBAR',
         area: '',
         ceco: '',
@@ -29,7 +29,9 @@ const AnticiposGastosLocales = () => {
         numero_cuenta: '',
         fecha_solicitud: getCurrentDate(),
         fecha_emision: getCurrentDate(),
-        numero_rendicion: '' // Añadimos el campo numero_rendicion
+        numero_rendicion: '',
+        id_user:'',
+        id_numero_rendicion:'',
     });
 
     const [responseMessage, setResponseMessage] = useState('');
@@ -46,13 +48,15 @@ const AnticiposGastosLocales = () => {
                 });
 
                 const userData = userResponse.data;
-
+                console.log("userData", userData);
                 let numeroRendicion = "";
+                let idRendicion = 0;
                 try {
-                  const rendicionResponse = await axios.get(`${baseURL}/rendicion/last`, {
+                  const rendicionResponse = await axios.get(`${baseURL}/solicitud/last`, {
                     params: { user_id: userData.id, tipo: "ANTICIPO" }, // Ajusta el parámetro `tipo` según sea necesario
                   });
                   numeroRendicion = rendicionResponse.data.nombre;
+                  idRendicion = rendicionResponse.data.id;
                 } catch (error) {
                   console.error("Error al obtener el numero_rendicion:", error);
                 }
@@ -64,13 +68,16 @@ const AnticiposGastosLocales = () => {
                     responsable: userData.full_name,
                     gerencia: userData.gerencia,
                     area: userData.area,
+                    empresa: userData.company_name,
                     ceco: userData.ceco,
                     banco: userData.banco || '',
                     numero_cuenta: userData.cuenta_bancaria || '',
                     fecha_solicitud: getCurrentDate(),
                     fecha_emision: getCurrentDate(),
                     cuenta_contable: userData.cuenta_contable,
-                    numero_rendicion: numeroRendicion, // Asignar el nombre del rendición al campo
+                    numero_rendicion: numeroRendicion, 
+                    id_user: userData.id,
+                    id_numero_rendicion: idRendicion,
                 });
             } catch (error) {
                 console.error('Error al obtener los datos del usuario:', error);
