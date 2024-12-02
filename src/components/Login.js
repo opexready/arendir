@@ -25,7 +25,7 @@ const Login = () => {
             localStorage.setItem('user', JSON.stringify(user));
 
             if (user.role === 'ADMINISTRACION') {
-                navigate('/administracion');
+                navigate('/administracion2');
             } else if (user.role === 'APROBADOR') {
                 navigate('/contador');
             } else if (user.role === 'COLABORADOR') {

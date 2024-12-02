@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import Login from './components/Login';
 import ContadorModule from './components/ContadorModule';
 import AdministracionModule from './components/AdministracionModule';
+import AdministracionModule2 from './components/AdministracionModule2';
 import ColaboradorModule from './components/ColaboradorModule';
 import AdminDashboard from './components/AdminDashboard';
 import RendicionGastos from './components/RendicionGastos';
@@ -57,6 +58,7 @@ function App() {
                                 <Routes>
                                     <Route path="/contador" element={<ContadorModule user={user} />} />
                                     <Route path="/administracion" element={<AdministracionModule user={user} />} />
+                                    <Route path="/administracion2" element={<AdministracionModule2 user={user} />} />
                                     <Route path="/colaborador/*" element={<ColaboradorModule user={user} />} />
                                     <Route path="/movilidad" element={<Movilidad />} />
                                     <Route path="/anticipos-viajes" element={<AnticiposViajes />} />
