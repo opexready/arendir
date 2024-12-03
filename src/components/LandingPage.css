@@ -675,3 +675,113 @@ body {
         width: 120px;
     }
 }
+
+/* Ajustes para pantallas medianas (tablets y pequeñas laptops) */
+@media (max-width: 1024px) {
+  .header {
+      flex-direction: column;
+      text-align: center;
+  }
+
+  .nav-links {
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+  }
+
+  .slider {
+      height: 400px;
+  }
+
+  .text-form {
+      font-size: 40px;
+      width: 80%;
+      margin: 0 auto;
+  }
+
+  .info-content2, .compu-img {
+      flex-direction: column;
+      text-align: center;
+      width: 100%;
+  }
+
+  .info-logo {
+      width: 100px;
+  }
+
+  .plans-grid {
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+  }
+
+  .plan {
+      max-width: 90%;
+  }
+
+  .partners-logos {
+      flex-wrap: wrap;
+      gap: 10px;
+  }
+
+  .partner-logo {
+      width: 100px;
+  }
+
+  .footer-container {
+      flex-direction: column;
+      align-items: center;
+  }
+}
+
+/* Ajustes para pantallas pequeñas (móviles) */
+@media (max-width: 480px) {
+  .header img {
+      height: 60px;
+  }
+
+  .nav-links {
+      flex-direction: column;
+      gap: 5px;
+  }
+
+  .slider {
+      height: 250px;
+  }
+
+  .text-form {
+      font-size: 30px;
+      width: 90%;
+  }
+
+  .info-content2 {
+      font-size: 16px;
+      padding: 10px;
+  }
+
+  .compu-img {
+      display: none; /* Opcional: oculta la imagen en móviles */
+  }
+
+  .plans-grid {
+      flex-direction: column;
+      gap: 15px;
+  }
+
+  .plan {
+      width: 100%;
+  }
+
+  .footer-container {
+      text-align: center;
+  }
+
+  .social-icons {
+      justify-content: center;
+  }
+
+  .whatsapp-link {
+      font-size: 14px;
+  }
+}
+
