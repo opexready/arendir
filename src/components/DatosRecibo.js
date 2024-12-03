@@ -136,6 +136,17 @@ const DatosRecibo = () => {
   const [formErrors, setFormErrors] = useState({});
   const [documentDetail, setDocumentDetail] = useState(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+
+  // Agregar la función normalizeDate para convertir fechas de DD/MM/YYYY a YYYY-MM-DD.
+const normalizeDate = (dateString) => {
+  if (dateString.includes("/")) {
+      const [day, month, year] = dateString.split("/");
+      return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  }
+  return dateString; // Devuelve la fecha como está si ya tiene el formato correcto
+};
+
+
   const handleViewDetail = async (documentId) => {
     try {
       const response = await axios.get(`${baseURL}/documentos/${documentId}`);
@@ -483,7 +494,7 @@ const DatosRecibo = () => {
 
           setFormData((prevFormData) => ({
             ...prevFormData,
-            fecha: decodeResponse.data.fecha || "",
+            fecha: normalizeDate(decodeResponse.data.fecha || ""),
             ruc: decodeResponse.data.ruc || "",
             tipoDoc: decodeResponse.data.tipo || "",
             serie: decodeResponse.data.serie || "",
