@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import "./LandingPage.css"; // Asegúrate de tener el archivo CSS para los estilos
 import "@fortawesome/fontawesome-free/css/all.css"; // Estilos de Font Awesome
 
-
 const LandingPage = () => {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -25,14 +24,16 @@ const LandingPage = () => {
 
   return (
     <div>
-
       <header>
-        {/* Barra superior azul */}
         <div className="top-bar">
           <p>
+            <img
+              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pcblanco.png?alt=media&token=4b2317e9-b04b-4ff6-9ead-349fb037327f"
+              alt="icono"
+              className="top-bar-icon"
+            />
             ¿Qué esperas para probar Arendir? Tenemos <strong>7 días</strong>.
             <a href="#" className="top-bar-link">
-              {" "}
               prueba gratis.
             </a>
           </p>
@@ -47,7 +48,7 @@ const LandingPage = () => {
           <nav>
             <ul className="nav-links">
               <li>
-                <a href="#">Quienes somos</a>
+                <a href="#">Quiénes somos</a>
               </li>
               <li>
                 <a href="#">Servicios</a>
@@ -104,8 +105,8 @@ const LandingPage = () => {
           />
         </div>
         <div className="text-form">
-          Ofrecemos una solución de software integral para la gestión de
-          rendiciones de gastos
+          Ofrecemos una solución de software integral para la gestión de rendiciones de ga
+          <span className="highlight">stos</span>
         </div>
         <div className="dots">
           <span
@@ -128,7 +129,7 @@ const LandingPage = () => {
         <div className="info-background">
           <div className="info-content">
             <div className="info-content2">
-              <h2>¿Quienes somos?</h2>
+              <h2>¿Quienes som<span className="highlight">os?</span></h2>
               <p>
                 Nos especializamos en digitalizar y optimizar la gestión de
                 rendición de gastos empresariales, ofreciendo soluciones
@@ -158,7 +159,7 @@ const LandingPage = () => {
       {/* Feature Section */}
       <section className="feature-section">
         <div class="container right-title">
-        <h2>Servicios</h2>
+          <h2>Servicios</h2>
         </div>
         <div className="container feature-container">
           <div className="left-content">
@@ -169,7 +170,6 @@ const LandingPage = () => {
             />
           </div>
           <div className="right-content">
-            
             <p>
               El servicio principal es facilitar la gestión de rendición de
               gastos de empresas a través de una plataforma digital que agiliza
@@ -190,118 +190,111 @@ const LandingPage = () => {
         </div>
       </section>
 
-      
-
       <section className="plans-section">
-  <div className="plans-container">
-    <div className="plans-title">
-      <h2>Planes</h2>
-    </div>
-    <div className="plans-grid">
-      <div className="plan">
-        <h3>Personal</h3>
-        <p>Obtén el mejor precio para uso personal</p>
-        <button className="plan-button">Comprar</button>
-        <p className="plan-price">S/ 8 / Mensual</p>
-      </div>
-      <div className="plan">
-        <h3>Negocio</h3>
-        <p>Accede a las funciones principales al iniciar tu negocio</p>
-        <button className="plan-button">Comprar</button>
-        <p className="plan-price">S/ 15 / Mensual</p>
-      </div>
-      <div className="plan">
-        <h3>Corporativo</h3>
-        <p>Desbloquea todas las funciones, ideal para empresas</p>
-        <button className="plan-button">Comprar</button>
-        <p className="plan-price">S/ 25 / Mensual</p>
-      </div>
-    </div>
-  </div>
-</section>
+        <div className="plans-container">
+          <div className="plans-title">
+            <h2>Planes</h2>
+          </div>
+          <div className="plans-grid">
+            <div className="plan">
+              <h3>Personal</h3>
+              <p>Obtén el mejor precio para uso personal</p>
+              <button className="plan-button">Comprar</button>
+              <p className="plan-price">S/ 8 / Mensual</p>
+            </div>
+            <div className="plan">
+              <h3>Negocio</h3>
+              <p>Accede a las funciones principales al iniciar tu negocio</p>
+              <button className="plan-button">Comprar</button>
+              <p className="plan-price">S/ 15 / Mensual</p>
+            </div>
+            <div className="plan">
+              <h3>Corporativo</h3>
+              <p>Desbloquea todas las funciones, ideal para empresas</p>
+              <button className="plan-button">Comprar</button>
+              <p className="plan-price">S/ 25 / Mensual</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
+      {/* Socios estratégicos Section */}
+      <section className="partners-section">
+        <div className="partners-header">
+          <h2>Nuestros socios estratégicos</h2>
+        </div>
+        <div className="partners-logos">
+          <img
+            src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa1.png?alt=media&token=e1b80f2f-83fd-487f-94a3-b52b652e851b"
+            alt="Socio 1"
+            className="partner-logo"
+          />
+          <img
+            src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa3.png?alt=media&token=633634d0-09e8-42c4-8708-350b82fdd86c"
+            alt="Socio 2"
+            className="partner-logo"
+          />
+          <img
+            src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa4.png?alt=media&token=fc3b7769-9abc-4357-8361-16c27192e152"
+            alt="Socio 3"
+            className="partner-logo"
+          />
+          <img
+            src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa2.png?alt=media&token=aa29c4bf-f40c-42e5-8e99-f87d35a28e8a"
+            alt="Socio 4"
+            className="partner-logo"
+          />
+        </div>
+      </section>
 
-    
-{/* Socios estratégicos Section */}
-<section className="partners-section">
-  <div className="partners-header">
-    <h2>Nuestros socios estratégicos</h2>
-  </div>
-  <div className="partners-logos">
-    <img
-      src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa1.png?alt=media&token=e1b80f2f-83fd-487f-94a3-b52b652e851b"
-      alt="Socio 1"
-      className="partner-logo"
-    />
-    <img
-      src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa3.png?alt=media&token=633634d0-09e8-42c4-8708-350b82fdd86c"
-      alt="Socio 2"
-      className="partner-logo"
-    />
-    <img
-      src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa4.png?alt=media&token=fc3b7769-9abc-4357-8361-16c27192e152"
-      alt="Socio 3"
-      className="partner-logo"
-    />
-    <img
-      src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa2.png?alt=media&token=aa29c4bf-f40c-42e5-8e99-f87d35a28e8a"
-      alt="Socio 4"
-      className="partner-logo"
-    />
-  </div>
-</section>
-
-{/* Nuevo Footer */}
-<footer className="new-footer">
-  <div className="footer-container">
-    <div className="footer-logo">
-      <img
-        src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/logoblanco2.png?alt=media&token=94ceb944-93e9-4361-83d3-75017559ab67"
-        alt="Arendir Logo Blanco"
-      />
-    </div>
-    <div className="footer-section">
-      <h4>Sobre Arendir</h4>
-      <ul>
-        <li>
-          <a href="#">Quienes somos</a>
-        </li>
-        <li>
-          <a href="#">Servicios</a>
-        </li>
-        <li>
-          <a href="#">Tarifario</a>
-        </li>
-        <li>
-          <a href="#">Soporte</a>
-        </li>
-      </ul>
-    </div>
-    <div className="footer-section">
-      <h4>Síguenos</h4>
-      <div className="social-icons">
-        <a href="#">
-          <i className="fab fa-facebook-f"></i>
-        </a>
-        <a href="#">
-          <i className="fab fa-instagram"></i>
-        </a>
-        <a href="#">
-          <i className="fab fa-linkedin-in"></i>
-        </a>
-      </div>
-    </div>
-    <div className="footer-section">
-      <h4>Contáctanos</h4>
-      <a href="https://wa.me/1234567890" className="whatsapp-link">
-        <i className="fab fa-whatsapp"></i> Chatea por WhatsApp
-      </a>
-    </div>
-  </div>
-</footer>
-
-
-
+      {/* Nuevo Footer */}
+      <footer className="new-footer">
+        <div className="footer-container">
+          <div className="footer-logo">
+            <img
+              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/logoblanco2.png?alt=media&token=94ceb944-93e9-4361-83d3-75017559ab67"
+              alt="Arendir Logo Blanco"
+            />
+          </div>
+          <div className="footer-section">
+            <h4>Sobre Arendir</h4>
+            <ul>
+              <li>
+                <a href="#">Quienes somos</a>
+              </li>
+              <li>
+                <a href="#">Servicios</a>
+              </li>
+              <li>
+                <a href="#">Tarifario</a>
+              </li>
+              <li>
+                <a href="#">Soporte</a>
+              </li>
+            </ul>
+          </div>
+          <div className="footer-section">
+            <h4>Síguenos</h4>
+            <div className="social-icons">
+              <a href="#">
+                <i className="fab fa-facebook-f"></i>
+              </a>
+              <a href="#">
+                <i className="fab fa-instagram"></i>
+              </a>
+              <a href="#">
+                <i className="fab fa-linkedin-in"></i>
+              </a>
+            </div>
+          </div>
+          <div className="footer-section">
+            <h4>Contáctanos</h4>
+            <a href="https://wa.me/1234567890" className="whatsapp-link">
+              <i className="fab fa-whatsapp"></i> Chatea por WhatsApp
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

@@ -58,7 +58,12 @@
     text-decoration: none; /* Asegura que no haya subrayado */
 }
 
-
+.top-bar-icon {
+  height: 2em; /* Ajusta la altura al tamaño de la fuente */
+  width: auto; /* Mantén las proporciones originales */
+  margin-right: 0.5em; /* Espacio entre la imagen y el texto */
+  vertical-align: middle; /* Alinea la imagen con el texto */
+}
 
 /* Global Styles */
 * {
@@ -89,42 +94,58 @@ body {
     height: 80px;
 }
 
+/* texto del menu */
 .nav-links {
-    display: flex;
-    gap: 30px;
-    list-style: none;
-    margin-left: auto;
+  display: flex;
+  gap: 30px;
+  list-style: none;
+  margin-left: auto;
+  margin-top: 70px; /* Baja toda la lista */
 }
 
 .nav-links a {
-    font-family: 'UbuntuBold', sans-serif;
-    font-weight: bold;
-    text-decoration: none;
-    /* font-weight: 500; */
-    color: #aaa;
-    font-size: 18px;
+  font-family: 'UbuntuBold', sans-serif;
+  font-weight: bold;
+  text-decoration: none;
+  color: #aaa;
+  font-size: 25px;
+  padding-top: 5px; /* Baja individualmente los textos dentro de los enlaces */
 }
 
 .nav-links a:hover {
-    color: #FF6E40;
+  color: #FF6E40;
 }
 
-/* Redes sociales */
-.social-icons {
-    display: flex;
-    gap: 15px;
+
+/*Social icons*/
+.social-iconss {
+  display: flex;
+  gap: 20px; /* Espaciado entre los iconos */
+  justify-content: flex-end; /* Alinear los iconos a la derecha */
+  margin-bottom: 20px; /* Espaciado hacia los botones de abajo */
 }
 
 .social-iconss a {
-    color: #1F3A93;
-    font-size: 20px;
-    text-decoration: none;
-    transition: color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white; /* Iconos blancos */
+  background-color: #1F3A93; /* Fondo azul */
+  width: 40px; /* Tamaño del círculo */
+  height: 40px; /* Tamaño del círculo */
+  border-radius: 50%; /* Forma circular */
+  font-size: 20px; /* Tamaño del icono */
+  text-decoration: none; /* Sin subrayado */
+  transition: background-color 0.3s, transform 0.2s; /* Transiciones */
 }
 
 .social-iconss a:hover {
-    color: #FF6E40;
+  background-color: #FF6E40; /* Fondo cambia al pasar el cursor */
+  transform: scale(1.1); /* Efecto de agrandamiento */
 }
+
+
+
 
 /* Botones */
 .buttons {
@@ -282,6 +303,12 @@ body {
     font-weight: bold; /* Texto en negrita */
 }
 
+.text-form .highlight {
+  color: #fff; /* Color del texto resaltado */
+  border-bottom: 20px solid #2E3192; /* Línea azul */
+  padding-bottom: 2px; /* Espacio entre el texto y la línea */
+}
+
 /* Info Section */
 .info-section {
     position: relative;
@@ -291,6 +318,7 @@ body {
     background-position: top center; /* Centra la imagen horizontalmente y la coloca en la parte superior verticalmente */
     background-repeat: no-repeat; /* Evita que la imagen se repita */
     padding: 60px 0;
+    padding-bottom: 200px;
     height: auto;
     color: #333;
     display: flex;
@@ -321,6 +349,19 @@ body {
     max-width: 600px;
 }
 
+.info-content2 h2{
+  font-size: 60px;
+  font-weight: bold;
+  font-family: 'UbuntuBold', sans-serif;
+
+}
+
+.info-content2 .highlight {
+  color: #fff; /* Color del texto resaltado */
+  border-bottom: 20px solid #2E3192; /* Línea azul */
+  padding-bottom: 2px; /* Espacio entre el texto y la línea */
+}
+
 .compu-img {
     flex: 1;
     width: 350px;
@@ -331,13 +372,13 @@ body {
 }
 
 .logo-container {
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-    opacity: 0;
-    animation: fadeIn 2s ease-in forwards;
+  position: absolute;
+  bottom: -40%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  opacity: 0;
+  animation: fadeIn 2s ease-in forwards;
 }
 
 .logo-container2 {
