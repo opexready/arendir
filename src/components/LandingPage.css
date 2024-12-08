@@ -16,7 +16,7 @@
   }
   
   @font-face {
-    font-family: 'Ubuntu';
+    font-family: 'UbuntuLight';
     src: url('../assets/fonts/Ubuntu-Light.ttf') format('truetype');
     font-weight: 300;
     font-style: normal;
@@ -51,6 +51,18 @@
     transition: transform 0.3s ease, box-shadow 0.3s ease; /* Animación suave */
 }
 
+.subscripcion {
+  display: inline-block;
+  background: linear-gradient(90deg, #FF6E40, #FF007B); /* Degradado de colores */
+  color: white; /* Texto blanco */
+  padding: 5px 15px; /* Tamaño interno del botón */
+  border-radius: 20px; /* Bordes redondeados */
+  text-decoration: none; /* Sin subrayado */
+  font-weight: bold; /* Negrita */
+  margin-left: 5px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Animación suave */
+}
+
 /* Efecto hover para el enlace */
 .top-bar a:hover {
     transform: scale(1.1); /* Agranda ligeramente el botón */
@@ -73,7 +85,7 @@
 }
 
 body {
-    font-family: 'Roboto', sans-serif;
+    /* font-family: 'Roboto', sans-serif; */
     background-color: black;
     color: #333;
 }
@@ -108,7 +120,7 @@ body {
   font-weight: bold;
   text-decoration: none;
   color: #aaa;
-  font-size: 25px;
+  font-size: 20px;
   padding-top: 5px; /* Baja individualmente los textos dentro de los enlaces */
 }
 
@@ -307,25 +319,29 @@ body {
   color: #fff; /* Color del texto resaltado */
   border-bottom: 20px solid #2E3192; /* Línea azul */
   padding-bottom: 2px; /* Espacio entre el texto y la línea */
+  
 }
 
 /* Info Section */
 .info-section {
-    position: relative;
-    background-color: black;
-    background-image: url('https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/fondo3.png?alt=media&token=759a2bc7-9ff9-46e9-9b8c-35a10a2367ca');
-    background-size: 100% auto; /* El ancho ocupará el 100% y la altura se ajusta automáticamente */
-    background-position: top center; /* Centra la imagen horizontalmente y la coloca en la parte superior verticalmente */
-    background-repeat: no-repeat; /* Evita que la imagen se repita */
-    padding: 60px 0;
-    padding-bottom: 200px;
-    height: auto;
-    color: #333;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
+  position: relative;
+  background: linear-gradient(to bottom, black 50%, white 50%);
+  background-image: url('https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/fondo3.png?alt=media&token=759a2bc7-9ff9-46e9-9b8c-35a10a2367ca'), 
+                    linear-gradient(to bottom, black 50%, white 50%);
+  background-size: cover, 100% 100%; /* La imagen ocupa toda la sección */
+  background-position: center, 0 0; /* Centra la imagen y el gradiente */
+  background-repeat: no-repeat, no-repeat; /* Evita repeticiones */
+  padding: 60px 0;
+  padding-bottom: 200px;
+  height: auto;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
+
+
 
 .info-background {
     display: flex;
@@ -346,34 +362,58 @@ body {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
     text-align: left;
     padding: 20px;
+    padding-top: 50px;
     max-width: 600px;
 }
 
 .info-content2 h2{
   font-size: 60px;
+  padding-bottom:10%;
   font-weight: bold;
   font-family: 'UbuntuBold', sans-serif;
-
 }
 
 .info-content2 .highlight {
   color: #fff; /* Color del texto resaltado */
   border-bottom: 20px solid #2E3192; /* Línea azul */
   padding-bottom: 2px; /* Espacio entre el texto y la línea */
+  font-size: 60px;
+}
+
+.info-content2 p {
+  font-size: 25px;
+  color: #fff;
+  font-family: 'UbuntuLight';
+  text-align: justify;
+  margin-top: -50px;
+  
+}
+
+.info-logo2 {
+  width: 150px;
+  height: auto;
+  text-align: center;
 }
 
 .compu-img {
     flex: 1;
-    width: 350px;
+    width: 450px;
     height: auto;
     margin-left: 700px;
-    margin-top:-350px;
+    margin-top:-540px;
     padding: 1px;
 }
 
+.info-logo {
+  width: 150px; /* Ancho deseado */
+  height: auto; /* Mantiene la proporción de la imagen */
+  max-width: 100%; /* Evita que la imagen sea más grande que su contenedor */
+}
+
+
 .logo-container {
   position: absolute;
-  bottom: -40%;
+  bottom: -10%;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
@@ -445,19 +485,31 @@ body {
     height: auto;
 }
 
-.right-title {
-    font-size: 28px;
+.feature-section .right-title h2 {
+    font-size: 70px;
     font-weight: bold;
-    line-height: 1.5;
     margin-bottom: 20px;
-    color: #F15A29; /* Color naranja */
+    color: #F15A29; 
     font-family: 'UbuntuBold', sans-serif;
     text-align: right;
 }
 
+.right-title2 {
+  font-size: 50px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #F15A29; 
+  font-family: 'UbuntuBold', sans-serif;
+  text-align: center;
+}
+
+
 .right-content {
     flex: 1;
-    padding-left: 40px; /* Añadir espacio entre la imagen y el texto */
+    padding-left: 100px; /* Añadir espacio entre la imagen y el texto */
+    color: #aaa; 
+    font-family: 'UbuntuBold', sans-serif;
+    font-size: 30px;
 }
 
 .right-content h2 {
@@ -470,7 +522,7 @@ body {
 }
 
 .right-content p {
-    font-size: 16px;
+    font-size: 25px;
     line-height: 1.5;
     font-family: 'UbuntuBold', sans-serif;
 }
@@ -496,7 +548,7 @@ body {
 }
 
 .plans-title h2 {
-  font-size: 48px;
+  font-size: 78px;
   font-weight: bold;
 }
 
@@ -507,20 +559,20 @@ body {
 }
 
 .plan {
-  background: white;
-  color: #333;
+  /* background: rgb(10, 1, 1); */
+  color: #ffffff;
   border-radius: 15px;
   padding: 30px 20px;
   width: 100%;
   max-width: 300px; /* Asegura un tamaño máximo */
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 12px rgba(255, 255, 255, 0);
   text-align: center;
 }
 
 .plan h3 {
   font-size: 24px;
   font-weight: bold;
-  color: #ff007b;
+  color: #fff;
   margin-bottom: 15px;
 }
 
@@ -530,8 +582,8 @@ body {
 }
 
 .plan-button {
-  background-color: #ff007b;
-  color: white;
+  background-color: #fff;
+  color: rgb(52, 184, 218);
   padding: 12px 30px;
   border: none;
   border-radius: 20px;
@@ -548,7 +600,7 @@ body {
   font-size: 22px;
   font-weight: bold;
   margin-top: 20px;
-  color: #ff007b;
+  color: #fff;
 }
 
 
@@ -825,4 +877,90 @@ body {
       font-size: 14px;
   }
 }
+
+
+/* Sección Métodos de Pago */
+.payment-methods-section {
+  background-color: #f9f9f9; /* Fondo claro */
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.payment-methods-section .container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.right-title2 {
+  font-size: 48px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+  font-family: 'UbuntuBold', sans-serif;
+}
+
+.payment-description {
+  font-size: 20px;
+  color: #666;
+  margin-bottom: 40px;
+  font-family: 'UbuntuLight';
+}
+
+.payment-methods-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Diseño responsive */
+  gap: 30px;
+  justify-content: center;
+  align-items: center;
+}
+
+.payment-method {
+  background-color: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.payment-method:hover {
+  transform: scale(1.05); /* Agranda ligeramente al pasar el cursor */
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+.payment-method img {
+  width: 100px;
+  height: auto;
+  margin-bottom: 15px;
+}
+
+.payment-method p {
+  font-size: 18px;
+  color: #333;
+  margin: 10px 0;
+  font-family: 'UbuntuLight';
+}
+
+.payment-note {
+  margin-top: 40px;
+  font-size: 18px;
+  color: #666;
+  font-family: 'UbuntuLight';
+}
+
+/* Responsive ajustes */
+@media (max-width: 768px) {
+  .right-title2 {
+    font-size: 36px;
+  }
+
+  .payment-description {
+    font-size: 18px;
+  }
+
+  .payment-method img {
+    width: 80px;
+  }
+}
+
 

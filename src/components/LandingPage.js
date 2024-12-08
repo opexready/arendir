@@ -11,6 +11,16 @@ const LandingPage = () => {
     navigate("/login"); // Redirigir al login
   };
 
+  const methodsPageClick = () => {
+    navigate("/payment-methods"); // Redirigir al login
+  };
+
+  const scrollToSection = (sectionId) => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth" });
+    }
+  };
   const currentSlide = (index) => {
     setCurrentIndex(index);
   };
@@ -48,28 +58,48 @@ const LandingPage = () => {
           <nav>
             <ul className="nav-links">
               <li>
-                <a href="#">Quiénes somos</a>
+                <a onClick={() => scrollToSection("about")} href="#about">
+                  Quiénes somos
+                </a>
               </li>
               <li>
-                <a href="#">Servicios</a>
+                <a onClick={() => scrollToSection("services")} href="#services">
+                  Servicios
+                </a>
               </li>
               <li>
-                <a href="#">Tarifario</a>
+                <a onClick={() => scrollToSection("pricing")} href="#pricing">
+                  Tarifario
+                </a>
               </li>
               <li>
-                <a href="#">Soporte</a>
+                <a href="/payment-methods" className="subscripcion">
+                  Obtener Subscripción
+                </a>
               </li>
             </ul>
           </nav>
           <div className="right-section">
             <div className="social-iconss">
-              <a href="#">
+              <a
+                href="https://www.instagram.com/arendir_pe/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <i className="fab fa-facebook-f"></i>
               </a>
-              <a href="#">
+              <a
+                href="https://www.instagram.com/arendir_pe/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <i className="fab fa-instagram"></i>
               </a>
-              <a href="#">
+              <a
+                href="https://www.linkedin.com/company/105542709/admin/dashboard/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <i className="fab fa-linkedin-in"></i>
               </a>
             </div>
@@ -105,31 +135,34 @@ const LandingPage = () => {
           />
         </div>
         <div className="text-form">
-          Ofrecemos una solución de software integral para la gestión de rendiciones de ga
+          Ofrecemos una solución de software integral para la gestión de
+          rendiciones de ga
           <span className="highlight">stos</span>
         </div>
         <div className="dots">
           <span
             className={`dot ${currentIndex === 0 ? "active" : ""}`}
-            onClick={() => currentSlide(0)}
+            onClick={() => setCurrentIndex(0)}
           ></span>
           <span
             className={`dot ${currentIndex === 1 ? "active" : ""}`}
-            onClick={() => currentSlide(1)}
+            onClick={() => setCurrentIndex(1)}
           ></span>
           <span
             className={`dot ${currentIndex === 2 ? "active" : ""}`}
-            onClick={() => currentSlide(2)}
+            onClick={() => setCurrentIndex(2)}
           ></span>
         </div>
       </section>
 
       {/* Info Section */}
-      <section className="info-section">
+      <section id="about" className="info-section">
         <div className="info-background">
           <div className="info-content">
             <div className="info-content2">
-              <h2>¿Quienes som<span className="highlight">os?</span></h2>
+              <h2>
+                ¿Quiénes som<span className="highlight">os?</span>
+              </h2>
               <p>
                 Nos especializamos en digitalizar y optimizar la gestión de
                 rendición de gastos empresariales, ofreciendo soluciones
@@ -157,7 +190,7 @@ const LandingPage = () => {
       </section>
 
       {/* Feature Section */}
-      <section className="feature-section">
+      <section id="services" className="feature-section">
         <div class="container right-title">
           <h2>Servicios</h2>
         </div>
@@ -190,7 +223,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <section className="plans-section">
+      <section id="pricing" className="plans-section">
         <div className="plans-container">
           <div className="plans-title">
             <h2>Planes</h2>
