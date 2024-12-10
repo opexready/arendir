@@ -128,7 +128,8 @@ const PaymentMethodsPage = () => {
                 alt="BCP Logo"
               />
               <p>BCP</p>
-              <p>Número de Cuenta: 823848239849832409039249</p>
+              <p>Número de Cuenta BCP en soles es: 19191892571076</p>
+              <p>Número de Cuenta Interbancaria es: 00219119189257107658</p>
             </div>
 
             {/* Método Interbank */}
@@ -138,7 +139,8 @@ const PaymentMethodsPage = () => {
                 alt="Interbank Logo"
               />
               <p>Interbank</p>
-              <p>Número de Cuenta: 2343245465654654</p>
+              <p>Número de Cuenta Simple Soles en Interbank es: 8983325007330</p>
+              <p>Número de Cuenta Interbancario en Interbank es: 00389801332500733040</p>
             </div>
           </div>
 
