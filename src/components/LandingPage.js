@@ -73,9 +73,12 @@ const LandingPage = () => {
                 </a>
               </li>
               <li>
-                <a href="/payment-methods" className="subscripcion">
+                {/* <a href="/payment-methods" className="subscripcion">
                   Obtener Subscripción
-                </a>
+                </a> */}
+                  <button onClick={methodsPageClick} className="button btn-method">
+                  Obtener Subscripción
+              </button>
               </li>
             </ul>
           </nav>

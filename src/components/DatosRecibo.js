@@ -470,7 +470,7 @@ const normalizeDate = (dateString) => {
 
         if (decodeResponse.data.detail === "No QR code found in the image") {
           setError(
-            "No se encontró un código QR en la imagen. Por favor, intente con otra imagen."
+            "No se pudo leer el código QR. Esto puede deberse a: mala iluminación, reflejos, un código QR dañado o fuera de foco, o problemas de permisos para acceder a la cámara. Por favor, asegúrese de que el código QR esté claramente visible, en un lugar bien iluminado, y que su dispositivo tenga permisos para usar la cámara."
           );
         } else {
           const decodedRuc = decodeResponse.data.ruc;

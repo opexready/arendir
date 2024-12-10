@@ -30,6 +30,8 @@ const Login = () => {
                 navigate('/contador');
             } else if (user.role === 'COLABORADOR') {
                 navigate('/colaborador');
+            } else if (user.role === 'SOPORTE') {
+                navigate('/soportePanel');
             }
         } catch (error) {
             console.error('Login failed', error);

@@ -18,6 +18,7 @@ import AnticiposViajes from './components/AnticiposViajes';
 import AnticipoTable from './components/AnticipoTable';
 import AnticiposGastosLocales from './components/AnticiposGastosLocales';
 import Historial from './components/Historial'; 
+import SoportePanel from './components/SoportePanel'; 
 import HistorialGastos from './components/HistorialGastos';// Importa tu nueva clase
 import api from './api';
 
@@ -50,6 +51,7 @@ function App() {
                     <Route path="/" element={<LandingPage />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/payment-methods" element={<PaymentMethodsPage />} />
+                    <Route path="/soportePanel" element={<SoportePanel />} />
 
                     {/* Con Navbar */}
                     <Route
