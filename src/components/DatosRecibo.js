@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { QrReader } from "react-qr-reader";
+
 import {
   Container,
   Card,
@@ -137,15 +139,103 @@ const DatosRecibo = () => {
   const [documentDetail, setDocumentDetail] = useState(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
 
+  const [showQrReader, setShowQrReader] = useState(false); // Controla visibilidad del lector
+  const [qrResult, setQrResult] = useState(null); // Almacena resultado del QR
+  const [qrError, setQrError] = useState(null); // Almacena errores del lector
+  const [isScanning, setIsScanning] = useState(false); // Indica si está escaneando
+  const [availableCameras, setAvailableCameras] = useState([]); // Lista de cámaras
+  const [selectedCamera, setSelectedCamera] = useState(null);
+  const [cameraFacingMode, setCameraFacingMode] = useState("environment"); // Estado para alternar entre cámaras
+
+  useEffect(() => {
+    if (qrResult) {
+      handleProcessQrResult(); // Llama a la API con el resultado del QR
+    }
+  }, [qrResult]); //
+
+  const handleProcessQrResult = async () => {
+    try {
+      if (!qrResult) {
+        console.error("No se ha detectado un resultado del escaneo.");
+        return;
+      }
+
+      console.log("Llamando a la API con el resultado:", qrResult);
+
+      const response = await axios.post(`${baseURL}/api/process-qr/`, {
+        data: qrResult, // Enviar el resultado del escaneo
+      });
+
+      console.log("Respuesta del backend:", response.data);
+
+      const processedData = response.data;
+
+      // Usar los datos procesados para llenar el formulario
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        fecha: processedData.fecha || "",
+        ruc: processedData.ruc || "",
+        tipoDoc: processedData.tipo || "",
+        serie: processedData.serie || "",
+        numero: processedData.numero || "",
+        igv: processedData.igv || "",
+        total: processedData.total || "",
+      }));
+
+      setError("");
+    } catch (error) {
+      setError("Error al procesar el QR. Por favor, inténtalo nuevamente.");
+      console.error("Error al llamar a /api/process-qr/:", error);
+    }
+  };
+
+  const handleCameraSwitch = (mode) => {
+    setCameraFacingMode(mode);
+    setShowQrReader(false); // Ocultar y reiniciar el lector QR
+    setTimeout(() => setShowQrReader(true), 100); // Mostrar lector con la nueva cámara
+  };
+
+  useEffect(() => {
+    // Enumerar cámaras disponibles
+    navigator.mediaDevices
+      .enumerateDevices()
+      .then((devices) => {
+        const videoDevices = devices.filter(
+          (device) => device.kind === "videoinput"
+        );
+        setAvailableCameras(videoDevices);
+        if (videoDevices.length > 0) {
+          setSelectedCamera(videoDevices[0].deviceId); // Selecciona la primera cámara disponible
+        }
+      })
+      .catch((error) => {
+        console.error("Error al enumerar dispositivos:", error);
+        setQrError(
+          "No se pudieron enumerar las cámaras. Verifica los permisos."
+        );
+      });
+  }, []);
+
+  const handleStartScanning = () => {
+    setShowQrReader(true); // Mostrar el lector QR
+    setIsScanning(true); // Mostrar mensaje de "Escaneando"
+    setError(""); // Limpiar errores previos
+    setQrResult(null); // Limpiar resultado previo
+  };
+
+  const handleStopScanning = () => {
+    setShowQrReader(false); // Oculta el lector QR
+    setIsScanning(false); // Oculta el mensaje de escaneo
+  };
+
   // Agregar la función normalizeDate para convertir fechas de DD/MM/YYYY a YYYY-MM-DD.
-const normalizeDate = (dateString) => {
-  if (dateString.includes("/")) {
+  const normalizeDate = (dateString) => {
+    if (dateString.includes("/")) {
       const [day, month, year] = dateString.split("/");
       return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-  }
-  return dateString; // Devuelve la fecha como está si ya tiene el formato correcto
-};
-
+    }
+    return dateString; // Devuelve la fecha como está si ya tiene el formato correcto
+  };
 
   const handleViewDetail = async (documentId) => {
     try {
@@ -630,8 +720,8 @@ const normalizeDate = (dateString) => {
       rubro: formData.rubro,
       cuenta_contable: parseInt(formData.cuentaContable, 10),
       numero_rendicion: nombreRendicion,
-      id_user:userId,
-      id_numero_rendicion:idRendicion,
+      id_user: userId,
+      id_numero_rendicion: idRendicion,
     };
 
     try {
@@ -776,12 +866,149 @@ const normalizeDate = (dateString) => {
                   },
                 }}
               >
-                Escanear QR
+                Escanear imagen adjunta
                 <input type="file" hidden onChange={handleQrFileChange} />
               </Button>
             </div>
-          </div>
+            <div className="col-md-4">
+              <Button
+                variant="outlined"
+                fullWidth
+                sx={{
+                  marginTop: 2,
+                  borderColor: "#2E3192",
+                  color: "#2E3192",
+                  "&:hover": {
+                    backgroundColor: "#F15A29",
+                    borderColor: "#F15A29",
+                    color: "white",
+                  },
+                }}
+                onClick={() => {
+                  setShowQrReader(true); // Mostrar lector QR
+                  setIsScanning(true); // Mostrar mensaje de escaneando
+                  setError(""); // Limpiar errores previos
+                  setQrResult(null); // Limpiar resultado previo
+                }}
+              >
+                Escanear QR
+              </Button>
 
+              {/* Botones para cambiar de cámara */}
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: 2,
+                  marginTop: 2,
+                }}
+              >
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{
+                    backgroundColor: "#2E3192",
+                    "&:hover": { backgroundColor: "#1F237A" },
+                  }}
+                  onClick={() => {
+                    setCameraFacingMode("environment"); // Cambiar a cámara trasera
+                    setShowQrReader(false); // Reiniciar lector QR
+                    setTimeout(() => setShowQrReader(true), 100); // Mostrar nuevamente con nueva configuración
+                  }}
+                >
+                  Cámara Trasera
+                </Button>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  sx={{
+                    backgroundColor: "#F15A29",
+                    "&:hover": { backgroundColor: "#D44115" },
+                  }}
+                  onClick={() => {
+                    setCameraFacingMode("user"); // Cambiar a cámara frontal
+                    setShowQrReader(false); // Reiniciar lector QR
+                    setTimeout(() => setShowQrReader(true), 100); // Mostrar nuevamente con nueva configuración
+                  }}
+                >
+                  Cámara Frontal
+                </Button>
+              </Box>
+
+              {/* Mensaje de estado */}
+              {isScanning && (
+                <Typography
+                  variant="body1"
+                  color="primary"
+                  sx={{ marginTop: 2 }}
+                >
+                  Escaneando... Por favor, apunta al código QR.
+                </Typography>
+              )}
+
+              {/* Lector QR */}
+              {showQrReader && (
+                <Box sx={{ marginTop: 2, position: "relative" }}>
+                  <QrReader
+                    constraints={{
+                      facingMode: cameraFacingMode, // Alternar entre cámaras
+                      width: { ideal: 1920 }, // Resolución ideal
+                      height: { ideal: 1080 },
+                    }}
+                    scanDelay={500} // Escanea cada 500ms
+                    onResult={(result, error) => {
+                      if (result) {
+                        console.log("Resultado del QR:", result.text);
+                        setShowQrReader(false); // Oculta el lector QR
+                        setIsScanning(false); // Detén el mensaje de escaneo
+                        setError(""); // Limpia cualquier mensaje de error
+                        setQrResult(result.text); // Almacena el resultado
+                      }
+                      if (error && error.name !== "NotFoundError") {
+                        console.error("Error al leer el QR:", error);
+                        setError(
+                          "No se pudo leer el QR. Por favor, intenta nuevamente."
+                        );
+                      }
+                    }}
+                    style={{ width: "100%" }}
+                  />
+                  {/* Marco visual */}
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      width: "200px",
+                      height: "200px",
+                      border: "2px solid red",
+                      boxSizing: "border-box",
+                      borderRadius: "5px",
+                    }}
+                  ></div>
+                </Box>
+              )}
+
+              {/* Mostrar resultado del QR */}
+              {qrResult && (
+                <Typography
+                  variant="body1"
+                  color="success"
+                  sx={{ marginTop: 2 }}
+                >
+                  Resultado: {qrResult}
+                </Typography>
+              )}
+
+              {/* Mostrar error en caso de fallo */}
+              {error && (
+                <Typography variant="body1" color="error" sx={{ marginTop: 2 }}>
+                  {error}
+                </Typography>
+              )}
+            </div>
+          </div>
           {isLoading ? (
             <div
               style={{
@@ -952,7 +1179,7 @@ const normalizeDate = (dateString) => {
           </Button>
           <Button
             onClick={async () => {
-             // await handleFinalizarRendicion();
+              // await handleFinalizarRendicion();
               handleDialogClose(false);
             }}
             color="secondary"
