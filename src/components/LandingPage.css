@@ -841,6 +841,39 @@ body {
 
 /* Ajustes para pantallas pequeñas (móviles) */
 @media (max-width: 480px) {
+
+
+  .feature-container {
+    flex-direction: column; /* Cambiar a una columna */
+    align-items: center; /* Centrar contenido */
+    text-align: center; /* Centrar texto */
+  }
+
+  .left-content {
+    display: none; /* Ocultar la imagen */
+  }
+
+  .right-content {
+    text-align: justify; /* Justificar el texto */
+    padding: 20px; /* Añadir espaciado alrededor del texto */
+  }
+
+  right-title {
+    display: flex; /* Activa flexbox */
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center; /* Centra verticalmente */
+    text-align: center; /* Asegura que el texto esté centrado */
+    height: 100%; /* Asegúrate de que tenga suficiente espacio */
+    margin: 0 auto; /* Centra el contenedor dentro de su padre */
+  }
+  
+  .right-title h2 {
+    font-size: 48px; /* Ajusta el tamaño de fuente si es necesario */
+    font-weight: bold;
+    color: #ff6e40; /* Puedes cambiar el color si deseas */
+  }
+
+
   .header img {
       height: 60px;
   }
@@ -868,22 +901,48 @@ body {
       display: none; /* Opcional: oculta la imagen en móviles */
   }
 
-  .plans-grid {
+  /* .plans-grid {
       flex-direction: column;
       gap: 15px;
   }
 
   .plan {
       width: 100%;
+  } */
+
+  .plans-container {
+    grid-template-columns: 1fr; /* Una sola columna */
+    text-align: center; /* Centra el contenido */
+    gap: 20px; /* Espaciado entre el título y las tarjetas */
+  }
+
+  .plans-title {
+    margin-bottom: 20px; /* Espacio entre el título y las tarjetas */
+  }
+
+  .plans-grid {
+    display: flex;
+    flex-direction: column; /* Cambia a columna */
+    gap: 20px; /* Espaciado entre las tarjetas */
+    align-items: center; /* Centra las tarjetas */
+  }
+
+  .plan {
+    max-width: 90%; /* Asegura que las tarjetas ocupen casi todo el ancho */
   }
 
   .footer-container {
       text-align: center;
   }
 
-  .social-icons {
-      justify-content: center;
+
+  .social-iconss {
+        display: flex;
+        gap: 20px; /* Espaciado entre los iconos */
+        justify-content: flex-end; /* Alinear los iconos a la derecha */
+        margin-bottom: 20px; /* Espaciado hacia los botones de abajo */
   }
+
 
   .whatsapp-link {
       font-size: 14px;
