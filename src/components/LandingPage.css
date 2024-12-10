@@ -842,6 +842,35 @@ body {
 /* Ajustes para pantallas pequeñas (móviles) */
 @media (max-width: 480px) {
 
+  .header {
+    flex-direction: column; /* Cambia a disposición en columna */
+    align-items: center; /* Centra todos los elementos */
+    text-align: center; /* Centra el texto */
+  }
+
+  .header img {
+    margin-bottom: 10px;
+    height: 60px; /* Ajusta el tamaño del logo */
+  }
+
+  .nav-links {
+    transform: translateX(-20px); /* Ajusta la posición solo en móvil */
+  }
+
+  .right-section {
+    flex-direction: column; /* Cambia los botones y redes sociales a columna */
+    gap: 10px;
+    margin-top: 15px;
+  }
+
+  .social-iconss {
+    justify-content: center; /* Centra los iconos de redes sociales */
+  }
+
+  .buttons {
+    flex-direction: column; /* Cambia los botones a disposición vertical */
+    gap: 10px;
+  }
 
   .feature-container {
     flex-direction: column; /* Cambiar a una columna */
@@ -858,7 +887,7 @@ body {
     padding: 20px; /* Añadir espaciado alrededor del texto */
   }
 
-  right-title {
+  .right-title {
     display: flex; /* Activa flexbox */
     justify-content: center; /* Centra horizontalmente */
     align-items: center; /* Centra verticalmente */
@@ -873,15 +902,28 @@ body {
     color: #ff6e40; /* Puedes cambiar el color si deseas */
   }
 
-
-  .header img {
-      height: 60px;
+  .info-content2 .highlight {
+    border-bottom: 20px solid transparent;
+    font-size: 60px;
+   
   }
 
-  .nav-links {
-      flex-direction: column;
-      gap: 5px;
+  .info-content2 h2{
+    font-size: 60px;
+    padding-bottom:10%;
+    margin-bottom: 10%;
+    font-weight: bold;
+    font-family: 'UbuntuBold', sans-serif;
   }
+
+  .right-title2 {
+  font-size: 50px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #F15A29; 
+  font-family: 'UbuntuBold', sans-serif;
+  text-align: center;
+}
 
   .slider {
       height: 250px;
@@ -901,14 +943,7 @@ body {
       display: none; /* Opcional: oculta la imagen en móviles */
   }
 
-  /* .plans-grid {
-      flex-direction: column;
-      gap: 15px;
-  }
 
-  .plan {
-      width: 100%;
-  } */
 
   .plans-container {
     grid-template-columns: 1fr; /* Una sola columna */
@@ -922,6 +957,7 @@ body {
 
   .plans-grid {
     display: flex;
+    transform: translateX(-20px); /* Ajusta la posición solo en móvil */
     flex-direction: column; /* Cambia a columna */
     gap: 20px; /* Espaciado entre las tarjetas */
     align-items: center; /* Centra las tarjetas */
@@ -931,21 +967,42 @@ body {
     max-width: 90%; /* Asegura que las tarjetas ocupen casi todo el ancho */
   }
 
-  .footer-container {
-      text-align: center;
+  .new-footer .footer-container {
+    display: flex;
+    flex-direction: column; /* Cambiar a una sola columna */
+    align-items: center; /* Centrar horizontalmente */
+    text-align: center; /* Asegurar que el texto esté centrado */
+    gap: 20px; /* Espaciado entre las secciones */
   }
 
-
-  .social-iconss {
-        display: flex;
-        gap: 20px; /* Espaciado entre los iconos */
-        justify-content: flex-end; /* Alinear los iconos a la derecha */
-        margin-bottom: 20px; /* Espaciado hacia los botones de abajo */
+  .new-footer .footer-logo img {
+    margin-bottom: 20px;
+    margin-left: -60px; /* Espaciado entre el logo y las demás secciones */
   }
 
+  .new-footer .footer-section {
+    width: 100%; /* Asegurar que las secciones ocupen todo el ancho */
+  }
 
-  .whatsapp-link {
-      font-size: 14px;
+  .new-footer .footer-section h4 {
+    margin-bottom: 10px; /* Espaciado entre el título y el contenido */
+    transform: translateX(-20px); /* Ajusta la posición solo en móvil */
+  }
+  .footer-section ul {
+    margin-left: -60px; /* Mueve solo la lista */
+  }
+
+  .new-footer .footer-section a {
+    margin-bottom: 10px; /* Espaciado entre el título y el contenido */
+    transform: translateX(-20px); /* Ajusta la posición solo en móvil */
+  }
+
+  .new-footer .social-icons {
+    justify-content: center; /* Centrar los íconos sociales */
+  }
+
+  .new-footer .whatsapp-link {
+    justify-content: center; /* Centrar el enlace de WhatsApp */
   }
 }
 
