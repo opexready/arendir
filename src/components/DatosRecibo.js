@@ -21,7 +21,6 @@ import {
   TableContainer,
   Paper,
   Table,
-  TableHead,
   TableRow,
   TableCell,
   TableBody,
@@ -33,7 +32,6 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import "./DatosRecibo.css";
 import api, { baseURL } from "../api";
-import lupaIcon from "../assets/lupa-icon.png";
 
 const DatosRecibo = () => {
   const categoryOptions = [
@@ -104,7 +102,7 @@ const DatosRecibo = () => {
   const [confirmFinalizarDialogOpen, setConfirmFinalizarDialogOpen] =
     useState(false);
   const navigate = useNavigate();
-  const { selectedCuentaContable, selectedRubro, numeroRendicion } =
+  const { selectedCuentaContable, selectedRubro} =
     location.state || {};
   const [formData, setFormData] = useState({
     fecha: "",
@@ -138,7 +136,6 @@ const DatosRecibo = () => {
   const [formErrors, setFormErrors] = useState({});
   const [documentDetail, setDocumentDetail] = useState(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
-
   const [showQrReader, setShowQrReader] = useState(false); // Controla visibilidad del lector
   const [qrResult, setQrResult] = useState(null); // Almacena resultado del QR
   const [qrError, setQrError] = useState(null); // Almacena errores del lector
@@ -216,17 +213,17 @@ const DatosRecibo = () => {
       });
   }, []);
 
-  const handleStartScanning = () => {
-    setShowQrReader(true); // Mostrar el lector QR
-    setIsScanning(true); // Mostrar mensaje de "Escaneando"
-    setError(""); // Limpiar errores previos
-    setQrResult(null); // Limpiar resultado previo
-  };
+  // const handleStartScanning = () => {
+  //   setShowQrReader(true); // Mostrar el lector QR
+  //   setIsScanning(true); // Mostrar mensaje de "Escaneando"
+  //   setError(""); // Limpiar errores previos
+  //   setQrResult(null); // Limpiar resultado previo
+  // };
 
-  const handleStopScanning = () => {
-    setShowQrReader(false); // Oculta el lector QR
-    setIsScanning(false); // Oculta el mensaje de escaneo
-  };
+  // const handleStopScanning = () => {
+  //   setShowQrReader(false); // Oculta el lector QR
+  //   setIsScanning(false); // Oculta el mensaje de escaneo
+  // };
 
   // Agregar la función normalizeDate para convertir fechas de DD/MM/YYYY a YYYY-MM-DD.
   const normalizeDate = (dateString) => {
@@ -237,16 +234,16 @@ const DatosRecibo = () => {
     return dateString; // Devuelve la fecha como está si ya tiene el formato correcto
   };
 
-  const handleViewDetail = async (documentId) => {
-    try {
-      const response = await axios.get(`${baseURL}/documentos/${documentId}`);
-      setDocumentDetail(response.data);
-      setDetailDialogOpen(true);
-    } catch (error) {
-      console.error("Error al obtener los detalles del documento:", error);
-      setError("Error al obtener los detalles. Por favor, intente nuevamente.");
-    }
-  };
+  // const handleViewDetail = async (documentId) => {
+  //   try {
+  //     const response = await axios.get(`${baseURL}/documentos/${documentId}`);
+  //     setDocumentDetail(response.data);
+  //     setDetailDialogOpen(true);
+  //   } catch (error) {
+  //     console.error("Error al obtener los detalles del documento:", error);
+  //     setError("Error al obtener los detalles. Por favor, intente nuevamente.");
+  //   }
+  // };
 
   const handleCloseDetailDialog = () => {
     setDetailDialogOpen(false);
@@ -254,25 +251,25 @@ const DatosRecibo = () => {
   };
 
   const [editRecord, setEditRecord] = useState(null);
-  const handleEditRecord = (record) => {
-    setFormData({
-      fecha: record.fecha || "",
-      ruc: record.ruc || "",
-      tipoDoc: record.tipoDoc || "",
-      cuentaContable: record.cuenta_contable || "",
-      serie: record.serie || "",
-      numero: record.numero || "",
-      rubro: record.rubro || "",
-      moneda: record.moneda || "PEN",
-      afecto: record.afecto || "",
-      igv: record.igv || "",
-      inafecto: record.inafecto || "",
-      total: record.total || "",
-      archivo: record.archivo || "",
-    });
-    setEditRecord(record);
-    setShowForm(true);
-  };
+  // const handleEditRecord = (record) => {
+  //   setFormData({
+  //     fecha: record.fecha || "",
+  //     ruc: record.ruc || "",
+  //     tipoDoc: record.tipoDoc || "",
+  //     cuentaContable: record.cuenta_contable || "",
+  //     serie: record.serie || "",
+  //     numero: record.numero || "",
+  //     rubro: record.rubro || "",
+  //     moneda: record.moneda || "PEN",
+  //     afecto: record.afecto || "",
+  //     igv: record.igv || "",
+  //     inafecto: record.inafecto || "",
+  //     total: record.total || "",
+  //     archivo: record.archivo || "",
+  //   });
+  //   setEditRecord(record);
+  //   setShowForm(true);
+  // };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -389,10 +386,10 @@ const DatosRecibo = () => {
     setSelectedFile(null);
   };
 
-  const handleOpenConfirmDeleteDialog = (documentoId) => {
-    setDocumentoIdToDelete(documentoId);
-    setConfirmDeleteDialogOpen(true);
-  };
+  // const handleOpenConfirmDeleteDialog = (documentoId) => {
+  //   setDocumentoIdToDelete(documentoId);
+  //   setConfirmDeleteDialogOpen(true);
+  // };
 
   const handleCloseConfirmDeleteDialog = () => {
     setDocumentoIdToDelete(null);
@@ -682,8 +679,8 @@ const DatosRecibo = () => {
     const userString = localStorage.getItem("user");
     const user = userString ? JSON.parse(userString) : null;
     const userId = user ? user.id : null;
-    const username = user ? user.email : null;
-    const company_name = user ? user.company_name : null;
+    // const username = user ? user.email : null;
+    // const company_name = user ? user.company_name : null;
     const gerencia = user ? user.gerencia : null;
 
     const todayDate = new Date().toISOString().split("T")[0];
@@ -737,13 +734,13 @@ const DatosRecibo = () => {
     }
   };
 
-  const handleNewExpense2 = () => {
-    setShowForm(true);
-  };
+  // const handleNewExpense2 = () => {
+  //   setShowForm(true);
+  // };
 
-  const handleContinueExpense2 = () => {
-    setShowForm(true);
-  };
+  // const handleContinueExpense2 = () => {
+  //   setShowForm(true);
+  // };
 
   const handleDialogClose = async (registerAnother) => {
     setDialogOpen(false);

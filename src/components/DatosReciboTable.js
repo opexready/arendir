@@ -26,11 +26,10 @@ import {
   FormControl,
   InputLabel,
   Select,
-  FormGroup, // <== Importar FormGroup
-  FormControlLabel, // <== Importar FormControlLabel
-  Checkbox, // <== Importar Checkbox
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
-
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import "./DatosRecibo.css";
@@ -139,31 +138,30 @@ const DatosReciboTable = () => {
   const [formErrors, setFormErrors] = useState({});
   const [documentDetail, setDocumentDetail] = useState(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
-
   const [solicitudOpciones, setSolicitudOpciones] = useState([]);
   const [checkedOpciones, setCheckedOpciones] = useState([]);
-  
-
   const fetchSolicitudOpciones = async () => {
     try {
       const userString = localStorage.getItem("user");
       const user = userString ? JSON.parse(userString) : null;
       const userId = user ? user.id : null;
-  
+
       if (!userId) {
         alert("Error: Usuario no autenticado");
         return;
       }
-  
-      const response = await axios.get(`${baseURL}/solicitud/nombres`, {
-        params: { user_id: userId, tipo: "ANTICIPO" },
+
+      const response = await axios.get(`${baseURL}/api/solicitud/nombres`, {
+        params: { user_id: userId, estado: "ABONADO" },
       });
-  
+
       setSolicitudOpciones(response.data);
       setError("");
     } catch (error) {
       console.error("Error al obtener las solicitudes:", error);
-      setError("Error al obtener las solicitudes. Por favor, intente nuevamente.");
+      setError(
+        "Error al obtener las solicitudes. Por favor, intente nuevamente."
+      );
     }
   };
 
@@ -172,9 +170,6 @@ const DatosReciboTable = () => {
       fetchSolicitudOpciones();
     }
   }, [confirmFinalizarDialogOpen]);
-  
-  
-
 
   const handleViewDetail = async (documentId) => {
     try {
@@ -276,9 +271,7 @@ const DatosReciboTable = () => {
         const newRendicionResponse = await axios.post(`${baseURL}/rendicion/`, {
           user_id: userId,
         });
-
       } else {
-
       }
     } catch (error) {
       console.error("Error al finalizar la rendición:", error);
@@ -298,7 +291,7 @@ const DatosReciboTable = () => {
           const response = await api.get(`/rendicion/last`, {
             params: {
               user_id: userId,
-              tipo: "RENDICION", 
+              tipo: "RENDICION",
             },
           });
           setNombreRendicion(response.data.nombre);
@@ -727,14 +720,14 @@ const DatosReciboTable = () => {
             Nuevo Registro
           </Button>
 
-            <Button
-              variant="contained"
-              color="warning"
-              sx={{ marginRight: 2 }}
-              onClick={() => navigate("/movilidad")}
-            >
-              Movilidad
-            </Button>
+          <Button
+            variant="contained"
+            color="warning"
+            sx={{ marginRight: 2 }}
+            onClick={() => navigate("/movilidad")}
+          >
+            Movilidad
+          </Button>
 
           <Button
             variant="contained"
@@ -1188,104 +1181,111 @@ const DatosReciboTable = () => {
         </DialogActions>
       </Dialog> */}
       <Dialog
-  open={confirmFinalizarDialogOpen}
-  onClose={() => setConfirmFinalizarDialogOpen(false)}
->
-  <DialogTitle>Seleccionar Anticipos</DialogTitle>
-  <DialogContent>
-    <DialogContentText>
-      Seleccione las anticipos que incluirán esta rendición
-    </DialogContentText>
+        open={confirmFinalizarDialogOpen}
+        onClose={() => setConfirmFinalizarDialogOpen(false)}
+      >
+        <DialogTitle>Seleccionar Anticipos</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Seleccione las anticipos que incluirán esta rendición
+          </DialogContentText>
 
-    {/* Cargar la lista desde el endpoint */}
-    <FormGroup>
-      {solicitudOpciones.map((opcion) => (
-        <FormControlLabel
-          key={opcion.id}
-          control={
-            <Checkbox
-              checked={checkedOpciones.includes(opcion.id)}
-              onChange={() => {
-                setCheckedOpciones((prevChecked) =>
-                  prevChecked.includes(opcion.id)
-                    ? prevChecked.filter((item) => item !== opcion.id)
-                    : [...prevChecked, opcion.id]
+          {/* Cargar la lista desde el endpoint */}
+          <FormGroup>
+            {solicitudOpciones.map((opcion) => (
+              <FormControlLabel
+                key={opcion.id}
+                control={
+                  <Checkbox
+                    checked={checkedOpciones.includes(opcion.id)}
+                    onChange={() => {
+                      setCheckedOpciones((prevChecked) =>
+                        prevChecked.includes(opcion.id)
+                          ? prevChecked.filter((item) => item !== opcion.id)
+                          : [...prevChecked, opcion.id]
+                      );
+                    }}
+                  />
+                }
+                label={opcion.nombre} // Mostrar el nombre como descripción
+              />
+            ))}
+          </FormGroup>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setConfirmFinalizarDialogOpen(false)}
+            color="primary"
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={async () => {
+              try {
+                const userString = localStorage.getItem("user");
+                const user = userString ? JSON.parse(userString) : null;
+                const userId = user ? user.id : null;
+
+                if (!userId) {
+                  alert("Error: Usuario no autenticado");
+                  return;
+                }
+
+                const lastRendicionResponse = await axios.get(
+                  `${baseURL}/rendicion/last`,
+                  {
+                    params: { user_id: userId, tipo: "RENDICION" },
+                  }
                 );
-              }}
-            />
-          }
-          label={opcion.nombre} // Mostrar el nombre como descripción
-        />
-      ))}
-    </FormGroup>
-  </DialogContent>
-  <DialogActions>
-    <Button
-      onClick={() => setConfirmFinalizarDialogOpen(false)}
-      color="primary"
-    >
-      Cancelar
-    </Button>
-    <Button
 
-  onClick={async () => {
-    try {
-      const userString = localStorage.getItem("user");
-      const user = userString ? JSON.parse(userString) : null;
-      const userId = user ? user.id : null;
+                const rendicionId = lastRendicionResponse.data.id;
 
-      if (!userId) {
-        alert("Error: Usuario no autenticado");
-        return;
-      }
+                if (!rendicionId) {
+                  alert("No se encontró una rendición activa");
+                  return;
+                }
+                await axios.put(`${baseURL}/rendicion/${rendicionId}`, {
+                  estado: "POR APROBAR",
+                });
 
-      const lastRendicionResponse = await axios.get(`${baseURL}/rendicion/last`, {
-        params: { user_id: userId, tipo: "RENDICION" },
-      });
+                for (const solicitudId of checkedOpciones) {
+                  await axios.put(`${baseURL}/api/solicitud/${solicitudId}`, {
+                    estado: "TERMINADO",
+                  });
 
-      const rendicionId = lastRendicionResponse.data.id;
+                  await axios.post(`${baseURL}/rendicion_solicitud`, {
+                    rendicion_id: rendicionId,
+                    solicitud_id: solicitudId,
+                    estado: "POR APROBAR",
+                  });
 
-      if (!rendicionId) {
-        alert("No se encontró una rendición activa");
-        return;
-      }
-      await axios.put(`${baseURL}/rendicion/${rendicionId}`, {
-        estado: "POR APROBAR",
-      });
+                  const newRendicionResponse = await axios.post(
+                    `${baseURL}/rendicion/`,
+                    {
+                      user_id: userId,
+                    }
+                  );
+                }
 
-      for (const solicitudId of checkedOpciones) {
-        await axios.put(`${baseURL}/solicitud/${solicitudId}`, {
-          estado: "POR APROBAR",
-        });
-
-        await axios.post(`${baseURL}/rendicion_solicitud`, {
-          rendicion_id: rendicionId,
-          solicitud_id: solicitudId,
-          estado: "POR APROBAR",
-        });
-
-        const newRendicionResponse = await axios.post(`${baseURL}/rendicion/`, {
-          user_id: userId,
-        });
-      }
-
-      alert("Rendición finalizada y solicitudes asociadas correctamente.");
-      setCheckedOpciones([]); 
-      setConfirmFinalizarDialogOpen(false);
-      navigate("/colaborador");
-    } catch (error) {
-      console.error("Error al finalizar la rendición:", error);
-      alert("Ocurrió un error al procesar las solicitudes. Intente nuevamente.");
-    }
-  }}
-  color="secondary"
->
-  Confirmar
-</Button>
-
-  </DialogActions>
-</Dialog>
-
+                alert(
+                  "Rendición finalizada y solicitudes asociadas correctamente."
+                );
+                setCheckedOpciones([]);
+                setConfirmFinalizarDialogOpen(false);
+                navigate("/colaborador");
+              } catch (error) {
+                console.error("Error al finalizar la rendición:", error);
+                alert(
+                  "Ocurrió un error al procesar las solicitudes. Intente nuevamente."
+                );
+              }
+            }}
+            color="secondary"
+          >
+            Confirmar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

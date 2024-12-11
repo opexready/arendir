@@ -41,7 +41,7 @@ const AdministracionModule2 = () => {
       if (tipo === "RENDICION") {
         await axios.put(`${baseURL}/rendicion/${id}`, { estado: nuevoEstado });
       } else if (tipo === "ANTICIPO") {
-        await axios.put(`${baseURL}/solicitud/${id}`, { estado: nuevoEstado });
+        await axios.put(`${baseURL}/api/solicitud/${id}`, { estado: nuevoEstado });
       }
       setRendiciones((prevRendiciones) =>
         prevRendiciones.map((rendicion) =>
@@ -254,7 +254,7 @@ const AdministracionModule2 = () => {
                   <em>Todos los Estados</em>
                 </MenuItem>
                 <MenuItem value="APROBADO">POR ABONAR</MenuItem>
-                <MenuItem value="TERMINADO">TERMINADO</MenuItem>
+                <MenuItem value="ABONADO">TERMINADO</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -365,7 +365,7 @@ const AdministracionModule2 = () => {
                           }
                         >
                           <MenuItem value="APROBADO">POR ABONAR</MenuItem>
-                          <MenuItem value="TERMINADO">TERMINADO</MenuItem>
+                          <MenuItem value="ABONADO">TERMINADO</MenuItem>
                           <MenuItem value="RECHAZADO">RECHAZADO</MenuItem>
                         </Select>
                       </FormControl>
@@ -470,7 +470,7 @@ const AdministracionModule2 = () => {
                                       <MenuItem value="APROBADO">
                                         POR ABONAR
                                       </MenuItem>
-                                      <MenuItem value="TERMINADO">
+                                      <MenuItem value="ABONADO">
                                       TERMINADO
                                       </MenuItem>
                                       <MenuItem value="RECHAZADO">
