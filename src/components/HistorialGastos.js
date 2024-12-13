@@ -85,7 +85,7 @@ const HistorialGastos = () => {
           fontSize: "1.5rem",
         }}
       >
-        Historial de Rendiciones
+        Detalle de Rendiciones
       </Typography>
 
       {/* Filtros */}

@@ -261,22 +261,22 @@ const LandingPage = () => {
         </div>
         <div className="partners-logos">
           <img
-            src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa1.png?alt=media&token=e1b80f2f-83fd-487f-94a3-b52b652e851b"
+            src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/CL1.png?alt=media&token=5d5d38ab-8c1f-41e6-84d9-48dcee457c3e"
             alt="Socio 1"
             className="partner-logo"
           />
           <img
-            src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa3.png?alt=media&token=633634d0-09e8-42c4-8708-350b82fdd86c"
+            src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/CL2.png?alt=media&token=35dde679-873b-4d9b-bff7-624440d22c5e"
             alt="Socio 2"
             className="partner-logo"
           />
           <img
-            src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa4.png?alt=media&token=fc3b7769-9abc-4357-8361-16c27192e152"
+            src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/CL3.png?alt=media&token=c7cd24d4-f608-4065-9822-5da8f42b6d56"
             alt="Socio 3"
             className="partner-logo"
           />
           <img
-            src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa2.png?alt=media&token=aa29c4bf-f40c-42e5-8e99-f87d35a28e8a"
+            src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/CL4.png?alt=media&token=c805fe90-9b9a-4788-b9fa-c35fca941ab4"
             alt="Socio 4"
             className="partner-logo"
           />
