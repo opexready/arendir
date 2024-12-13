@@ -151,6 +151,11 @@ const HistorialGastos = () => {
                 color: "white",
               }}
             >
+               <img
+                        src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
+                        alt="Ícono Eliminar"
+                        style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                      />
               Aplicar Filtros
             </Button>
           </Grid>

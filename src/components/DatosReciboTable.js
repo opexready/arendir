@@ -717,6 +717,11 @@ const DatosReciboTable = () => {
             sx={{ marginRight: 2 }}
             onClick={() => navigate("/datos-recibo")}
           >
+            <img
+              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa12.png?alt=media&token=605b5260-250c-4fb0-ade2-ff241845be1c"
+              alt="Ícono de Anticipo Viajes"
+              style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+            />
             Nuevo Registro
           </Button>
 
@@ -726,6 +731,11 @@ const DatosReciboTable = () => {
             sx={{ marginRight: 2 }}
             onClick={() => navigate("/movilidad")}
           >
+            <img
+              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa11.png?alt=media&token=6d72c9af-25f8-43b4-89e8-fb82b22224de"
+              alt="Ícono de Anticipo Viajes"
+              style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+            />
             Movilidad
           </Button>
 
@@ -735,6 +745,11 @@ const DatosReciboTable = () => {
             sx={{ marginRight: 2 }}
             onClick={() => setConfirmFinalizarDialogOpen(true)}
           >
+            <img
+              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa13.png?alt=media&token=7b15c497-d494-4a52-9011-ee7e6bdbe1e8"
+              alt="Ícono de Anticipo Viajes"
+              style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+            />
             Finalizar Rendición
           </Button>
         </Box>
@@ -984,24 +999,59 @@ const DatosReciboTable = () => {
             <TableHead>
               <TableRow sx={{ backgroundColor: "#1F237A" }}>
                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa14.png?alt=media&token=0adf0d7c-ba88-48a2-abee-864cbf6850e5"
+                    alt="Ícono Número de Ítem"
+                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                  />
                   Número de Ítem
                 </TableCell>
                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa15.png?alt=media&token=3e9271c1-9533-4661-ab02-d30de0ad90e6"
+                    alt="Ícono Número de Ítem"
+                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                  />
                   Rubro
                 </TableCell>
                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa16.png?alt=media&token=d8afd433-339c-4f9a-ab2d-b211e10345b2"
+                    alt="Ícono Número de Ítem"
+                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                  />
                   Total
                 </TableCell>
                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa17.png?alt=media&token=aae19df1-ae52-45f4-8653-042af6b5a59b"
+                    alt="Ícono Número de Ítem"
+                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                  />
                   Ver Archivo
                 </TableCell>
                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa18.png?alt=media&token=8228c7ef-c92f-478c-995a-2104ea29f3d4"
+                    alt="Ícono Número de Ítem"
+                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                  />
                   Detalle
                 </TableCell>
                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa21.png?alt=media&token=8eacf126-3bd4-42cb-bdb1-900c746eea23"
+                    alt="Ícono Número de Ítem"
+                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                  />
                   Editar
                 </TableCell>
                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa22.png?alt=media&token=554ee3ea-2338-48be-ba94-fd6535f34fc4"
+                    alt="Ícono Número de Ítem"
+                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                  />
                   Eliminar
                 </TableCell>
               </TableRow>
@@ -1032,6 +1082,11 @@ const DatosReciboTable = () => {
                       color="success"
                       onClick={() => handleViewDetail(record.id)}
                     >
+                      <img
+                        src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa11.png?alt=media&token=6d72c9af-25f8-43b4-89e8-fb82b22224de"
+                        alt="Ícono de Anticipo Viajes"
+                        style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                      />
                       Ver Detalle
                     </Button>
                   </TableCell>
@@ -1042,6 +1097,11 @@ const DatosReciboTable = () => {
                       onClick={() => handleEditRecord(record)}
                       disabled={record.rubro.toLowerCase() === "movilidad"}
                     >
+                      <img
+                        src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa11.png?alt=media&token=6d72c9af-25f8-43b4-89e8-fb82b22224de"
+                        alt="Ícono de Anticipo Viajes"
+                        style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                      />
                       Editar
                     </Button>
                   </TableCell>
@@ -1051,6 +1111,11 @@ const DatosReciboTable = () => {
                       color="error"
                       onClick={() => handleOpenConfirmDeleteDialog(record.id)}
                     >
+                      <img
+                        src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa11.png?alt=media&token=6d72c9af-25f8-43b4-89e8-fb82b22224de"
+                        alt="Ícono de Anticipo Viajes"
+                        style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                      />
                       Eliminar
                     </Button>
                   </TableCell>

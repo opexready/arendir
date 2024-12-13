@@ -7,8 +7,8 @@ WORKDIR /app
 # Copia los archivos de package.json y package-lock.json (si lo tienes)
 COPY package*.json ./
 
-# Instala las dependencias
-RUN npm install
+# Instala las dependencias con manejo de conflictos
+RUN npm install --legacy-peer-deps
 
 # Copia el resto de los archivos de tu proyecto
 COPY . .

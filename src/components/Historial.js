@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Grid,
@@ -9,10 +9,9 @@ import {
   ListItemText,
   CircularProgress,
   Alert,
-} from '@mui/material';
-import axios from 'axios';
-import { baseURL } from '../api';
-
+} from "@mui/material";
+import axios from "axios";
+import { baseURL } from "../api";
 
 const Historial = () => {
   const [rendiciones, setRendiciones] = useState([]);
@@ -26,7 +25,7 @@ const Historial = () => {
         // Obtener datos del usuario desde la sesión
         const userResponse = await axios.get(`${baseURL}/users/me`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
         const userId = userResponse.data.id;
@@ -34,10 +33,10 @@ const Historial = () => {
         // Realizar llamadas a las APIs
         const [rendicionesResponse, solicitudesResponse] = await Promise.all([
           axios.get(`${baseURL}/rendiciones/nombres`, {
-            params: { user_id: userId, tipo: 'RENDICION' },
+            params: { user_id: userId, tipo: "RENDICION" },
           }),
-          axios.get(`${baseURL}/solicitud/nombres`, {
-            params: { user_id: userId, tipo: 'ANTICIPO' },
+          axios.get(`${baseURL}/api/solicitud/nombres`, {
+            params: { user_id: userId },
           }),
         ]);
 
@@ -46,8 +45,10 @@ const Historial = () => {
         setSolicitudes(solicitudesResponse.data);
         setLoading(false);
       } catch (error) {
-        console.error('Error al obtener los datos del historial:', error);
-        setError('Hubo un error al cargar los datos. Por favor, intenta nuevamente.');
+        console.error("Error al obtener los datos del historial:", error);
+        setError(
+          "Hubo un error al cargar los datos. Por favor, intenta nuevamente."
+        );
         setLoading(false);
       }
     };
@@ -58,7 +59,12 @@ const Historial = () => {
   if (loading) {
     return (
       <Container>
-        <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="100vh"
+        >
           <CircularProgress />
         </Box>
       </Container>
@@ -80,14 +86,31 @@ const Historial = () => {
       <Grid container spacing={4}>
         {/* Cuadro de Rendiciones */}
         <Grid item xs={12} md={6}>
-          <Box sx={{ border: '1px solid #ccc', padding: 2, borderRadius: 2 }}>
-            <Typography
-              variant="h6"
-              align="center"
-              sx={{ backgroundColor: '#1F4E79', color: 'white', padding: 1, borderRadius: '4px 4px 0 0' }}
+          <Box sx={{ border: "1px solid #ccc", padding: 2, borderRadius: 2 }}>
+            {/* Encabezado con imagen e icono */}
+            <Box
+              sx={{
+                backgroundColor: "#1F4E79",
+                color: "white",
+                padding: 1,
+                borderRadius: "4px 4px 0 0",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 1, // Espaciado entre imagen y texto
+              }}
             >
-              GASTO
-            </Typography>
+              <img
+                src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa5.png?alt=media&token=b6854d9a-a91c-4930-bac3-150808ccabe5"
+                alt="Ícono de gasto"
+                style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+              />
+              <Typography variant="h6" align="center">
+                GASTO
+              </Typography>
+            </Box>
+
+            {/* Lista de rendiciones */}
             <List>
               <ListItem>
                 <ListItemText primary="Lista" secondary="Todos" />
@@ -105,14 +128,31 @@ const Historial = () => {
 
         {/* Cuadro de Solicitudes */}
         <Grid item xs={12} md={6}>
-          <Box sx={{ border: '1px solid #ccc', padding: 2, borderRadius: 2 }}>
-            <Typography
-              variant="h6"
-              align="center"
-              sx={{ backgroundColor: '#1F4E79', color: 'white', padding: 1, borderRadius: '4px 4px 0 0' }}
+          <Box sx={{ border: "1px solid #ccc", padding: 2, borderRadius: 2 }}>
+            {/* Encabezado con imagen e ícono */}
+            <Box
+              sx={{
+                backgroundColor: "#1F4E79",
+                color: "white",
+                padding: 1,
+                borderRadius: "4px 4px 0 0",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 1, // Espaciado entre imagen y texto
+              }}
             >
-              ANTICIPO
-            </Typography>
+              <img
+                src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa6.png?alt=media&token=7ac20ab7-9ee1-45f3-ad4f-ab7d40c3e2cc"
+                alt="Ícono de anticipo"
+                style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+              />
+              <Typography variant="h6" align="center">
+                ANTICIPO
+              </Typography>
+            </Box>
+
+            {/* Lista de solicitudes */}
             <List>
               <ListItem>
                 <ListItemText primary="Lista" secondary="Todos" />

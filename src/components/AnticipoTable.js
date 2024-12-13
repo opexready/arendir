@@ -49,7 +49,6 @@ const AnticipoTable = () => {
     navigate("/anticipos-viajes");
   };
 
-
   const [formData, setFormData] = useState({
     usuario: "",
     dni: "",
@@ -390,26 +389,57 @@ const AnticipoTable = () => {
           <Button
             variant="contained"
             color="primary"
-            sx={{ marginRight: 2 }}
-           // onClick={() => setShowForm(true)} // Mostrar formulario handleAnticipoViajes
+            sx={{
+              marginRight: 2,
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+            }}
             onClick={handleAnticipoViajes}
           >
+            <img
+              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa11.png?alt=media&token=6d72c9af-25f8-43b4-89e8-fb82b22224de"
+              alt="Ícono de Anticipo Viajes"
+              style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+            />
             Anticipo Viajes
           </Button>
+
           <Button
             variant="contained"
             color="success"
-            sx={{ marginRight: 2 }}
+            sx={{
+              marginRight: 2,
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+            }}
             onClick={handleAnticipoGastosLocales}
           >
+            <img
+              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa12.png?alt=media&token=605b5260-250c-4fb0-ade2-ff241845be1c"
+              alt="Ícono de Anticipo Gastos Locales"
+              style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+            />
             Anticipo Gastos Locales
           </Button>
+
           <Button
             variant="contained"
             color="warning"
-            sx={{ marginRight: 2 }}
+            sx={{
+              marginRight: 2,
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+            }}
             onClick={handleOpenConfirmFinalizarDialog}
           >
+            <img
+              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa13.png?alt=media&token=7b15c497-d494-4a52-9011-ee7e6bdbe1e8"
+              alt="Ícono de Finalizar Solicitud"
+              style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+            />
             Finalizar Solicitud
           </Button>
         </Box>
@@ -423,22 +453,62 @@ const AnticipoTable = () => {
           <Table>
             <TableHead>
               <TableRow sx={{ backgroundColor: "#1F237A" }}>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                <TableCell
+                  sx={{
+                    color: "white",
+                    fontWeight: "bold",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa14.png?alt=media&token=0adf0d7c-ba88-48a2-abee-864cbf6850e5"
+                    alt="Ícono Número de Ítem"
+                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                  />
                   Número de Ítem
                 </TableCell>
+
                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa15.png?alt=media&token=3e9271c1-9533-4661-ab02-d30de0ad90e6"
+                    alt="Ícono Número de Ítem"
+                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                  />
                   Categoria
                 </TableCell>
+
                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa16.png?alt=media&token=d8afd433-339c-4f9a-ab2d-b211e10345b2"
+                    alt="Ícono Número de Ítem"
+                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                  />
                   Total
                 </TableCell>
                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa17.png?alt=media&token=aae19df1-ae52-45f4-8653-042af6b5a59b"
+                    alt="Ícono Número de Ítem"
+                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                  />
                   Ver Archivo
                 </TableCell>
                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa18.png?alt=media&token=8228c7ef-c92f-478c-995a-2104ea29f3d4"
+                    alt="Ícono Número de Ítem"
+                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                  />
                   Detalle
                 </TableCell>
                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa22.png?alt=media&token=554ee3ea-2338-48be-ba94-fd6535f34fc4"
+                    alt="Ícono Número de Ítem"
+                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                  />
                   Eliminar
                 </TableCell>
               </TableRow>
@@ -474,7 +544,13 @@ const AnticipoTable = () => {
                       variant="contained"
                       color="info"
                       onClick={() => handleViewDetail(record.id)}
+                      sx={{ display: "flex", alignItems: "center", gap: 1 }}
                     >
+                      <img
+                        src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa20.png?alt=media&token=38395495-e82e-418f-8dbe-ff366f3f45c2"
+                        alt="Ícono Ver Detalle"
+                        style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                      />
                       Ver Detalle
                     </Button>
                   </TableCell>
@@ -492,7 +568,13 @@ const AnticipoTable = () => {
                       variant="contained"
                       color="error"
                       onClick={() => handleOpenConfirmDeleteDialog(record.id)}
+                      sx={{ display: "flex", alignItems: "center", gap: 1 }}
                     >
+                      <img
+                        src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa22.png?alt=media&token=554ee3ea-2338-48be-ba94-fd6535f34fc4"
+                        alt="Ícono Eliminar"
+                        style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                      />
                       Eliminar
                     </Button>
                   </TableCell>
@@ -502,7 +584,6 @@ const AnticipoTable = () => {
           </Table>
         </TableContainer>
       )}
- 
 
       {/* Modal para ver el archivo */}
       <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
