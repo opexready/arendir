@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom"; // Importa useLocation
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   AppBar,
   Toolbar,
@@ -16,7 +16,7 @@ import api from "../api";
 const Navbar = () => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
-  const location = useLocation(); // Obtén la ubicación actual
+  const location = useLocation();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -41,7 +41,6 @@ const Navbar = () => {
     navigate("/login");
   };
 
-  // Verifica si la ruta actual es "/colaborador/*"
   const isColaboradorPage = location.pathname.startsWith("/colaborador");
 
   return (
@@ -54,20 +53,15 @@ const Navbar = () => {
         }}
       >
         <Toolbar>
-          <Typography
-            variant="h6"
-            sx={{ flexGrow: 1, marginLeft: "10px" }}
-          ></Typography>
+          <Typography variant="h6" sx={{ flexGrow: 1, marginLeft: "10px" }} />
           <Box sx={{ display: "flex", alignItems: "center" }}>
             {user ? (
-              <>
-                <img
-                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/logoblanco2.png?alt=media&token=94ceb944-93e9-4361-83d3-75017559ab67"
-                  alt="Logo"
-                  style={{ height: "40px", cursor: "pointer" }}
-                  onClick={handleLogout}
-                />
-              </>
+              <img
+                src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/logoblanco2.png?alt=media&token=94ceb944-93e9-4361-83d3-75017559ab67"
+                alt="Logo"
+                style={{ height: "40px", cursor: "pointer" }}
+                onClick={handleLogout}
+              />
             ) : (
               <Button color="inherit" onClick={() => navigate("/login")}>
                 Login
@@ -77,7 +71,7 @@ const Navbar = () => {
         </Toolbar>
       </AppBar>
 
-      {/* Renderiza la barra de opciones solo si no estás en la página de colaborador */}
+      {/* Render options bar only if the user is logged in as "COLABORADOR" and not on a collaborator page */}
       {user && user.role === "COLABORADOR" && !isColaboradorPage && (
         <Box
           sx={{
@@ -90,40 +84,13 @@ const Navbar = () => {
           }}
         >
           <List sx={{ display: "flex", flexDirection: "row", padding: 0 }}>
-            {/* <ListItem button component={Link} to="/datos-recibo" sx={{ justifyContent: 'center' }}>
-                            <ListItemIcon>
-                                <img 
-                                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/GASTOS.png?alt=media&token=e9261ba0-d22f-4d13-8ff0-213b23feb977" 
-                                    alt="Gastos" 
-                                    style={{ height: '24px', width: '24px' }} 
-                                />
-                            </ListItemIcon>
-                            <ListItemText primary="Gastos" sx={{ color: '#2E3192', textAlign: 'center' }} />
-                        </ListItem> */}
+            {/* Gastos */}
             <ListItem
               button
               component={Link}
-              to={{ pathname: "/datos-recibo-table", state: { reset: true } }} // Agregar `state`
+              to="/datos-recibo-table"
               sx={{ justifyContent: "center" }}
             >
-              <ListItem
-                button
-                component={Link}
-                to="/anticipo-table"
-                sx={{ justifyContent: "center" }}
-              >
-                <ListItemIcon>
-                  <img
-                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/ANTICIPOS.png?alt=media&token=f5f00653-d2c4-4919-8c33-7eb353f0cf7b"
-                    alt="Anticipos"
-                    style={{ height: "24px", width: "24px" }}
-                  />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Anticipo"
-                  sx={{ color: "#2E3192", textAlign: "center" }}
-                />
-              </ListItem>
               <ListItemIcon>
                 <img
                   src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/GASTOS.png?alt=media&token=e9261ba0-d22f-4d13-8ff0-213b23feb977"
@@ -137,6 +104,27 @@ const Navbar = () => {
               />
             </ListItem>
 
+            {/* Anticipo */}
+            <ListItem
+              button
+              component={Link}
+              to="/anticipo-table"
+              sx={{ justifyContent: "center" }}
+            >
+              <ListItemIcon>
+                <img
+                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/ANTICIPOS.png?alt=media&token=f5f00653-d2c4-4919-8c33-7eb353f0cf7b"
+                  alt="Anticipos"
+                  style={{ height: "24px", width: "24px" }}
+                />
+              </ListItemIcon>
+              <ListItemText
+                primary="Anticipo"
+                sx={{ color: "#2E3192", textAlign: "center" }}
+              />
+            </ListItem>
+
+            {/* Historial */}
             <ListItem
               button
               component={Link}
@@ -155,6 +143,8 @@ const Navbar = () => {
                 sx={{ color: "#2E3192", textAlign: "center" }}
               />
             </ListItem>
+
+            {/* Detalle */}
             <ListItem
               button
               component={Link}
@@ -176,6 +166,7 @@ const Navbar = () => {
           </List>
         </Box>
       )}
+
       <Box
         component="main"
         sx={{
@@ -184,7 +175,7 @@ const Navbar = () => {
           padding: 3,
           marginTop: user && user.role === "COLABORADOR" ? "128px" : "64px",
         }}
-      ></Box>
+      />
     </Box>
   );
 };
