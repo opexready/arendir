@@ -96,7 +96,7 @@ const ContadorModule = () => {
         {
           params: {
             tipo: filtros.tipo_solicitud || undefined,
-            estado: filtros.estado || undefined,
+            estado: filtros.estado || "POR APROBAR",
             colaborador: filtros.colaborador || undefined,
             fecha_registro_from: filtros.fechaDesde || undefined,
             fecha_registro_to: filtros.fechaHasta || undefined,

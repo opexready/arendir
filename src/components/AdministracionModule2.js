@@ -98,7 +98,7 @@ const AdministracionModule2 = () => {
         {
           params: {
             tipo: filtros.tipo_solicitud || undefined,
-            estado: filtros.estado || undefined,
+            estado: filtros.estado || "APROBADO",
             colaborador: filtros.colaborador || undefined,
             fecha_registro_from: filtros.fechaDesde || undefined,
             fecha_registro_to: filtros.fechaHasta || undefined,
@@ -163,11 +163,17 @@ const AdministracionModule2 = () => {
   const [openModal, setOpenModal] = useState(false);
   const [pdfUrl, setPdfUrl] = useState("");
 
-  const handleExportPDF = async (rendicion) => {
+  const userString = localStorage.getItem("user");
+        const user = userString ? JSON.parse(userString) : null;
+        const userId = user ? user.id : null;
+        const username = user ? user.email : null;
+        const userCompany = user ? user.company_name : null;
+        console.log("user", user);
+
+  const handleExportPDF = async (rendicionId) => {
     const params = {
-      company_name: "innova",
-      username: "colauser1@gmail.com",
-      numero_rendicion: "R00001",
+      id_rendicion: rendicionId,
+      id_usuario: userId,
     };
     try {
       const response = await axios.get(`${baseURL}/documentos/export/pdf`, {
@@ -177,7 +183,7 @@ const AdministracionModule2 = () => {
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `${rendicion.nombre}_documento.pdf`);
+      link.setAttribute("download", `rendicion_${rendicionId}_documento.pdf`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -191,6 +197,8 @@ const AdministracionModule2 = () => {
       company_name: empresa,
       estado: filtros.estado,
       username: filtros.colaborador,
+      fecha_desde: filtros.fechaDesde || undefined, // Agregando filtro de fecha desde
+      fecha_hasta: filtros.fechaHasta || undefined, // Agregando filtro de fecha hasta
     };
     try {
       const response = await axios.get(`${baseURL}/documentos/export/excel`, {
@@ -380,7 +388,7 @@ const AdministracionModule2 = () => {
                       {rendicion.rendicion.tipo === "RENDICION" && (
                         <Button
                           variant="contained"
-                          onClick={() => handleExportPDF(rendicion.rendicion)}
+                          onClick={() => handleExportPDF(rendicion.rendicion.id)}
                           sx={{
                             backgroundColor: "#2E3192",
                             "&:hover": { backgroundColor: "#1F237A" },
