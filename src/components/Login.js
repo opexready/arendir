@@ -84,7 +84,7 @@ const Login = () => {
             </Box>
             <Box sx={{ width: '100%', maxWidth: '400px', mt: '80px', backgroundColor: 'rgba(255, 255, 255, 0.9)', p: 4, borderRadius: '8px' }}>
                 <Typography variant="h4" component="h1" gutterBottom sx={{ color: '#F15A29', fontWeight: 'bold', textAlign: 'center' }}>
-                    Bienvenido
+                    BIENVENIDO
                 </Typography>
                 {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
                 <Box component="form" onSubmit={handleSubmit}>

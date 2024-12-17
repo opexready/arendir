@@ -709,12 +709,24 @@ const DatosReciboTable = () => {
 
   return (
     <Container sx={{ marginTop: -20 }}>
-      <Container sx={{ marginBottom: 2 }}>
-        <Box display="flex" justifyContent="flex-end">
+     <Container sx={{ marginBottom: 2, marginTop: 2 }} disableGutters> 
+  <Box
+    display="flex"
+    justifyContent="flex-end" // Alinea a la derecha
+    sx={{
+      width: "101%", // Asegura que ocupe todo el ancho disponible
+      marginRight: "-20px", // Ajusta el margen derecho si hay espacio extra
+    }}
+  >
           <Button
             variant="contained"
             color="primary"
-            sx={{ marginRight: 2, display: "flex", alignItems: "center", gap: "8px" }}
+            sx={{
+              marginRight: 2,
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
             onClick={() => navigate("/datos-recibo")}
           >
             <img
@@ -728,7 +740,12 @@ const DatosReciboTable = () => {
           <Button
             variant="contained"
             color="warning"
-            sx={{ marginRight: 2, display: "flex", alignItems: "center", gap: "8px" }}
+            sx={{
+              marginRight: 2,
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
             onClick={() => navigate("/movilidad")}
           >
             <img
@@ -742,7 +759,12 @@ const DatosReciboTable = () => {
           <Button
             variant="contained"
             color="success"
-            sx={{ marginRight: 2, display: "flex", alignItems: "center", gap: "8px" }}
+            sx={{
+              marginRight: 2,
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
             onClick={() => setConfirmFinalizarDialogOpen(true)}
           >
             <img
@@ -998,59 +1020,59 @@ const DatosReciboTable = () => {
           <Table>
             <TableHead>
               <TableRow sx={{ backgroundColor: "#1F237A" }}>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                <TableCell align="left" sx={{ color: "white", fontWeight: "bold" }}>
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa14.png?alt=media&token=0adf0d7c-ba88-48a2-abee-864cbf6850e5"
                     alt="Ícono Número de Ítem"
-                    style={{ height: "24px",marginRight: "8px", }} // Ajusta el tamaño de la imagen
+                    style={{ height: "24px", marginRight: "8px" }} // Ajusta el tamaño de la imagen
                   />
                   Número de Ítem
                 </TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                <TableCell align="left" sx={{ color: "white", fontWeight: "bold" }}>
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa15.png?alt=media&token=3e9271c1-9533-4661-ab02-d30de0ad90e6"
                     alt="Ícono Número de Ítem"
-                    style={{ height: "24px",marginRight: "8px", }}// Ajusta el tamaño de la imagen
+                    style={{ height: "24px", marginRight: "8px" }} // Ajusta el tamaño de la imagen
                   />
                   Rubro
                 </TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                <TableCell align="left" sx={{ color: "white", fontWeight: "bold" }}>
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa16.png?alt=media&token=d8afd433-339c-4f9a-ab2d-b211e10345b2"
                     alt="Ícono Número de Ítem"
-                    style={{ height: "24px",marginRight: "8px", }} // Ajusta el tamaño de la imagen
+                    style={{ height: "24px", marginRight: "8px" }} // Ajusta el tamaño de la imagen
                   />
                   Total
                 </TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                <TableCell align="left" sx={{ color: "white", fontWeight: "bold" }}>
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa17.png?alt=media&token=aae19df1-ae52-45f4-8653-042af6b5a59b"
                     alt="Ícono Número de Ítem"
-                    style={{ height: "24px",marginRight: "8px", }} // Ajusta el tamaño de la imagen
+                    style={{ height: "24px", marginRight: "8px" }} // Ajusta el tamaño de la imagen
                   />
                   Ver Archivo
                 </TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                <TableCell align="left" sx={{ color: "white", fontWeight: "bold" }}>
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa18.png?alt=media&token=8228c7ef-c92f-478c-995a-2104ea29f3d4"
                     alt="Ícono Número de Ítem"
-                    style={{ height: "24px",marginRight: "8px", }} // Ajusta el tamaño de la imagen
+                    style={{ height: "24px", marginRight: "8px" }} // Ajusta el tamaño de la imagen
                   />
                   Detalle
                 </TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                <TableCell align="left" sx={{ color: "white", fontWeight: "bold" }}>
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa21.png?alt=media&token=8eacf126-3bd4-42cb-bdb1-900c746eea23"
                     alt="Ícono Número de Ítem"
-                    style={{ height: "24px",marginRight: "8px", }}// Ajusta el tamaño de la imagen
+                    style={{ height: "24px", marginRight: "8px" }} // Ajusta el tamaño de la imagen
                   />
                   Editar
                 </TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                <TableCell align="left" sx={{ color: "white", fontWeight: "bold" }}>
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa22.png?alt=media&token=554ee3ea-2338-48be-ba94-fd6535f34fc4"
                     alt="Ícono Número de Ítem"
-                    style={{ height: "24px",marginRight: "8px", }} // Ajusta el tamaño de la imagen
+                    style={{ height: "24px", marginRight: "8px" }} // Ajusta el tamaño de la imagen
                   />
                   Eliminar
                 </TableCell>
@@ -1059,10 +1081,10 @@ const DatosReciboTable = () => {
             <TableBody>
               {records.map((record, index) => (
                 <TableRow key={record.id}>
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell>{record.rubro}</TableCell>
-                  <TableCell>{record.total}</TableCell>
-                  <TableCell>
+                  <TableCell align="left">{index + 1}</TableCell>
+                  <TableCell align="left">{record.rubro}</TableCell>
+                  <TableCell align="left">{record.total}</TableCell>
+                  <TableCell align="left">
                     {record.archivo && (
                       <Button
                         variant="contained"
@@ -1077,7 +1099,7 @@ const DatosReciboTable = () => {
                       </Button>
                     )}
                   </TableCell>
-                  <TableCell>
+                  <TableCell align="left">
                     <Button
                       variant="contained"
                       color="warning"
@@ -1090,7 +1112,7 @@ const DatosReciboTable = () => {
                       />
                     </Button>
                   </TableCell>
-                  <TableCell>
+                  <TableCell align="left">
                     <Button
                       variant="contained"
                       color="primary"
@@ -1104,7 +1126,7 @@ const DatosReciboTable = () => {
                       />
                     </Button>
                   </TableCell>
-                  <TableCell>
+                  <TableCell align="left">
                     <Button
                       variant="contained"
                       color="error"

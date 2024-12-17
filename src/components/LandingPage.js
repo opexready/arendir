@@ -2,10 +2,27 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LandingPage.css"; // Asegúrate de tener el archivo CSS para los estilos
 import "@fortawesome/fontawesome-free/css/all.css"; // Estilos de Font Awesome
+import RegisterForm from "./RegisterForm";
 
 const LandingPage = () => {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [showRegisterForm, setShowRegisterForm] = useState(false);
+
+  const handleShowRegister = () => {
+    setShowRegisterForm(true); // Muestra el formulario
+  };
+
+  const handleCloseRegister = () => {
+    setShowRegisterForm(false); // Cierra el formulario
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % 3);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleLoginClick = () => {
     navigate("/login"); // Redirigir al login
@@ -43,7 +60,7 @@ const LandingPage = () => {
               className="top-bar-icon"
             />
             ¿Qué esperas para probar Arendir? Tenemos <strong>7 días</strong>.
-            <a href="#" className="top-bar-link">
+            <a href="#" className="top-bar-link" onClick={handleShowRegister}>
               prueba gratis.
             </a>
           </p>
@@ -76,9 +93,12 @@ const LandingPage = () => {
                 {/* <a href="/payment-methods" className="subscripcion">
                   Obtener Subscripción
                 </a> */}
-                  <button onClick={methodsPageClick} className="button btn-method">
+                <button
+                  onClick={methodsPageClick}
+                  className="button btn-method"
+                >
                   Obtener Subscripción
-              </button>
+                </button>
               </li>
             </ul>
           </nav>
@@ -110,13 +130,29 @@ const LandingPage = () => {
               <button onClick={handleLoginClick} className="button btn-login">
                 Ingresar
               </button>
-              <a href="#" className="button btn-register">
+              <a
+                href="#"
+                onClick={handleShowRegister}
+                className="button btn-register"
+              >
                 Registro
               </a>
             </div>
           </div>
         </div>
       </header>
+
+      {/* Renderiza el formulario si showRegisterForm es true */}
+      {showRegisterForm && (
+        <div className="register-modal">
+          <div className="modal-content">
+            <button className="close-button" onClick={handleCloseRegister}>
+              X
+            </button>
+            <RegisterForm /> {/* Llama al formulario aquí */}
+          </div>
+        </div>
+      )}
 
       {/* Slider */}
       <section className="slider">
