@@ -144,15 +144,8 @@ const LandingPage = () => {
 
       {/* Renderiza el formulario si showRegisterForm es true */}
       {showRegisterForm && (
-        <div className="register-modal">
-          <div className="modal-content">
-            <button className="close-button" onClick={handleCloseRegister}>
-              X
-            </button>
-            <RegisterForm /> {/* Llama al formulario aquí */}
-          </div>
-        </div>
-      )}
+  <RegisterForm open={showRegisterForm} onClose={handleCloseRegister} />
+)}
 
       {/* Slider */}
       <section className="slider">
