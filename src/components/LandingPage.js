@@ -105,7 +105,7 @@ const LandingPage = () => {
           <div className="right-section">
             <div className="social-iconss">
               <a
-                href="https://www.instagram.com/arendir_pe/"
+                href="https://www.facebook.com/share/18Kqj8454V/?mibextid=LQQJ4d"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -144,8 +144,8 @@ const LandingPage = () => {
 
       {/* Renderiza el formulario si showRegisterForm es true */}
       {showRegisterForm && (
-  <RegisterForm open={showRegisterForm} onClose={handleCloseRegister} />
-)}
+        <RegisterForm open={showRegisterForm} onClose={handleCloseRegister} />
+      )}
 
       {/* Slider */}
       <section className="slider">
@@ -264,19 +264,19 @@ const LandingPage = () => {
             <div className="plan">
               <h3>Personal</h3>
               <p>Obtén el mejor precio para uso personal</p>
-              <button className="plan-button">Comprar</button>
+              <button onClick={methodsPageClick} className="plan-button">Comprar</button>
               <p className="plan-price">S/ 8 / Mensual</p>
             </div>
             <div className="plan">
               <h3>Negocio</h3>
               <p>Accede a las funciones principales al iniciar tu negocio</p>
-              <button className="plan-button">Comprar</button>
+              <button onClick={methodsPageClick} className="plan-button">Comprar</button>
               <p className="plan-price">S/ 15 / Mensual</p>
             </div>
             <div className="plan">
               <h3>Corporativo</h3>
               <p>Desbloquea todas las funciones, ideal para empresas</p>
-              <button className="plan-button">Comprar</button>
+              <button onClick={methodsPageClick} className="plan-button">Comprar</button>
               <p className="plan-price">S/ 25 / Mensual</p>
             </div>
           </div>
@@ -312,20 +312,39 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Nuevo Footer */}
       <footer className="new-footer">
-        <div className="footer-container">
-          <div className="footer-logo">
+        <div
+          className="footer-container"
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "flex-start", // Alinea todos los elementos al inicio (arriba)
+            gap: "40px", // Espaciado entre columnas
+            padding: "20px 0",
+            flexWrap: "wrap", // Adaptación para pantallas pequeñas
+          }}
+        >
+          {/* Logo */}
+          <div
+            className="footer-logo"
+            style={{ textAlign: "center", minWidth: "150px" }}
+          >
             <img
               src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/logoblanco2.png?alt=media&token=94ceb944-93e9-4361-83d3-75017559ab67"
               alt="Arendir Logo Blanco"
+              style={{ maxWidth: "150px" }}
             />
           </div>
-          <div className="footer-section">
+
+          {/* Sobre Arendir */}
+          <div
+            className="footer-section"
+            style={{ textAlign: "center", minWidth: "150px" }}
+          >
             <h4>Sobre Arendir</h4>
-            <ul>
+            <ul style={{ listStyleType: "none", padding: "0", margin: "0" }}>
               <li>
-                <a href="#">Quienes somos</a>
+                <a href="#">Quiénes somos</a>
               </li>
               <li>
                 <a href="#">Servicios</a>
@@ -338,24 +357,63 @@ const LandingPage = () => {
               </li>
             </ul>
           </div>
-          <div className="footer-section">
+
+          {/* Síguenos */}
+          <div
+            className="footer-section"
+            style={{ textAlign: "center", minWidth: "150px" }}
+          >
             <h4>Síguenos</h4>
-            <div className="social-icons">
-              <a href="#">
+            <div
+              className="social-icons"
+              style={{ display: "flex", justifyContent: "center", gap: "10px" }}
+            >
+              <a
+                href="https://www.facebook.com/share/18Kqj8454V/?mibextid=LQQJ4d"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <i className="fab fa-facebook-f"></i>
               </a>
-              <a href="#">
+              <a
+                href="https://www.instagram.com/arendir_pe/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <i className="fab fa-instagram"></i>
               </a>
-              <a href="#">
+              <a
+                href="https://www.linkedin.com/company/105542709/admin/dashboard/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <i className="fab fa-linkedin-in"></i>
               </a>
             </div>
           </div>
-          <div className="footer-section">
+
+          {/* Contáctanos */}
+          <div
+            className="footer-section"
+            style={{ textAlign: "center", minWidth: "150px" }}
+          >
             <h4>Contáctanos</h4>
-            <a href="https://wa.me/1234567890" className="whatsapp-link">
-              <i className="fab fa-whatsapp"></i> Chatea por WhatsApp
+            <a
+              href="https://wa.me/921136926"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="whatsapp-link"
+              style={{
+                textDecoration: "none",
+                color: "white",
+                fontWeight: "bold",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <i className="fab fa-whatsapp" style={{ marginRight: "8px" }}></i>
+              Chatea por WhatsApp
             </a>
           </div>
         </div>
