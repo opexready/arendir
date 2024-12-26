@@ -393,7 +393,7 @@ const AnticipoTable = () => {
               marginRight: 2,
               display: "flex",
               alignItems: "center",
-              gap: 1,
+              gap: "8px",
             }}
             onClick={handleAnticipoViajes}
           >
@@ -407,12 +407,12 @@ const AnticipoTable = () => {
 
           <Button
             variant="contained"
-            color="success"
+            color="warning"
             sx={{
               marginRight: 2,
               display: "flex",
               alignItems: "center",
-              gap: 1,
+              gap: "8px",
             }}
             onClick={handleAnticipoGastosLocales}
           >
@@ -426,12 +426,12 @@ const AnticipoTable = () => {
 
           <Button
             variant="contained"
-            color="warning"
+            color="success"
             sx={{
-              marginRight: 2,
+              marginRight: -3,
               display: "flex",
               alignItems: "center",
-              gap: 1,
+              gap: "8px",
             }}
             onClick={handleOpenConfirmFinalizarDialog}
           >

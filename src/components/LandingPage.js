@@ -264,19 +264,19 @@ const LandingPage = () => {
             <div className="plan">
               <h3>Personal</h3>
               <p>Obtén el mejor precio para uso personal</p>
-              <button onClick={methodsPageClick} className="plan-button">Comprar</button>
+              <button onClick={methodsPageClick} className="plan-button">Subscribirse</button>
               <p className="plan-price">S/ 8 / Mensual</p>
             </div>
             <div className="plan">
               <h3>Negocio</h3>
               <p>Accede a las funciones principales al iniciar tu negocio</p>
-              <button onClick={methodsPageClick} className="plan-button">Comprar</button>
+              <button onClick={methodsPageClick} className="plan-button">Subscribirse</button>
               <p className="plan-price">S/ 15 / Mensual</p>
             </div>
             <div className="plan">
               <h3>Corporativo</h3>
               <p>Desbloquea todas las funciones, ideal para empresas</p>
-              <button onClick={methodsPageClick} className="plan-button">Comprar</button>
+              <button onClick={methodsPageClick} className="plan-button">Subscribirse</button>
               <p className="plan-price">S/ 25 / Mensual</p>
             </div>
           </div>

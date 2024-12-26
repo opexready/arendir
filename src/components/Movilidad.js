@@ -147,6 +147,7 @@ const Movilidad = () => {
         if (response?.data?.nombre) {
           numeroRendicion = response.data.nombre;
           idRendicion = response.data.id;
+          console.log("idRendicion  " + idRendicion);
         } else {
           console.error(
             "No se pudo obtener el valor de nombre de la última rendición."
@@ -175,6 +176,7 @@ const Movilidad = () => {
     const today = new Date().toISOString().split("T")[0];
     const userString = localStorage.getItem("user");
     const user = userString ? JSON.parse(userString) : null;
+    const userId = user?.id;
 
     const dataToSend = {
       ...formData,
@@ -184,7 +186,7 @@ const Movilidad = () => {
         : today,
       usuario: loggedInUser,
       correlativo: "00000001",
-      ruc: "00000000000",
+      ruc: "20612958271",
       dni: user.dni,
       gerencia: user.gerencia,
       numero_rendicion: numeroRendicion,
@@ -193,7 +195,7 @@ const Movilidad = () => {
       inafecto: 0,
       igv: 0,
       serie: "----",
-      id_user: user.id,
+      id_user: userId,
       id_numero_rendicion: idRendicion,
       empresa: user.company_name,
     };
