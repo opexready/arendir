@@ -175,7 +175,9 @@ const Movilidad = () => {
 
     const today = new Date().toISOString().split("T")[0];
     const userString = localStorage.getItem("user");
+    console.log("datos del usuario" + userString);
     const user = userString ? JSON.parse(userString) : null;
+    const full_name = user?.full_name;
     const userId = user?.id;
 
     const dataToSend = {
@@ -198,6 +200,7 @@ const Movilidad = () => {
       id_user: userId,
       id_numero_rendicion: idRendicion,
       empresa: user.company_name,
+      full_name: full_name
     };
 
     try {

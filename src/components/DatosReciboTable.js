@@ -34,7 +34,6 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import "./DatosRecibo.css";
 import api, { baseURL } from "../api";
-import lupaIcon from "../assets/lupa-icon.png";
 
 const DatosReciboTable = () => {
   const categoryOptions = [
@@ -355,7 +354,7 @@ const DatosReciboTable = () => {
       if (userId && username) {
         const response = await api.get("/documentos/", {
           params: {
-            company_name: "innova",
+            company_name: user.company_name,
             estado: "POR APROBAR",
             username: username,
             tipo_solicitud: "",
@@ -601,12 +600,15 @@ const DatosReciboTable = () => {
     }
 
     const todayDate = new Date().toISOString().split("T")[0];
+    const userString = localStorage.getItem("user");
+    const user = userString ? JSON.parse(userString) : null;
+  
 
     const requestData = {
       fecha_solicitud: todayDate,
-      dni: formData.dni || "12345678",
+      dni: formData.dni || "11111111",
       usuario: loggedInUser,
-      gerencia: "Gerencia de Finanzas",
+      gerencia: "",
       ruc: formData.ruc,
       proveedor: formData.proveedor || "Proveedor Desconocido",
       fecha_emision: formData.fecha,
@@ -623,10 +625,10 @@ const DatosReciboTable = () => {
       anticipo: 0.0,
       total: parseFloat(formData.total),
       pago: parseFloat(formData.total),
-      detalle: "Pago por servicios de consultoría",
+      detalle: "",
       estado: "POR APROBAR",
       tipo_solicitud: "RENDICION",
-      empresa: "innova",
+      empresa: user.company_name,
       archivo: formData.archivo,
       tipo_cambio: formData.moneda === "USD" ? tipoCambio : 1,
       afecto: parseFloat(formData.afecto) || 0.0,
@@ -634,6 +636,7 @@ const DatosReciboTable = () => {
       rubro: formData.rubro,
       cuenta_contable: parseInt(formData.cuentaContable, 10),
       numero_rendicion: nombreRendicion,
+
     };
 
     try {

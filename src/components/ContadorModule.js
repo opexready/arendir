@@ -39,7 +39,9 @@ const ContadorModule = () => {
       if (tipo === "RENDICION") {
         await axios.put(`${baseURL}/rendicion/${id}`, { estado: nuevoEstado });
       } else if (tipo === "ANTICIPO") {
-        await axios.put(`${baseURL}/api/solicitud/${id}`, { estado: nuevoEstado });
+        await axios.put(`${baseURL}/api/solicitud/${id}`, {
+          estado: nuevoEstado,
+        });
       }
       setRendiciones((prevRendiciones) =>
         prevRendiciones.map((rendicion) =>
@@ -268,13 +270,61 @@ const ContadorModule = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell style={headerStyle}>Código</TableCell>
-                <TableCell style={headerStyle}>Colaborador</TableCell>
-                <TableCell style={headerStyle}>Tipo</TableCell>
-                <TableCell style={headerStyle}>Estado</TableCell>
-                <TableCell style={headerStyle}>Fecha Registro</TableCell>
-                <TableCell style={headerStyle}>Fecha Actualización</TableCell>
-                <TableCell style={headerStyle}>Acciones</TableCell>
+                <TableCell style={headerStyle}>
+                  {" "}
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/a46.png?alt=media&token=00936ed5-e266-4eca-853b-f869b3f2afeb"
+                    alt="Ícono Eliminar"
+                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                  />
+                  Código
+                </TableCell>
+                <TableCell style={headerStyle}>
+                  {" "}
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/a47.png?alt=media&token=63738bbc-85ca-4d4e-8ea5-ffd95fa4e805"
+                    alt="Ícono Eliminar"
+                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                  />
+                  Colaborador
+                </TableCell>
+                <TableCell style={headerStyle}>
+                  {" "}
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/a48.png?alt=media&token=af55ca0b-19f9-4c2d-8b32-b118eacff3f1"
+                    alt="Ícono Eliminar"
+                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                  />
+                  Tipo
+                </TableCell>
+                <TableCell style={headerStyle}>
+                  {" "}
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/a49.png?alt=media&token=eb9186e8-2de5-4872-a22b-7121a463b16f"
+                    alt="Ícono Eliminar"
+                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                  />
+                  Estado
+                </TableCell>
+                <TableCell style={headerStyle}>
+                  {" "}
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/a56.png?alt=media&token=0007a489-531b-41e3-862e-7025a3140f95"
+                    alt="Ícono Eliminar"
+                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                  />
+                  Fecha Registro
+                </TableCell>
+                <TableCell style={headerStyle}>
+                  {" "}
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/a56.png?alt=media&token=0007a489-531b-41e3-862e-7025a3140f95"
+                    alt="Ícono Eliminar"
+                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                  />
+                  Fecha Actualización
+                </TableCell>
+                <TableCell style={headerStyle}></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -345,21 +395,87 @@ const ContadorModule = () => {
                         <Table size="small">
                           <TableHead>
                             <TableRow>
-                              <TableCell style={headerStyle}>RUC</TableCell>
                               <TableCell style={headerStyle}>
+                                {" "}
+                                <img
+                                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
+                                  alt="Ícono Eliminar"
+                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                />
+                                RUC
+                              </TableCell>
+                              <TableCell style={headerStyle}>
+                                {" "}
+                                <img
+                                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
+                                  alt="Ícono Eliminar"
+                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                />
                                 Proveedor
                               </TableCell>
                               <TableCell style={headerStyle}>
+                                {" "}
+                                <img
+                                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
+                                  alt="Ícono Eliminar"
+                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                />
                                 Fecha Emisión
                               </TableCell>
-                              <TableCell style={headerStyle}>Moneda</TableCell>
                               <TableCell style={headerStyle}>
+                                {" "}
+                                <img
+                                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
+                                  alt="Ícono Eliminar"
+                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                />
+                                Moneda
+                              </TableCell>
+                              <TableCell style={headerStyle}>
+                                {" "}
+                                <img
+                                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
+                                  alt="Ícono Eliminar"
+                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                />
                                 Tipo Documento
                               </TableCell>
-                              <TableCell style={headerStyle}>Total</TableCell>
-                              <TableCell style={headerStyle}>Estado</TableCell>
-                              <TableCell style={headerStyle}>Empresa</TableCell>
-                              <TableCell style={headerStyle}>Archivo</TableCell>
+                              <TableCell style={headerStyle}>
+                                {" "}
+                                <img
+                                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
+                                  alt="Ícono Eliminar"
+                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                />
+                                Total
+                              </TableCell>
+                              <TableCell style={headerStyle}>
+                                {" "}
+                                <img
+                                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
+                                  alt="Ícono Eliminar"
+                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                />
+                                Estado
+                              </TableCell>
+                              <TableCell style={headerStyle}>
+                                {" "}
+                                <img
+                                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
+                                  alt="Ícono Eliminar"
+                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                />
+                                Empresa
+                              </TableCell>
+                              <TableCell style={headerStyle}>
+                                {" "}
+                                <img
+                                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
+                                  alt="Ícono Eliminar"
+                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                />
+                                Archivo
+                              </TableCell>
                             </TableRow>
                           </TableHead>
                           <TableBody>
@@ -403,7 +519,11 @@ const ContadorModule = () => {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                   >
-                                    Ver Archivo
+                                    <img
+                                      src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/a71.png?alt=media&token=61d31196-774b-40ad-9a1d-327267c7b22e"
+                                      alt="Ícono Eliminar"
+                                      style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                    />
                                   </Button>
                                 </TableCell>
                               </TableRow>

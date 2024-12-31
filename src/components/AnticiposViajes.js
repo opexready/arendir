@@ -64,8 +64,8 @@ const AnticiposViajes = () => {
     tipo_viaje: "",
     numero_rendicion: "",
     fecha_solicitud: getCurrentDate(),
-    id_user:"",
-    id_numero_rendicion:"",
+    id_user: "",
+    id_numero_rendicion: "",
   });
 
   const [tipoViaje, setTipoViaje] = useState("NACIONAL");
@@ -93,7 +93,7 @@ const AnticiposViajes = () => {
       const userId = user ? user.id : null;
       const username = user ? user.email : null;
       const company_name = user ? user.company_name : null;
-      console.log("company_name",company_name);
+      console.log("company_name", company_name);
       // Extraer numero_rendicion usando el userId
       let numeroRendicion = "";
       try {
@@ -119,12 +119,12 @@ const AnticiposViajes = () => {
             fecha_solicitud_to: "",
             fecha_rendicion_from: "",
             fecha_rendicion_to: "",
-            id_user:userId,
-            id_numero_rendicion:"",
+            id_user: userId,
+            id_numero_rendicion: "",
           },
         });
         console.log("Resultado de la solicitud:", response.data);
-        setRecords(response.data); 
+        setRecords(response.data);
       } catch (error) {
         console.error("Error al obtener los documentos:", error);
       }
@@ -186,8 +186,8 @@ const AnticiposViajes = () => {
           tipo_anticipo: "VIAJES",
           numero_rendicion: rendicionData.nombre,
           correlativo: "0001",
-          id_user:userId,
-          id_numero_rendicion:rendicionData.id,
+          id_user: userId,
+          id_numero_rendicion: rendicionData.id,
         });
       } catch (error) {
         console.error("Error al obtener los datos del usuario:", error);
@@ -227,15 +227,14 @@ const AnticiposViajes = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await axios.post(
-        `${baseURL}/documentos/crear-con-pdf-custom/`,
-        formData
-      );
-      setResponseMessage("Anticipo creado correctamente");
+      console.log("request para crear pdf: " , formData.toString);
+      await axios.post(`${baseURL}/documentos/crear-con-pdf-custom/`, formData);
+      setResponseMessage("Anticipo creado correctamente.");
       setOpen(true);
     } catch (error) {
       setResponseMessage("Error al crear el documento.");
       console.error("Error:", error);
+      setOpen(true);
     } finally {
       setIsLoading(false);
     }
@@ -243,7 +242,7 @@ const AnticiposViajes = () => {
 
   const handleClose = () => {
     setOpen(false);
-    window.history.back();
+    navigate("/anticipo-table"); // Redirige a la ruta deseada
   };
 
   const handleDepartamentoChange = (e) => {
@@ -394,22 +393,37 @@ const AnticiposViajes = () => {
             sx={{ marginRight: 2 }}
             onClick={() => setShowForm(true)} // Mostrar formulario
           >
+            <img
+              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa11.png?alt=media&token=6d72c9af-25f8-43b4-89e8-fb82b22224de"
+              alt="Ícono de Anticipo Viajes"
+              style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+            />
             Anticipo Viajes
-          </Button>
-          <Button
-            variant="contained"
-            color="success"
-            sx={{ marginRight: 2 }}
-            onClick={handleAnticipoGastosLocales}
-          >
-            Anticipo Gastos Locales
           </Button>
           <Button
             variant="contained"
             color="warning"
             sx={{ marginRight: 2 }}
+            onClick={handleAnticipoGastosLocales}
+          >
+            <img
+              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa12.png?alt=media&token=605b5260-250c-4fb0-ade2-ff241845be1c"
+              alt="Ícono de Anticipo Gastos Locales"
+              style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+            />
+            Anticipo Gastos Locales
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            sx={{ marginRight: 2 }}
             onClick={handleOpenConfirmFinalizarDialog}
           >
+            <img
+              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa13.png?alt=media&token=7b15c497-d494-4a52-9011-ee7e6bdbe1e8"
+              alt="Ícono de Finalizar Solicitud"
+              style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+            />
             Finalizar Solicitud
           </Button>
         </Box>
@@ -623,25 +637,18 @@ const AnticiposViajes = () => {
       </Card>
 
       {/* Modal para confimar el registro */}
-      <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
-        <DialogTitle>Anticipo registrado</DialogTitle>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Registro Exitoso</DialogTitle>
         <DialogContent>
-          {selectedFile && (
-            <iframe
-              src={selectedFile}
-              width="20%"
-              height="200px"
-              title="Archivo del Documento"
-              frameBorder="0"
-            />
-          )}
+          <Typography>{responseMessage}</Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            Cerrar
+            OK
           </Button>
         </DialogActions>
       </Dialog>
+
       {/* Modal para confimar el registro */}
 
       <Dialog

@@ -59,7 +59,7 @@ const AnticipoTable = () => {
     tipo_anticipo: "VIAJES",
     destino: "",
     motivo: "",
-    empresa: "innova",
+    empresa: "",
     estado: "POR APROBAR",
     fecha_emision: "",
     dias: "",
@@ -113,7 +113,7 @@ const AnticipoTable = () => {
       try {
         const response = await axios.get(`${baseURL}/documentos/`, {
           params: {
-            company_name: "innova",
+            company_name: user.company_name,
             estado: "POR APROBAR",
             username: username,
             tipo_solicitud: "",

@@ -22,6 +22,7 @@ import {
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import axios from "axios";
 import { baseURL, getUsersByCompanyAndRole } from "../api";
+import { red } from "@mui/material/colors";
 
 const AdministracionModule2 = () => {
   const [rendiciones, setRendiciones] = useState([]);
@@ -41,7 +42,9 @@ const AdministracionModule2 = () => {
       if (tipo === "RENDICION") {
         await axios.put(`${baseURL}/rendicion/${id}`, { estado: nuevoEstado });
       } else if (tipo === "ANTICIPO") {
-        await axios.put(`${baseURL}/api/solicitud/${id}`, { estado: nuevoEstado });
+        await axios.put(`${baseURL}/api/solicitud/${id}`, {
+          estado: nuevoEstado,
+        });
       }
       setRendiciones((prevRendiciones) =>
         prevRendiciones.map((rendicion) =>
@@ -164,11 +167,11 @@ const AdministracionModule2 = () => {
   const [pdfUrl, setPdfUrl] = useState("");
 
   const userString = localStorage.getItem("user");
-        const user = userString ? JSON.parse(userString) : null;
-        const userId = user ? user.id : null;
-        const username = user ? user.email : null;
-        const userCompany = user ? user.company_name : null;
-        console.log("user", user);
+  const user = userString ? JSON.parse(userString) : null;
+  const userId = user ? user.id : null;
+  const username = user ? user.email : null;
+  const userCompany = user ? user.company_name : null;
+  console.log("user", user);
 
   const handleExportPDF = async (rendicionId) => {
     const params = {
@@ -307,14 +310,21 @@ const AdministracionModule2 = () => {
           <Grid item xs={12} sm={4}>
             <Button
               variant="contained"
+              color="success"
               onClick={handleExportExcel}
               sx={{
-                backgroundColor: "#F15A29",
-                "&:hover": { backgroundColor: "#D14A23" },
-                color: "white",
+                marginRight: -3,
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
               }}
               fullWidth
             >
+              <img
+                src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/a59.png?alt=media&token=d13ade7a-96cf-4b94-aa8a-e8e678ae531b"
+                alt="Ícono Eliminar"
+                style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+              />
               Exportar Excel
             </Button>
           </Grid>
@@ -342,14 +352,72 @@ const AdministracionModule2 = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell style={headerStyle}>Código</TableCell>
-                <TableCell style={headerStyle}>Colaborador</TableCell>
-                <TableCell style={headerStyle}>Tipo</TableCell>
-                <TableCell style={headerStyle}>Estado</TableCell>
-                <TableCell style={headerStyle}>Fecha Registro</TableCell>
-                <TableCell style={headerStyle}>Fecha Actualización</TableCell>
-                <TableCell style={headerStyle}>Acciones</TableCell>
-                <TableCell style={headerStyle}>PDF</TableCell>
+                <TableCell style={headerStyle}>
+                  {" "}
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/a46.png?alt=media&token=00936ed5-e266-4eca-853b-f869b3f2afeb"
+                    alt="Ícono Eliminar"
+                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                  />
+                  Código
+                </TableCell>
+                <TableCell style={headerStyle}>
+                  {" "}
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/a47.png?alt=media&token=63738bbc-85ca-4d4e-8ea5-ffd95fa4e805"
+                    alt="Ícono Eliminar"
+                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                  />
+                  Colaborador
+                </TableCell>
+                <TableCell style={headerStyle}>
+                  {" "}
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/a48.png?alt=media&token=af55ca0b-19f9-4c2d-8b32-b118eacff3f1"
+                    alt="Ícono Eliminar"
+                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                  />
+                  Tipo
+                </TableCell>
+                <TableCell style={headerStyle}>
+                  {" "}
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/a49.png?alt=media&token=eb9186e8-2de5-4872-a22b-7121a463b16f"
+                    alt="Ícono Eliminar"
+                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                  />
+                  Estado
+                </TableCell>
+                <TableCell style={headerStyle}>
+                  {" "}
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/a56.png?alt=media&token=0007a489-531b-41e3-862e-7025a3140f95"
+                    alt="Ícono Eliminar"
+                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                  />
+                  Fecha Registro
+                </TableCell>
+                <TableCell style={headerStyle}>
+                  {" "}
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/a56.png?alt=media&token=0007a489-531b-41e3-862e-7025a3140f95"
+                    alt="Ícono Eliminar"
+                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                  />
+                  Fecha Actualización
+                </TableCell>
+                {/* <TableCell style={headerStyle}>  <img
+                        src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/a58.png?alt=media&token=c8cddc01-ab6c-4ec4-982c-a0657445fa97"
+                        alt="Ícono Eliminar"
+                        style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                      />Acciones</TableCell> */}
+                <TableCell style={headerStyle}></TableCell>
+                <TableCell style={headerStyle}></TableCell>
+                {/* <TableCell style={headerStyle}>  <img
+                        src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/a59.png?alt=media&token=d13ade7a-96cf-4b94-aa8a-e8e678ae531b"
+                        alt="Ícono Eliminar"
+                        style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                      />PDF</TableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -388,13 +456,22 @@ const AdministracionModule2 = () => {
                       {rendicion.rendicion.tipo === "RENDICION" && (
                         <Button
                           variant="contained"
-                          onClick={() => handleExportPDF(rendicion.rendicion.id)}
+                          color="error"
+                          onClick={() =>
+                            handleExportPDF(rendicion.rendicion.id)
+                          }
                           sx={{
-                            backgroundColor: "#2E3192",
-                            "&:hover": { backgroundColor: "#1F237A" },
-                            color: "white",
+                            marginRight: -3,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
                           }}
                         >
+                          <img
+                            src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/a59.png?alt=media&token=d13ade7a-96cf-4b94-aa8a-e8e678ae531b"
+                            alt="Ícono Eliminar"
+                            style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                          />
                           Exportar PDF
                         </Button>
                       )}
@@ -437,21 +514,87 @@ const AdministracionModule2 = () => {
                         <Table size="small">
                           <TableHead>
                             <TableRow>
-                              <TableCell style={headerStyle}>RUC</TableCell>
                               <TableCell style={headerStyle}>
+                                {" "}
+                                <img
+                                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
+                                  alt="Ícono Eliminar"
+                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                />
+                                RUC
+                              </TableCell>
+                              <TableCell style={headerStyle}>
+                                {" "}
+                                <img
+                                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
+                                  alt="Ícono Eliminar"
+                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                />
                                 Proveedor
                               </TableCell>
                               <TableCell style={headerStyle}>
+                                {" "}
+                                <img
+                                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
+                                  alt="Ícono Eliminar"
+                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                />
                                 Fecha Emisión
                               </TableCell>
-                              <TableCell style={headerStyle}>Moneda</TableCell>
                               <TableCell style={headerStyle}>
+                                {" "}
+                                <img
+                                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
+                                  alt="Ícono Eliminar"
+                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                />
+                                Moneda
+                              </TableCell>
+                              <TableCell style={headerStyle}>
+                                {" "}
+                                <img
+                                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
+                                  alt="Ícono Eliminar"
+                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                />
                                 Tipo Documento
                               </TableCell>
-                              <TableCell style={headerStyle}>Total</TableCell>
-                              <TableCell style={headerStyle}>Estado</TableCell>
-                              <TableCell style={headerStyle}>Empresa</TableCell>
-                              <TableCell style={headerStyle}>Archivo</TableCell>
+                              <TableCell style={headerStyle}>
+                                {" "}
+                                <img
+                                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
+                                  alt="Ícono Eliminar"
+                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                />
+                                Total
+                              </TableCell>
+                              <TableCell style={headerStyle}>
+                                {" "}
+                                <img
+                                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
+                                  alt="Ícono Eliminar"
+                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                />
+                                Estado
+                              </TableCell>
+                              <TableCell style={headerStyle}>
+                                {" "}
+                                <img
+                                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
+                                  alt="Ícono Eliminar"
+                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                />
+                                Empresa
+                              </TableCell>
+                              <TableCell style={headerStyle}>
+                                {" "}
+                                <img
+                                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
+                                  alt="Ícono Eliminar"
+                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                />
+                                Archivo
+                              </TableCell>
                             </TableRow>
                           </TableHead>
                           <TableBody>
@@ -479,7 +622,7 @@ const AdministracionModule2 = () => {
                                         POR ABONAR
                                       </MenuItem>
                                       <MenuItem value="ABONADO">
-                                      TERMINADO
+                                        TERMINADO
                                       </MenuItem>
                                       <MenuItem value="RECHAZADO">
                                         RECHAZADO
@@ -495,7 +638,11 @@ const AdministracionModule2 = () => {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                   >
-                                    Ver Archivo
+                                    <img
+                                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/a71.png?alt=media&token=61d31196-774b-40ad-9a1d-327267c7b22e"
+                                  alt="Ícono Eliminar"
+                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                />
                                   </Button>
                                 </TableCell>
                               </TableRow>
