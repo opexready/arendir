@@ -100,10 +100,12 @@ const HistorialGastos = () => {
                 onChange={(e) => setEstado(e.target.value)}
               >
                 <MenuItem value="">Todos</MenuItem>
-                <MenuItem value="CREADO">CREADO</MenuItem>
-                <MenuItem value="PREPARADO">PREPARADO</MenuItem>
+                {/* <MenuItem value="CREADO">CREADO</MenuItem>
+                <MenuItem value="PREPARADO">PREPARADO</MenuItem> */}
                 <MenuItem value="POR APROBAR">POR APROBAR</MenuItem>
-                <MenuItem value="APROBADO">APROBADO</MenuItem>
+                <MenuItem value="APROBADO">POR ABONAR</MenuItem>
+                <MenuItem value="ABONADO">ABONADO</MenuItem>
+                <MenuItem value="RECHAZADO">RECHAZADO</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -130,6 +132,7 @@ const HistorialGastos = () => {
               InputLabelProps={{ shrink: true }}
             />
           </Grid>
+    
           <Grid item xs={12} sm={6} md={4}>
             <TextField
               label="Fecha Registro Hasta"

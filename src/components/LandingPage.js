@@ -254,30 +254,133 @@ const LandingPage = () => {
           />
         </div>
       </section>
-
+      {/* Section de pagos */}
       <section id="pricing" className="plans-section">
         <div className="plans-container">
-          <div className="plans-title">
-            <h2>Planes</h2>
+          <div
+            className="plans-title"
+            style={{ display: "flex", alignItems: "center" }}
+          >
+            <img
+              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/AR33.png?alt=media&token=113925ce-c08b-421b-994b-850d2cc57c20"
+              alt="Icono de planes"
+              style={{
+                width: "100%", // Cambia el ancho según sea necesario en porcentaje
+                maxWidth: "120px", // Ancho máximo para que no sea demasiado grande
+                height: "auto", // Mantiene la proporción de la imagen
+                marginRight: "2%",
+              }}
+            />
+            <h2 className="plan-description">Descripción de Planes</h2>
           </div>
           <div className="plans-grid">
-            <div className="plan">
-              <h3>Personal</h3>
+            <div className="plan white-rectangle">
+              <h3>
+                <img
+                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/AR35.png?alt=media&token=2136de01-56dd-4ae0-81b0-d68744259824"
+                  alt="icon"
+                  className="plan-icon"
+                />{" "}
+                Personal
+              </h3>
               <p>Obtén el mejor precio para uso personal</p>
-              <button onClick={methodsPageClick} className="plan-button">Subscribirse</button>
+              <button onClick={methodsPageClick} className="plan-button">
+                Subscribirse
+              </button>
               <p className="plan-price">S/ 8 / Mensual</p>
             </div>
-            <div className="plan">
-              <h3>Negocio</h3>
+            <div className="plan white-rectangle">
+              <h3>
+                <img
+                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/AR35.png?alt=media&token=2136de01-56dd-4ae0-81b0-d68744259824"
+                  alt="icon"
+                  className="plan-icon"
+                />{" "}
+                Negocio
+              </h3>
               <p>Accede a las funciones principales al iniciar tu negocio</p>
-              <button onClick={methodsPageClick} className="plan-button">Subscribirse</button>
+              <button onClick={methodsPageClick} className="plan-button">
+                Subscribirse
+              </button>
               <p className="plan-price">S/ 15 / Mensual</p>
             </div>
-            <div className="plan">
-              <h3>Corporativo</h3>
+            <div className="plan white-rectangle">
+              <h3>
+                <img
+                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/AR35.png?alt=media&token=2136de01-56dd-4ae0-81b0-d68744259824"
+                  alt="icon"
+                  className="plan-icon"
+                />{" "}
+                Corporativo
+              </h3>
               <p>Desbloquea todas las funciones, ideal para empresas</p>
-              <button onClick={methodsPageClick} className="plan-button">Subscribirse</button>
+              <button onClick={methodsPageClick} className="plan-button">
+                Subscribirse
+              </button>
               <p className="plan-price">S/ 25 / Mensual</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* métddos de pago */}
+      <section id="pricing" className="method-section">
+        <div className="plans-container">
+          <div
+            className="plans-title"
+            style={{ display: "flex", alignItems: "center" }}
+          >
+            <img
+              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/AR33.png?alt=media&token=113925ce-c08b-421b-994b-850d2cc57c20"
+              alt="Icono de planes"
+              style={{
+                width: "100%", // Cambia el ancho según sea necesario en porcentaje
+                maxWidth: "120px", // Ancho máximo para que no sea demasiado grande
+                height: "auto", // Mantiene la proporción de la imagen
+                marginRight: "2%",
+              }}
+            />
+            <h2 className="method-description">Métodos de Pago</h2>
+          </div>
+          <div className="payment-methods-grid">
+            <div className="payment-method2">
+              <img
+                src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/yapeicono.png?alt=media&token=b9bbf281-b3ae-4d0e-9d86-7ea78e1ba3b0"
+                alt="Yape Logo"
+              />
+              <img
+                src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/YAPE.png?alt=media&token=41b4f25f-889f-486e-8e8f-360f2dd3b616"
+                alt="Yape QR"
+              />
+              <img
+                src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/BCP.png?alt=media&token=0a37d741-54c4-4dee-b867-d099b39756d1"
+                alt="BCP Logo"
+              />
+              <p className="left-aligned">
+              <span className="az">Número de Cuenta BCP en soles es:</span> 19191892571076
+                <br />
+                <span className="az">Número de Cuenta Interbancaria es:</span> 00219119189257107658
+              </p>
+            </div>
+            <div className="payment-method2">
+              <img
+                src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/plinicono.png?alt=media&token=1299286a-be8e-4238-9c88-d69ea37514cf"
+                alt="Plin Logo"
+              />
+              <img
+                src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/PLIN.png?alt=media&token=882ea5a6-c930-414f-b631-c12162d3c43e"
+                alt="Plin QR"
+              />
+              <img
+                src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/interbank.png?alt=media&token=66d6dd01-f84a-4f08-8f17-7db25e9b5b2a"
+                alt="Interbank Logo"
+              />
+              <p className="left-aligned">
+                <span className="cv">Número de Cuenta Simple Soles en Interbank es:</span> 8983325007330
+                <br />
+                <span className="cv">Número de Cuenta Interbancario en Interbank es:</span>
+                00389801332500733040
+              </p>
             </div>
           </div>
         </div>
@@ -344,13 +447,13 @@ const LandingPage = () => {
             <h4>Sobre Arendir</h4>
             <ul style={{ listStyleType: "none", padding: "0", margin: "0" }}>
               <li>
-                <a href="#">Quiénes somos</a>
+                <a a onClick={() => scrollToSection("about")} href="#about">Quiénes somos</a>
               </li>
               <li>
-                <a href="#">Servicios</a>
+              <a onClick={() => scrollToSection("services")} href="#services">Servicios</a>
               </li>
               <li>
-                <a href="#">Tarifario</a>
+              <a onClick={() => scrollToSection("pricing")} href="#pricing">Tarifario</a>
               </li>
               <li>
                 <a href="#">Soporte</a>
