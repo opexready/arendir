@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./RegisterForm.css"; //
 import {
   TextField,
   Button,
@@ -60,15 +61,35 @@ const RegisterForm = ({ open, onClose }) => {
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
       <DialogTitle sx={{ textAlign: "center" }}>
-        <Typography variant="h5">¡Comienza hoy!</Typography>
-        <Typography variant="body2" color="textSecondary">
-          No requiere tarjeta de crédito
-        </Typography>
+        <div className="title-container">
+          <img
+            src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/AR31.png?alt=media&token=00ce3038-cf2f-411f-842d-c7be5c023299"
+            alt="Icon"
+            className="title-icon"
+          />
+          <div className="title-text">
+            <Typography variant="h5" className="main-title">
+              ¡Comienza hoy!
+            </Typography>
+            <Typography variant="body1" className="subtitle">
+              Conoce las ventajas de la Prueba Gratuita de ARendir ¡No requiere
+              tarjeta de crédito!
+            </Typography>
+          </div>
+        </div>
       </DialogTitle>
 
       <DialogContent>
-        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-        {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+        {success && (
+          <Alert severity="success" sx={{ mb: 2 }}>
+            {success}
+          </Alert>
+        )}
 
         <form onSubmit={handleSubmit}>
           <TextField
@@ -145,10 +166,19 @@ const RegisterForm = ({ open, onClose }) => {
               variant="contained"
               color="primary"
               sx={{
-                backgroundColor: "#2E3192",
+                background:
+                  "linear-gradient(90deg,#ff8b31, #FF6E40, #FF007B, #191b38)",
+                color: "white",
                 "&:hover": { backgroundColor: "#1F237A" },
+                display: "flex",
+                alignItems: "center",
               }}
             >
+              <img
+                src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/AR32.png?alt=media&token=c65a01dd-a03a-4693-9846-b313645cd8eb"
+                alt="Icon"
+                style={{ width: "24px", height: "24px", marginRight: "8px" }}
+              />
               Empezar prueba gratuita
             </Button>
           </DialogActions>

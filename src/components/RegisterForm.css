@@ -1,0 +1,31 @@
+.title-container {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Centra el contenido horizontalmente */
+    text-align: center; /* Centra el texto */
+    margin-bottom: 20px; /* Espacio inferior */
+  }
+  
+  .title-icon {
+    width: 40px; /* Ajusta el tamaño según tus necesidades */
+    height: 40px; /* Ajusta el tamaño según tus necesidades */
+    margin-right: 8px; /* Espacio entre la imagen y el texto */
+  }
+  
+  .title-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .main-title {
+    color: #FF6E40; /* Cambia el color del título */
+    font-size: 30px!important; /* Ajusta el tamaño según tus necesidades */
+    font-weight: bold!important; /* Hace el texto negrita */
+  }
+  
+  .subtitle {
+    color: #333; /* Color del texto adicional */
+    font-size: 14px; /* Tamaño de fuente del texto adicional */
+    margin-top: 8px; /* Espacio superior */
+  }
