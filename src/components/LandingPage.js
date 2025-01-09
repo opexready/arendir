@@ -519,6 +519,9 @@ const LandingPage = () => {
               Chatea por WhatsApp
             </a>
           </div>
+          <div className="footer-text">
+    ©️ 2025 OPEX READY S.A.C Todos los derechos reservados RUC 20612958271
+  </div>
         </div>
       </footer>
     </div>
