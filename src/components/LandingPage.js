@@ -283,10 +283,17 @@ const LandingPage = () => {
                 />{" "}
                 Personal
               </h3>
-              <p>Obtén el mejor precio para uso personal</p>
-              <button onClick={methodsPageClick} className="plan-button">
+              <ul style={{ textAlign: "left" }}>
+              <li>
+                Envía hasta 25 tickets de gastos realizados en automático desde
+                WhatsApp.
+              </li>
+              <li>1 usuario por razón social.</li>
+              <li>Descarga tus facturas desde WhatsApp y email.</li>
+            </ul>
+              {/* <button onClick={methodsPageClick} className="plan-button">
                 Subscribirse
-              </button>
+              </button> */}
               <p className="plan-price">S/ 8 / Mensual</p>
             </div>
             <div className="plan white-rectangle">
@@ -298,10 +305,17 @@ const LandingPage = () => {
                 />{" "}
                 Negocio
               </h3>
-              <p>Accede a las funciones principales al iniciar tu negocio</p>
-              <button onClick={methodsPageClick} className="plan-button">
+              <ul style={{ textAlign: "left" }}>
+              <li>
+                Registro de gastos ilimitados desde WhatsApp mediante texto o
+                foto de tus recibos.
+              </li>
+              <li>Descarga tu historial de gastos a Excel y PDF.</li>
+              <li>Acceso a Arendir, tu asistente financiero 24/7.</li>
+            </ul>
+              {/* <button onClick={methodsPageClick} className="plan-button">
                 Subscribirse
-              </button>
+              </button> */}
               <p className="plan-price">S/ 15 / Mensual</p>
             </div>
             <div className="plan white-rectangle">
@@ -313,10 +327,18 @@ const LandingPage = () => {
                 />{" "}
                 Corporativo
               </h3>
-              <p>Desbloquea todas las funciones, ideal para empresas</p>
-              <button onClick={methodsPageClick} className="plan-button">
+              <ul style={{ textAlign: "left" }}>
+              <li>
+                Personaliza la cantidad de tickets a facturar que necesitas.
+              </li>
+              <li>Diferentes usuarios por razón social.</li>
+              <li>Descarga tus facturas desde WhatsApp y email.</li>
+              <li>Accede a un panel de control para ver todas tus facturas.</li>
+              <li>Todo lo que incluye el Plan Premium.</li>
+            </ul>
+              {/* <button onClick={methodsPageClick} className="plan-button">
                 Subscribirse
-              </button>
+              </button> */}
               <p className="plan-price">S/ 25 / Mensual</p>
             </div>
           </div>
@@ -357,9 +379,13 @@ const LandingPage = () => {
                 alt="BCP Logo"
               />
               <p className="left-aligned">
-              <span className="az">Número de Cuenta BCP en soles es:</span> 19191892571076
+                <span className="az">Número de Cuenta BCP en soles es:</span>{" "}
+                19191892571076
                 <br />
-                <span className="az">Número de Cuenta Interbancaria es:</span> 00219119189257107658
+                <span className="az">
+                  Número de Cuenta Interbancaria es:
+                </span>{" "}
+                00219119189257107658
               </p>
             </div>
             <div className="payment-method2">
@@ -376,9 +402,14 @@ const LandingPage = () => {
                 alt="Interbank Logo"
               />
               <p className="left-aligned">
-                <span className="cv">Número de Cuenta Simple Soles en Interbank es:</span> 8983325007330
+                <span className="cv">
+                  Número de Cuenta Simple Soles en Interbank es:
+                </span>{" "}
+                8983325007330
                 <br />
-                <span className="cv">Número de Cuenta Interbancario en Interbank es:</span>
+                <span className="cv">
+                  Número de Cuenta Interbancario en Interbank es:
+                </span>
                 00389801332500733040
               </p>
             </div>
@@ -447,16 +478,22 @@ const LandingPage = () => {
             <h4>Sobre Arendir</h4>
             <ul style={{ listStyleType: "none", padding: "0", margin: "0" }}>
               <li>
-                <a a onClick={() => scrollToSection("about")} href="#about">Quiénes somos</a>
+                <a a onClick={() => scrollToSection("about")} href="#about">
+                  Quiénes somos
+                </a>
               </li>
               <li>
-              <a onClick={() => scrollToSection("services")} href="#services">Servicios</a>
+                <a onClick={() => scrollToSection("services")} href="#services">
+                  Servicios
+                </a>
               </li>
               <li>
-              <a onClick={() => scrollToSection("pricing")} href="#pricing">Tarifario</a>
+                <a onClick={() => scrollToSection("pricing")} href="#pricing">
+                  Tarifario
+                </a>
               </li>
               <li>
-                <a href="#">Soporte</a>
+                <a href="mailto:opexready.soporte@gmail.com">Soporte</a>
               </li>
             </ul>
           </div>
@@ -520,8 +557,9 @@ const LandingPage = () => {
             </a>
           </div>
           <div className="footer-text">
-    ©️ 2025 OPEX READY S.A.C Todos los derechos reservados RUC 20612958271
-  </div>
+            ©️ 2025 OPEX READY S.A.C Todos los derechos reservados RUC
+            20612958271
+          </div>
         </div>
       </footer>
     </div>

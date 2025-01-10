@@ -626,7 +626,7 @@ body {
 }
 
 .plan-button {
-  background-color: #fff;
+  background-color: #FF6E40;
   color: rgb(52, 184, 218);
   padding: 12px 30px;
   border: none;
@@ -638,6 +638,7 @@ body {
 
 .plan-button:hover {
   background-color: #e6006f;
+  color: white!important;
 }
 
 .plan-price {
@@ -1145,6 +1146,19 @@ body {
   font-size: 18px;
   color: #666;
   font-family: 'UbuntuLight';
+}
+
+
+.center-aligned {
+  text-align: center;
+  margin: 0 auto;
+  color:black!important;
+}
+
+.contact-link {
+  text-decoration: none;
+  color: #2E3192;
+  font-weight: bold;
 }
 
 /* Responsive ajustes */
