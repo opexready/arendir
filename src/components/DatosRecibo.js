@@ -102,8 +102,7 @@ const DatosRecibo = () => {
   const [confirmFinalizarDialogOpen, setConfirmFinalizarDialogOpen] =
     useState(false);
   const navigate = useNavigate();
-  const { selectedCuentaContable, selectedRubro} =
-    location.state || {};
+  const { selectedCuentaContable, selectedRubro } = location.state || {};
   const [formData, setFormData] = useState({
     fecha: "",
     ruc: "",
@@ -706,7 +705,7 @@ const DatosRecibo = () => {
       anticipo: 0.0,
       total: parseFloat(formData.total),
       pago: parseFloat(formData.total),
-      detalle: "Pago por servicios de consultoría",
+      detalle: "",
       estado: "POR APROBAR",
       tipo_solicitud: "RENDICION",
       empresa: user.company_name,
@@ -734,13 +733,7 @@ const DatosRecibo = () => {
     }
   };
 
-  // const handleNewExpense2 = () => {
-  //   setShowForm(true);
-  // };
-
-  // const handleContinueExpense2 = () => {
-  //   setShowForm(true);
-  // };
+  const [detalle, setDetalle] = useState("");
 
   const handleDialogClose = async (registerAnother) => {
     setDialogOpen(false);
@@ -1146,6 +1139,21 @@ const DatosRecibo = () => {
                 onChange={handleChange}
               />
             ))}
+
+
+{/* trext are */}
+
+<div className="form-group">
+    <label htmlFor="detalle">Detalle:</label>
+    <textarea
+      id="detalle"
+      name="detalle"
+      value={detalle}
+      onChange={(e) => setDetalle(e.target.value)}
+      className="form-control"
+      rows="4"
+    />
+  </div>
 
             <Button
               type="submit"

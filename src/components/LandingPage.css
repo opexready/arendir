@@ -305,7 +305,17 @@ body {
     z-index: 2; /* Asegura que el texto esté por encima de cualquier otro elemento */
 }
 
+.slide-image {
+  width: 100%;
+  height: auto;
+  object-fit: cover; /* Asegura que la imagen cubra el contenedor */
+}
 
+@media (max-width: 768px) {
+  .slide-image {
+    object-fit: contain; /* Ajusta la imagen para que se contenga dentro del contenedor */
+  }
+}
 
 /* Gradiente para el slider */
 .slides::after {

@@ -149,21 +149,21 @@ const LandingPage = () => {
 
       {/* Slider */}
       <section className="slider">
-        <div
-          className="slides"
-          style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-        >
+      <div className="slides" style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
           <img
             src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/slide1.png?alt=media&token=3bf465dc-c288-442a-b57b-113b2f375061"
             alt="Slide 1"
+            className="slide-image"
           />
           <img
             src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/slide2.png?alt=media&token=73e8e0d8-c11b-4133-a791-1473796f6035"
             alt="Slide 2"
+            className="slide-image"
           />
           <img
             src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/slide3.png?alt=media&token=22623873-a054-4e97-8b16-3daf235259df"
             alt="Slide 3"
+            className="slide-image"
           />
         </div>
         <div className="text-form">

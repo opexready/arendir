@@ -113,8 +113,20 @@ const Historial = () => {
             {/* Lista de rendiciones */}
             <List>
               <ListItem>
-                <ListItemText primary="Lista" secondary="Todos" />
-                <ListItemText primary="Status" />
+                <ListItemText
+                  primary={
+                    <Typography style={{ fontWeight: "bold" }}>
+                      Gasto
+                    </Typography>
+                  }
+                />
+                <ListItemText
+                  primary={
+                    <Typography style={{ fontWeight: "bold" }}>
+                      Estado
+                    </Typography>
+                  }
+                />
               </ListItem>
               {rendiciones.map((rendicion, index) => (
                 <ListItem key={index}>
@@ -155,8 +167,20 @@ const Historial = () => {
             {/* Lista de solicitudes */}
             <List>
               <ListItem>
-                <ListItemText primary="Lista" secondary="Todos" />
-                <ListItemText primary="Status" />
+                <ListItemText
+                  primary={
+                    <Typography style={{ fontWeight: "bold" }}>
+                      Anticipo
+                    </Typography>
+                  }
+                />
+                <ListItemText
+                  primary={
+                    <Typography style={{ fontWeight: "bold" }}>
+                      Estado
+                    </Typography>
+                  }
+                />
               </ListItem>
               {solicitudes.map((solicitud, index) => (
                 <ListItem key={index}>
