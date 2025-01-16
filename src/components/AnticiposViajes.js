@@ -29,6 +29,7 @@ import paisesSudamerica from "../data/paisesMundo";
 import { useNavigate } from "react-router-dom";
 
 const AnticiposViajes = () => {
+  
   const getCurrentDate = () => {
     const today = new Date();
     const year = today.getFullYear();
@@ -68,7 +69,7 @@ const AnticiposViajes = () => {
     id_numero_rendicion: "",
   });
 
-  const [tipoViaje, setTipoViaje] = useState("NACIONAL");
+  const [tipoViaje, setTipoViaje] = useState('NACIONAL');
   const [responseMessage, setResponseMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -226,6 +227,19 @@ const AnticiposViajes = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+   
+    if (!tipoViaje) {
+      setIsLoading(false);
+      setResponseMessage("Por favor, elige un tipo de viaje.");
+      setOpen(true);
+      return;
+    }
+
+    const formData = {
+      // ...other form data...
+      tipo_viaje: tipoViaje,
+    };
+
     try {
       console.log("request para crear pdf: " , formData.toString);
       await axios.post(`${baseURL}/documentos/crear-con-pdf-custom/`, formData);
@@ -467,7 +481,10 @@ const AnticiposViajes = () => {
               select
               value={tipoViaje}
               onChange={handleTipoViajeChange}
+              error={!tipoViaje} // Muestra un error si no se ha seleccionado un tipo de viaje
+              helperText={!tipoViaje ? "Por favor, elige un tipo de viaje" : ""}
             >
+              <MenuItem value="NACIONAL">Elegir tipo</MenuItem>
               <MenuItem value="NACIONAL">Viajes Nacionales</MenuItem>
               <MenuItem value="INTERNACIONAL">Viajes Internacionales</MenuItem>
             </TextField>

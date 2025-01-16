@@ -33,7 +33,7 @@ const HistorialGastos = () => {
   const fetchRendiciones = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(`${baseURL}/rendiciones/con-documentos/`, {
+      const response = await axios.get(`${baseURL}/api/rendiciones/con-documentos/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -105,6 +105,7 @@ const HistorialGastos = () => {
                 <MenuItem value="POR APROBAR">POR APROBAR</MenuItem>
                 <MenuItem value="APROBADO">POR ABONAR</MenuItem>
                 <MenuItem value="ABONADO">ABONADO</MenuItem>
+                <MenuItem value="TERMINADO">TERMINADO</MenuItem>
                 <MenuItem value="RECHAZADO">RECHAZADO</MenuItem>
               </Select>
             </FormControl>
