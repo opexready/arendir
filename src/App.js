@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Navbar from './components/Navbar';
 import Login from './components/Login';
+import AdminDashboard2 from './components/AdminDashboard2';
 import PaymentMethodsPage from './components/PaymentMethodsPage';
 import ContadorModule from './components/ContadorModule';
 import AdministracionModule from './components/AdministracionModule';
@@ -50,6 +51,7 @@ function App() {
                     {/* Sin Navbar */}
                     <Route path="/" element={<LandingPage />} />
                     <Route path="/login" element={<Login />} />
+                    <Route path="/admin-dashboard" element={<AdminDashboard2 />} />
                     <Route path="/payment-methods" element={<PaymentMethodsPage />} />
                     <Route path="/soportePanel" element={<SoportePanel />} />
 

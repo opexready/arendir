@@ -87,6 +87,7 @@ const DatosReciboTable = () => {
     { value: "6592", label: "Sanciones administrativas" },
   ];
   const [category, setCategory] = useState("");
+
   const handleCategoryChange = (event) => {
     const selectedValue = event.target.value;
     setCategory(selectedValue);
@@ -104,23 +105,6 @@ const DatosReciboTable = () => {
   const [confirmFinalizarDialogOpen, setConfirmFinalizarDialogOpen] =
     useState(false);
   const navigate = useNavigate();
-  const { selectedCuentaContable, selectedRubro, numeroRendicion } =
-    location.state || {};
-  const [formData, setFormData] = useState({
-    fecha: "",
-    ruc: "",
-    tipoDoc: "",
-    cuentaContable: selectedCuentaContable || "",
-    serie: "",
-    numero: "",
-    rubro: selectedRubro || "",
-    moneda: "PEN",
-    afecto: "",
-    igv: "",
-    inafecto: "",
-    total: "",
-    archivo: "",
-  });
   const [tipoCambio, setTipoCambio] = useState("");
   const [searchRuc, setSearchRuc] = useState("");
   const [searchResult, setSearchResult] = useState(null);
@@ -139,6 +123,40 @@ const DatosReciboTable = () => {
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [solicitudOpciones, setSolicitudOpciones] = useState([]);
   const [checkedOpciones, setCheckedOpciones] = useState([]);
+  const { selectedCuentaContable, selectedRubro, numeroRendicion } =
+    location.state || {};
+  const [formData, setFormData] = useState({
+    fecha: "",
+    ruc: "",
+    tipoDoc: "",
+    cuentaContable: selectedCuentaContable || "",
+    serie: "",
+    numero: "",
+    rubro: selectedRubro || "",
+    moneda: "PEN",
+    afecto: "",
+    igv: "",
+    inafecto: "",
+    total: "",
+    archivo: "",
+  });
+
+  // Estado para controlar la visibilidad del modal de "No hay anticipos"
+  const [noAnticiposModalOpen, setNoAnticiposModalOpen] = useState(false);
+
+  // Efecto para mostrar el modal si no hay anticipos
+  useEffect(() => {
+    if (confirmFinalizarDialogOpen && solicitudOpciones.length === 0) {
+      setNoAnticiposModalOpen(true); // Mostrar modal si no hay datos
+      setConfirmFinalizarDialogOpen(false); // Cerrar el diálogo de selección de anticipos
+    }
+  }, [confirmFinalizarDialogOpen, solicitudOpciones]);
+
+  // Cerrar el modal de "No hay anticipos"
+  const handleCloseNoAnticiposModal = () => {
+    setNoAnticiposModalOpen(false);
+  };
+
   const fetchSolicitudOpciones = async () => {
     try {
       const userString = localStorage.getItem("user");
@@ -602,7 +620,6 @@ const DatosReciboTable = () => {
     const todayDate = new Date().toISOString().split("T")[0];
     const userString = localStorage.getItem("user");
     const user = userString ? JSON.parse(userString) : null;
-  
 
     const requestData = {
       fecha_solicitud: todayDate,
@@ -636,7 +653,6 @@ const DatosReciboTable = () => {
       rubro: formData.rubro,
       cuenta_contable: parseInt(formData.cuentaContable, 10),
       numero_rendicion: nombreRendicion,
-
     };
 
     try {
@@ -712,15 +728,15 @@ const DatosReciboTable = () => {
 
   return (
     <Container sx={{ marginTop: -20 }}>
-     <Container sx={{ marginBottom: 2, marginTop: 2 }} disableGutters> 
-  <Box
-    display="flex"
-    justifyContent="flex-end" // Alinea a la derecha
-    sx={{
-      width: "101%", // Asegura que ocupe todo el ancho disponible
-      marginRight: "-20px", // Ajusta el margen derecho si hay espacio extra
-    }}
-  >
+      <Container sx={{ marginBottom: 2, marginTop: 2 }} disableGutters>
+        <Box
+          display="flex"
+          justifyContent="flex-end" // Alinea a la derecha
+          sx={{
+            width: "101%", // Asegura que ocupe todo el ancho disponible
+            marginRight: "-20px", // Ajusta el margen derecho si hay espacio extra
+          }}
+        >
           <Button
             variant="contained"
             color="primary"
@@ -1023,7 +1039,10 @@ const DatosReciboTable = () => {
           <Table>
             <TableHead>
               <TableRow sx={{ backgroundColor: "#1F237A" }}>
-                <TableCell align="left" sx={{ color: "white", fontWeight: "bold" }}>
+                <TableCell
+                  align="left"
+                  sx={{ color: "white", fontWeight: "bold" }}
+                >
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa14.png?alt=media&token=0adf0d7c-ba88-48a2-abee-864cbf6850e5"
                     alt="Ícono Número de Ítem"
@@ -1031,7 +1050,10 @@ const DatosReciboTable = () => {
                   />
                   Número de Ítem
                 </TableCell>
-                <TableCell align="left" sx={{ color: "white", fontWeight: "bold" }}>
+                <TableCell
+                  align="left"
+                  sx={{ color: "white", fontWeight: "bold" }}
+                >
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa15.png?alt=media&token=3e9271c1-9533-4661-ab02-d30de0ad90e6"
                     alt="Ícono Número de Ítem"
@@ -1039,7 +1061,10 @@ const DatosReciboTable = () => {
                   />
                   Rubro
                 </TableCell>
-                <TableCell align="left" sx={{ color: "white", fontWeight: "bold" }}>
+                <TableCell
+                  align="left"
+                  sx={{ color: "white", fontWeight: "bold" }}
+                >
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa16.png?alt=media&token=d8afd433-339c-4f9a-ab2d-b211e10345b2"
                     alt="Ícono Número de Ítem"
@@ -1047,7 +1072,10 @@ const DatosReciboTable = () => {
                   />
                   Total
                 </TableCell>
-                <TableCell align="left" sx={{ color: "white", fontWeight: "bold" }}>
+                <TableCell
+                  align="left"
+                  sx={{ color: "white", fontWeight: "bold" }}
+                >
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa17.png?alt=media&token=aae19df1-ae52-45f4-8653-042af6b5a59b"
                     alt="Ícono Número de Ítem"
@@ -1055,7 +1083,10 @@ const DatosReciboTable = () => {
                   />
                   Ver Archivo
                 </TableCell>
-                <TableCell align="left" sx={{ color: "white", fontWeight: "bold" }}>
+                <TableCell
+                  align="left"
+                  sx={{ color: "white", fontWeight: "bold" }}
+                >
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa18.png?alt=media&token=8228c7ef-c92f-478c-995a-2104ea29f3d4"
                     alt="Ícono Número de Ítem"
@@ -1063,7 +1094,10 @@ const DatosReciboTable = () => {
                   />
                   Detalle
                 </TableCell>
-                <TableCell align="left" sx={{ color: "white", fontWeight: "bold" }}>
+                <TableCell
+                  align="left"
+                  sx={{ color: "white", fontWeight: "bold" }}
+                >
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa21.png?alt=media&token=8eacf126-3bd4-42cb-bdb1-900c746eea23"
                     alt="Ícono Número de Ítem"
@@ -1071,7 +1105,10 @@ const DatosReciboTable = () => {
                   />
                   Editar
                 </TableCell>
-                <TableCell align="left" sx={{ color: "white", fontWeight: "bold" }}>
+                <TableCell
+                  align="left"
+                  sx={{ color: "white", fontWeight: "bold" }}
+                >
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa22.png?alt=media&token=554ee3ea-2338-48be-ba94-fd6535f34fc4"
                     alt="Ícono Número de Ítem"
@@ -1238,36 +1275,6 @@ const DatosReciboTable = () => {
           </Button>
         </DialogActions>
       </Dialog>
-
-      {/* <Dialog
-        open={confirmFinalizarDialogOpen}
-        onClose={() => setConfirmFinalizarDialogOpen(false)}
-      >
-        <DialogTitle>Confirmación</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            ¿Estás seguro de finalizar la rendición de gastos?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => setConfirmFinalizarDialogOpen(false)}
-            color="primary"
-          >
-            No
-          </Button>
-          <Button
-            onClick={async () => {
-              setConfirmFinalizarDialogOpen(false);
-              await handleFinalizarRendicion();
-              navigate("/colaborador");
-            }}
-            color="secondary"
-          >
-            Sí
-          </Button>
-        </DialogActions>
-      </Dialog> */}
       <Dialog
         open={confirmFinalizarDialogOpen}
         onClose={() => setConfirmFinalizarDialogOpen(false)}
@@ -1275,30 +1282,36 @@ const DatosReciboTable = () => {
         <DialogTitle>Seleccionar Anticipos</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Seleccione las anticipos que incluirán esta rendición
+            Seleccione los anticipos que incluirán esta rendición.
           </DialogContentText>
 
-          {/* Cargar la lista desde el endpoint */}
-          <FormGroup>
-            {solicitudOpciones.map((opcion) => (
-              <FormControlLabel
-                key={opcion.id}
-                control={
-                  <Checkbox
-                    checked={checkedOpciones.includes(opcion.id)}
-                    onChange={() => {
-                      setCheckedOpciones((prevChecked) =>
-                        prevChecked.includes(opcion.id)
-                          ? prevChecked.filter((item) => item !== opcion.id)
-                          : [...prevChecked, opcion.id]
-                      );
-                    }}
-                  />
-                }
-                label={opcion.nombre} // Mostrar el nombre como descripción
-              />
-            ))}
-          </FormGroup>
+          {/* Renderizar el FormGroup solo si hay datos */}
+          {solicitudOpciones.length > 0 ? (
+            <FormGroup>
+              {solicitudOpciones.map((opcion) => (
+                <FormControlLabel
+                  key={opcion.id}
+                  control={
+                    <Checkbox
+                      checked={checkedOpciones.includes(opcion.id)}
+                      onChange={() => {
+                        setCheckedOpciones((prevChecked) =>
+                          prevChecked.includes(opcion.id)
+                            ? prevChecked.filter((item) => item !== opcion.id)
+                            : [...prevChecked, opcion.id]
+                        );
+                      }}
+                    />
+                  }
+                  label={opcion.nombre} // Mostrar el nombre como descripción
+                />
+              ))}
+            </FormGroup>
+          ) : (
+            <Typography variant="body1" sx={{ textAlign: "center", mt: 2 }}>
+              No hay anticipos disponibles.
+            </Typography>
+          )}
         </DialogContent>
         <DialogActions>
           <Button
@@ -1332,10 +1345,12 @@ const DatosReciboTable = () => {
                   alert("No se encontró una rendición activa");
                   return;
                 }
+
                 await axios.put(`${baseURL}/rendicion/${rendicionId}`, {
                   estado: "POR APROBAR",
                 });
 
+                let isRendicionCreated = false;
                 for (const solicitudId of checkedOpciones) {
                   await axios.put(`${baseURL}/api/solicitud/${solicitudId}`, {
                     estado: "TERMINADO",
@@ -1347,17 +1362,17 @@ const DatosReciboTable = () => {
                     estado: "POR APROBAR",
                   });
 
-                  const newRendicionResponse = await axios.post(
-                    `${baseURL}/rendicion/`,
-                    {
-                      user_id: userId,
-                    }
-                  );
+                  if (!isRendicionCreated) {
+                    const newRendicionResponse = await axios.post(
+                      `${baseURL}/rendicion/`,
+                      {
+                        user_id: userId,
+                      }
+                    );
+                    isRendicionCreated = true;
+                  }
                 }
 
-                alert(
-                  "Rendición finalizada y solicitudes asociadas correctamente."
-                );
                 setCheckedOpciones([]);
                 setConfirmFinalizarDialogOpen(false);
                 navigate("/colaborador");
@@ -1365,6 +1380,72 @@ const DatosReciboTable = () => {
                 console.error("Error al finalizar la rendición:", error);
                 alert(
                   "Ocurrió un error al procesar las solicitudes. Intente nuevamente."
+                );
+              }
+            }}
+            color="secondary"
+            disabled={solicitudOpciones.length === 0} // Deshabilitar el botón si no hay anticipos
+          >
+            Confirmar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Modal para "No se encontraron anticipos" */}
+      <Dialog open={noAnticiposModalOpen} onClose={handleCloseNoAnticiposModal}>
+        <DialogTitle>No se encontraron anticipos</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            No hay anticipos disponibles para asociar a esta rendición. ¿Desea
+            crear una nueva rendición sin anticipos?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseNoAnticiposModal} color="primary">
+            Cancelar
+          </Button>
+          <Button
+            onClick={async () => {
+              try {
+                const userString = localStorage.getItem("user");
+                const user = userString ? JSON.parse(userString) : null;
+                const userId = user ? user.id : null;
+
+                if (!userId) {
+                  alert("Error: Usuario no autenticado");
+                  return;
+                }
+
+                const lastRendicionResponse = await axios.get(
+                  `${baseURL}/rendicion/last`,
+                  {
+                    params: { user_id: userId, tipo: "RENDICION" },
+                  }
+                );
+
+                const rendicionId = lastRendicionResponse.data.id;
+
+                await axios.put(`${baseURL}/rendicion/${rendicionId}`, {
+                  estado: "POR APROBAR",
+                });
+
+                // Llamar a la API para crear una nueva rendición
+                const newRendicionResponse = await axios.post(
+                  `${baseURL}/rendicion/`,
+                  {
+                    user_id: userId,
+                  }
+                );
+
+                // Cerrar el modal
+                setNoAnticiposModalOpen(false);
+
+                // Navegar a la página de colaborador o realizar otra acción
+                navigate("/colaborador");
+              } catch (error) {
+                console.error("Error al crear la rendición:", error);
+                alert(
+                  "Ocurrió un error al crear la rendición. Intente nuevamente."
                 );
               }
             }}
@@ -1377,4 +1458,5 @@ const DatosReciboTable = () => {
     </Container>
   );
 };
+
 export default DatosReciboTable;

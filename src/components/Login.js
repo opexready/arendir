@@ -32,6 +32,8 @@ const Login = () => {
                 navigate('/colaborador');
             } else if (user.role === 'SOPORTE') {
                 navigate('/soportePanel');
+            } else if (user.role === 'ADMIN') {
+                navigate('/admin-dashboard'); // Nueva ruta para el rol ADMIN
             }
         } catch (error) {
             console.error('Login failed', error);
