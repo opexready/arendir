@@ -34,6 +34,14 @@
     font-weight: 500; /* Peso de fuente medio */
 }
 
+.copyright-symbol {
+  border: 1px solid white; /* Borde blanco */
+  padding: 2px; /* Espacio alrededor del símbolo para que el borde sea visible */
+  border-radius: 50%; /* Opcional: para un borde redondeado */
+  display: inline-block; /* Asegura que el borde se ajuste al tamaño del contenido */
+  color: white; /* Color del texto */
+}
+
 .top-bar strong {
     font-weight: bold;
 }
@@ -64,6 +72,7 @@
 }
 
 .btn-method{
+  font-family: 'Ubuntu';
   display: inline-block;
   background: linear-gradient(90deg,#ff8b31, #FF6E40, #FF007B, #191b38);
   color: white; /* Texto blanco */
@@ -83,6 +92,7 @@
 }
 
 .top-bar-icon {
+  font-family: 'UbuntuLight';
   height: 2em; /* Ajusta la altura al tamaño de la fuente */
   width: auto; /* Mantén las proporciones originales */
   margin-right: 0.5em; /* Espacio entre la imagen y el texto */
@@ -128,7 +138,7 @@ body {
 }
 
 .nav-links a {
-  font-family: 'UbuntuBold', sans-serif;
+  font-family: 'UbuntuLight';
   font-weight: bold;
   text-decoration: none;
   color: #aaa;
@@ -219,6 +229,7 @@ body {
 }
 
 .button {
+    font-family: 'UbuntuLight';
     text-decoration: none;
     padding: 10px 20px;
     border-radius: 20px;
@@ -228,6 +239,7 @@ body {
 }
 
 .btn-login {
+    font-family: 'UbuntuLight';
     background-color: #FF6E40;
     color: #ffffff;
     border: none;
@@ -369,7 +381,7 @@ body {
     border-radius: 0; /* Sin bordes redondeados */
     box-shadow: none; /* Sin sombra */
     color: #fff; /* Color del texto */
-    font-family: 'UbuntuBold', sans-serif;
+    font-family: 'Ubuntu';
     font-size: 60px; /* Tamaño del texto */
     line-height: 1; /* Reduce la separación entre líneas */
     width: 50%; /* Ajusta el ancho a la mitad de la pantalla */
@@ -421,8 +433,7 @@ body {
     flex: 1;
     color: #fff;
     font-size: 20px;
-    font-family: 'UbuntuBold', sans-serif;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    font-family: 'Ubuntu';
     text-align: left;
     padding: 20px;
     padding-top: 50px;
@@ -433,7 +444,7 @@ body {
   font-size: 60px;
   padding-bottom:10%;
   font-weight: bold;
-  font-family: 'UbuntuBold', sans-serif;
+  font-family: 'Ubuntu';
 }
 
 .info-content2 .highlight {
@@ -444,9 +455,9 @@ body {
 }
 
 .info-content2 p {
+  font-family: 'UbuntuLight';
   font-size: 25px;
   color: #fff;
-  font-family: 'UbuntuLight';
   text-align: justify;
   margin-top: -50px;
   
@@ -550,10 +561,10 @@ body {
 
 .feature-section .right-title h2 {
     font-size: 70px;
-    font-weight: bold;
     margin-bottom: 20px;
     color: #F15A29; 
-    font-family: 'UbuntuBold', sans-serif;
+    font-weight: bold;
+    font-family: 'Ubuntu';
     text-align: right;
 }
 
@@ -577,17 +588,17 @@ body {
 
 .right-content h2 {
     font-size: 28px;
-    font-weight: bold;
     line-height: 1.5;
     margin-bottom: 20px;
     color: #F15A29; /* Color naranja */
-    font-family: 'UbuntuBold', sans-serif;
+    font-weight: bold;
+    font-family: 'Ubuntu';
 }
 
 .right-content p {
     font-size: 25px;
     line-height: 1.5;
-    font-family: 'UbuntuBold', sans-serif;
+    font-family: 'UbuntuLight';
 }
 
 /* Planes Section */
@@ -613,6 +624,7 @@ body {
 .plans-title h2 {
   font-size: 78px;
   font-weight: bold;
+  font-family: 'Ubuntu';
 }
 
 .plans-grid {
@@ -621,7 +633,9 @@ body {
   gap: 10px; 
 }
 
-
+.text-card {
+  font-family: 'UbuntuLight';
+} 
 
 .plan h3 {
   font-size: 24px;
@@ -631,6 +645,7 @@ body {
 }
 
 .plan p {
+  font-family: 'UbuntuLight';
   font-size: 16px;
   margin: 10px 0;
 }
@@ -698,9 +713,10 @@ body {
   }
   
   .partners-header h2 {
-    font-size: 28px;
+    font-size: 36px;
     font-weight: bold;
-    margin-bottom: 20px;
+    font-family: 'Ubuntu';
+    margin-bottom: 50px;
   }
   
   .partners-logos {
@@ -814,9 +830,12 @@ body {
 
     .right-content h2 {
         font-size: 22px;
+        font-weight: bold;
+        font-family: 'Ubuntu';
     }
 
     .right-content p {
+      font-family: 'UbuntuLight';
         font-size: 14px;
     }
 
@@ -952,6 +971,7 @@ body {
   .right-title h2 {
     font-size: 48px; /* Ajusta el tamaño de fuente si es necesario */
     font-weight: bold;
+    font-family: 'Ubuntu';
     color: #ff6e40; /* Puedes cambiar el color si deseas */
   }
 
@@ -966,7 +986,7 @@ body {
     padding-bottom:10%;
     margin-bottom: 10%;
     font-weight: bold;
-    font-family: 'UbuntuBold', sans-serif;
+    font-family: 'Ubuntu';
   }
 
   .right-title2 {
@@ -1082,22 +1102,24 @@ body {
 }
 
 .payment-method2 p {
+  font-family: 'UbuntuLight';
   font-size: 12px;
   color: #333;
   grid-column: span 1; /* Cada párrafo ocupa dos columnas */
 }
 
 .left-aligned {
+  font-family: 'UbuntuLight';
   text-align: left; /* Alinea el texto a la izquierda */
 }
 
 .az {
-  font-weight: bold; /* Negrita */
+  font-family: 'UbuntuLight';
   color: blue; /* Color azul */
 }
 
 .cv {
-  font-weight: bold; /* Negrita */
+  font-family: 'UbuntuLight';
   color: green; /* Color azul */
 }
 

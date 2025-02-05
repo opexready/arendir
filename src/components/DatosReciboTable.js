@@ -727,7 +727,7 @@ const DatosReciboTable = () => {
   };
 
   return (
-    <Container sx={{ marginTop: -20 }}>
+    <Container sx={{ marginTop: 0 }}>
       <Container sx={{ marginBottom: 2, marginTop: 2 }} disableGutters>
         <Box
           display="flex"

@@ -284,12 +284,12 @@ const LandingPage = () => {
                 Personal
               </h3>
               <ul style={{ textAlign: "left" }}>
-              <li>
+              <li className="text-card">
                 Envía hasta 25 tickets de gastos realizados en automático desde
                 WhatsApp.
               </li>
-              <li>1 usuario por razón social.</li>
-              <li>Descarga tus facturas desde WhatsApp y email.</li>
+              <li className="text-card">1 usuario por razón social.</li>
+              <li className="text-card">Descarga tus facturas desde WhatsApp y email.</li>
             </ul>
               {/* <button onClick={methodsPageClick} className="plan-button">
                 Subscribirse
@@ -306,12 +306,12 @@ const LandingPage = () => {
                 Negocio
               </h3>
               <ul style={{ textAlign: "left" }}>
-              <li>
+              <li className="text-card">
                 Registro de gastos ilimitados desde WhatsApp mediante texto o
                 foto de tus recibos.
               </li>
-              <li>Descarga tu historial de gastos a Excel y PDF.</li>
-              <li>Acceso a Arendir, tu asistente financiero 24/7.</li>
+              <li className="text-card">Descarga tu historial de gastos a Excel y PDF.</li>
+              <li className="text-card">Acceso a Arendir, tu asistente financiero 24/7.</li>
             </ul>
               {/* <button onClick={methodsPageClick} className="plan-button">
                 Subscribirse
@@ -328,13 +328,13 @@ const LandingPage = () => {
                 Corporativo
               </h3>
               <ul style={{ textAlign: "left" }}>
-              <li>
+              <li className="text-card">
                 Personaliza la cantidad de tickets a facturar que necesitas.
               </li>
-              <li>Diferentes usuarios por razón social.</li>
-              <li>Descarga tus facturas desde WhatsApp y email.</li>
-              <li>Accede a un panel de control para ver todas tus facturas.</li>
-              <li>Todo lo que incluye el Plan Premium.</li>
+              <li className="text-card">Diferentes usuarios por razón social.</li>
+              <li className="text-card">Descarga tus facturas desde WhatsApp y email.</li>
+              <li className="text-card">Accede a un panel de control para ver todas tus facturas.</li>
+              <li className="text-card">Todo lo que incluye el Plan Premium.</li>
             </ul>
               {/* <button onClick={methodsPageClick} className="plan-button">
                 Subscribirse
