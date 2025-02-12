@@ -72,7 +72,7 @@ const ContadorModule = () => {
         console.log("user", user);
 
         const colaboradoresResponse = await axios.get(
-          `${baseURL}/users/by-company-and-role/`,
+          `${baseURL}/api/users/by-company-and-role/`,
           {
             params: {
               company_name: userCompany,

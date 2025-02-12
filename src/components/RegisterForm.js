@@ -18,8 +18,8 @@ const RegisterForm = ({ open, onClose }) => {
     username: "",
     full_name: "",
     email: "",
-    company_name: "",
-    role: "",
+    company_name: "innova",
+    role: "ADMIN",
     password: "",
   });
   const [error, setError] = useState(null);
@@ -45,7 +45,7 @@ const RegisterForm = ({ open, onClose }) => {
         return;
       }
 
-      const response = await api.post("/users/", {
+      const response = await api.post("/api/users/", {
         ...formData,
         user_id: userId,
       });
@@ -120,15 +120,15 @@ const RegisterForm = ({ open, onClose }) => {
             margin="normal"
             required
           />
-          <TextField
+          {/* <TextField
             label="Empresa"
             name="company_name"
             value={formData.company_name}
             onChange={handleChange}
             fullWidth
             margin="normal"
-          />
-          <TextField
+          /> */}
+          {/* <TextField
             select
             label="Rol"
             name="role"
@@ -140,7 +140,7 @@ const RegisterForm = ({ open, onClose }) => {
             <MenuItem value="COLABORADOR">COLABORADOR</MenuItem>
             <MenuItem value="APROBADOR">APROBADOR</MenuItem>
             <MenuItem value="CONTADOR">CONTADOR</MenuItem>
-          </TextField>
+          </TextField> */}
           <TextField
             label="Contraseña"
             name="password"

@@ -55,7 +55,7 @@ const AnticiposGastosLocales = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const userResponse = await axios.get(`${baseURL}/users/me`, {
+        const userResponse = await axios.get(`${baseURL}/api/users/me`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },

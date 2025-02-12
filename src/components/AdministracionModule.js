@@ -44,7 +44,7 @@ const AdministracionModule = () => {
     // Obtener el usuario y establecer la empresa una sola vez
     useEffect(() => {
         const fetchUser = async () => {
-            const response = await api.get('/users/me/');
+            const response = await api.get('/api/users/me/');
             setUser(response.data);
             setEmpresa(response.data.company_name);
         };

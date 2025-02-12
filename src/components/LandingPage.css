@@ -182,7 +182,7 @@ body {
   font-size: 40px !important; /* Ajusta el tamaño según tus necesidades */
   font-weight: bold !important; /* Ejemplo de otro estilo */
   color: white !important; /* Ejemplo de color */
-  padding: 100px !important;
+  padding-left: 10px !important;
   margin-right: 50px !important;
   margin-left: -50px !important;
 }
@@ -326,6 +326,20 @@ body {
 @media (max-width: 768px) {
   .slide-image {
     object-fit: contain; /* Ajusta la imagen para que se contenga dentro del contenedor */
+  }
+  
+
+  .plan {
+    width: 90%; /* Ocupa casi todo el ancho en móviles */
+  }
+
+  .plans-grid {
+    flex-direction: column; /* Cambia a una disposición vertical */
+    align-items: center; /* Centra las cards */
+  }
+
+  .plan {
+    width: 90%; /* Ocupa casi todo el ancho en móviles */
   }
 }
 
@@ -627,10 +641,17 @@ body {
   font-family: 'Ubuntu';
 }
 
-.plans-grid {
+/* .plans-grid {
   display: flex;
   justify-content: space-between;
   gap: 10px; 
+} */
+
+.plans-grid {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap; /* Permite que las cards se acomoden en varias líneas */
 }
 
 .text-card {
@@ -685,7 +706,7 @@ body {
   font-size: 40px !important; /* Ajusta el tamaño según tus necesidades */
   font-weight: bold !important; /* Ejemplo de otro estilo */
   color: #ff6e40 !important; /* Ejemplo de color */
-  padding: 100px !important;
+  padding-left: 60px !important;
   margin-right: 50px !important;
   margin-left: -50px !important;
 }

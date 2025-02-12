@@ -23,7 +23,7 @@ const Navbar = () => {
       try {
         const token = localStorage.getItem("token");
         if (token) {
-          const userResponse = await api.get("/users/me/");
+          const userResponse = await api.get("/api/users/me/");
           setUser(userResponse.data);
         }
       } catch (error) {

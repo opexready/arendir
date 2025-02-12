@@ -16,7 +16,7 @@ const Login = () => {
             const response = await api.post('/token', { email, password });
             localStorage.setItem('token', response.data.access_token);
 
-            const userResponse = await api.get('/users/me/', {
+            const userResponse = await api.get('/api/users/me/', {
                 headers: {
                     Authorization: `Bearer ${response.data.access_token}`
                 }

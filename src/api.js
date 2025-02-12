@@ -24,7 +24,7 @@ api.interceptors.request.use(
 );
 
 export const getUsersByCompanyAndRole = async (companyName, role) => {
-    const response = await api.get(`/users/by-company-and-role/`, {
+    const response = await api.get(`/api/users/by-company-and-role/`, {
         params: {
             company_name: companyName,
             role: role,

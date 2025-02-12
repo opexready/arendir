@@ -23,7 +23,7 @@ const Historial = () => {
     const fetchHistorialData = async () => {
       try {
         // Obtener datos del usuario desde la sesión
-        const userResponse = await axios.get(`${baseURL}/users/me`, {
+        const userResponse = await axios.get(`${baseURL}/api/users/me`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },

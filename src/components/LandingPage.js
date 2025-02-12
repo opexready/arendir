@@ -161,7 +161,8 @@ const LandingPage = () => {
             className="slide-image"
           />
           <img
-            src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/slide3.png?alt=media&token=22623873-a054-4e97-8b16-3daf235259df"
+            //src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/slide3.png?alt=media&token=22623873-a054-4e97-8b16-3daf235259df"
+            src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/slide2.png?alt=media&token=73e8e0d8-c11b-4133-a791-1473796f6035"
             alt="Slide 3"
             className="slide-image"
           />
@@ -254,6 +255,9 @@ const LandingPage = () => {
           />
         </div>
       </section>
+
+
+
       {/* Section de pagos */}
       <section id="pricing" className="plans-section">
         <div className="plans-container">
@@ -265,9 +269,9 @@ const LandingPage = () => {
               src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/AR33.png?alt=media&token=113925ce-c08b-421b-994b-850d2cc57c20"
               alt="Icono de planes"
               style={{
-                width: "100%", // Cambia el ancho según sea necesario en porcentaje
-                maxWidth: "120px", // Ancho máximo para que no sea demasiado grande
-                height: "auto", // Mantiene la proporción de la imagen
+                width: "100%", 
+                maxWidth: "120px", 
+                height: "auto", 
                 marginRight: "2%",
               }}
             />
@@ -291,9 +295,6 @@ const LandingPage = () => {
               <li className="text-card">1 usuario por razón social.</li>
               <li className="text-card">Descarga tus facturas desde WhatsApp y email.</li>
             </ul>
-              {/* <button onClick={methodsPageClick} className="plan-button">
-                Subscribirse
-              </button> */}
               <p className="plan-price">S/ 8 / Mensual</p>
             </div>
             <div className="plan white-rectangle">
@@ -313,9 +314,6 @@ const LandingPage = () => {
               <li className="text-card">Descarga tu historial de gastos a Excel y PDF.</li>
               <li className="text-card">Acceso a Arendir, tu asistente financiero 24/7.</li>
             </ul>
-              {/* <button onClick={methodsPageClick} className="plan-button">
-                Subscribirse
-              </button> */}
               <p className="plan-price">S/ 15 / Mensual</p>
             </div>
             <div className="plan white-rectangle">
@@ -336,9 +334,6 @@ const LandingPage = () => {
               <li className="text-card">Accede a un panel de control para ver todas tus facturas.</li>
               <li className="text-card">Todo lo que incluye el Plan Premium.</li>
             </ul>
-              {/* <button onClick={methodsPageClick} className="plan-button">
-                Subscribirse
-              </button> */}
               <p className="plan-price">S/ 25 / Mensual</p>
             </div>
           </div>
@@ -356,9 +351,9 @@ const LandingPage = () => {
               src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/AR33.png?alt=media&token=113925ce-c08b-421b-994b-850d2cc57c20"
               alt="Icono de planes"
               style={{
-                width: "100%", // Cambia el ancho según sea necesario en porcentaje
-                maxWidth: "120px", // Ancho máximo para que no sea demasiado grande
-                height: "auto", // Mantiene la proporción de la imagen
+                width: "100%", 
+                maxWidth: "120px", 
+                height: "auto", 
                 marginRight: "2%",
               }}
             />
@@ -416,6 +411,7 @@ const LandingPage = () => {
           </div>
         </div>
       </section>
+
 
       {/* Socios estratégicos Section */}
       <section className="partners-section">

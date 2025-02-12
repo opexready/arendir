@@ -31,7 +31,7 @@ const SoportePanel = () => {
         try {
             const token = localStorage.getItem('token');
             await api.post(
-                '/users/',
+                '/api/users/',
                 { username, email, password, role },
                 {
                     headers: {
@@ -83,7 +83,7 @@ const SoportePanel = () => {
     const handleReadUsers = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await api.get('/users/', {
+            const response = await api.get('/api/users/', {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

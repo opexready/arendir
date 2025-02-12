@@ -145,7 +145,7 @@ const DatosRecibo = () => {
 
   useEffect(() => {
     if (qrResult) {
-      handleProcessQrResult(); // Llama a la API con el resultado del QR
+      handleProcessQrResult(); 
     }
   }, [qrResult]); //
 
@@ -159,14 +159,13 @@ const DatosRecibo = () => {
       console.log("Llamando a la API con el resultado:", qrResult);
 
       const response = await axios.post(`${baseURL}/api/process-qr/`, {
-        data: qrResult, // Enviar el resultado del escaneo
+        data: qrResult, 
       });
 
       console.log("Respuesta del backend:", response.data);
 
       const processedData = response.data;
 
-      // Usar los datos procesados para llenar el formulario
       setFormData((prevFormData) => ({
         ...prevFormData,
         fecha: processedData.fecha || "",
@@ -177,8 +176,13 @@ const DatosRecibo = () => {
         igv: processedData.igv || "",
         total: processedData.total || "",
       }));
-
+      setSearchRuc(processedData.ruc || "");
       setError("");
+
+      if (processedData.ruc) { // NUEVA LÍNEA: Si se obtuvo el RUC, ejecutar handleSearch
+        handleSearch(processedData.ruc); // NUEVA LÍNEA: Llamar a handleSearch con el RUC
+      }
+      
     } catch (error) {
       setError("Error al procesar el QR. Por favor, inténtalo nuevamente.");
       console.error("Error al llamar a /api/process-qr/:", error);
@@ -212,19 +216,6 @@ const DatosRecibo = () => {
       });
   }, []);
 
-  // const handleStartScanning = () => {
-  //   setShowQrReader(true); // Mostrar el lector QR
-  //   setIsScanning(true); // Mostrar mensaje de "Escaneando"
-  //   setError(""); // Limpiar errores previos
-  //   setQrResult(null); // Limpiar resultado previo
-  // };
-
-  // const handleStopScanning = () => {
-  //   setShowQrReader(false); // Oculta el lector QR
-  //   setIsScanning(false); // Oculta el mensaje de escaneo
-  // };
-
-  // Agregar la función normalizeDate para convertir fechas de DD/MM/YYYY a YYYY-MM-DD.
   const normalizeDate = (dateString) => {
     if (dateString.includes("/")) {
       const [day, month, year] = dateString.split("/");
@@ -233,42 +224,12 @@ const DatosRecibo = () => {
     return dateString; // Devuelve la fecha como está si ya tiene el formato correcto
   };
 
-  // const handleViewDetail = async (documentId) => {
-  //   try {
-  //     const response = await axios.get(`${baseURL}/documentos/${documentId}`);
-  //     setDocumentDetail(response.data);
-  //     setDetailDialogOpen(true);
-  //   } catch (error) {
-  //     console.error("Error al obtener los detalles del documento:", error);
-  //     setError("Error al obtener los detalles. Por favor, intente nuevamente.");
-  //   }
-  // };
-
   const handleCloseDetailDialog = () => {
     setDetailDialogOpen(false);
     setDocumentDetail(null);
   };
 
   const [editRecord, setEditRecord] = useState(null);
-  // const handleEditRecord = (record) => {
-  //   setFormData({
-  //     fecha: record.fecha || "",
-  //     ruc: record.ruc || "",
-  //     tipoDoc: record.tipoDoc || "",
-  //     cuentaContable: record.cuenta_contable || "",
-  //     serie: record.serie || "",
-  //     numero: record.numero || "",
-  //     rubro: record.rubro || "",
-  //     moneda: record.moneda || "PEN",
-  //     afecto: record.afecto || "",
-  //     igv: record.igv || "",
-  //     inafecto: record.inafecto || "",
-  //     total: record.total || "",
-  //     archivo: record.archivo || "",
-  //   });
-  //   setEditRecord(record);
-  //   setShowForm(true);
-  // };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -336,10 +297,7 @@ const DatosRecibo = () => {
         const newRendicionResponse = await axios.post(`${baseURL}/rendicion/`, {
           user_id: userId,
         });
-
-        // alert(`Nueva rendición creada con el nombre: ${newRendicionResponse.data.nombre}`);
       } else {
-        // alert("No se encontró la última rendición para este usuario.");
       }
     } catch (error) {
       console.error("Error al finalizar la rendición:", error);
@@ -385,10 +343,6 @@ const DatosRecibo = () => {
     setSelectedFile(null);
   };
 
-  // const handleOpenConfirmDeleteDialog = (documentoId) => {
-  //   setDocumentoIdToDelete(documentoId);
-  //   setConfirmDeleteDialogOpen(true);
-  // };
 
   const handleCloseConfirmDeleteDialog = () => {
     setDocumentoIdToDelete(null);
@@ -513,17 +467,38 @@ const DatosRecibo = () => {
     setSearchRuc(e.target.value);
   };
 
-  const handleSearch = async () => {
+  // const handleSearch = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `${baseURL}/consulta-ruc?ruc=${searchRuc}`
+  //     );
+  //     setSearchResult(response.data);
+  //     setFormData({
+  //       ...formData,
+  //       ruc: searchRuc,
+  //       tipoDoc: response.data.tipoDocumento,
+  //     });
+  //     setError("");
+  //   } catch (error) {
+  //     setError("Error al buscar el RUC. Asegúrese de que el número es válido.");
+  //     setSearchResult(null);
+  //   }
+  // };
+
+  const handleSearch = async (ruc) => {
     try {
       const response = await axios.get(
-        `${baseURL}/consulta-ruc?ruc=${searchRuc}`
+        `${baseURL}/consulta-ruc?ruc=${ruc || searchRuc}`
       );
       setSearchResult(response.data);
-      setFormData({
-        ...formData,
-        ruc: searchRuc,
+  
+      // Actualiza formData manteniendo los datos existentes
+      setFormData((prevFormData) => ({
+      ...prevFormData,
+        ruc: ruc || searchRuc,
         tipoDoc: response.data.tipoDocumento,
-      });
+      }));
+  
       setError("");
     } catch (error) {
       setError("Error al buscar el RUC. Asegúrese de que el número es válido.");
@@ -589,7 +564,11 @@ const DatosRecibo = () => {
             total: decodeResponse.data.total || "",
             proveedor: razonSocial,
           }));
+          setSearchRuc(decodeResponse.data.ruc || "");
           setError("");
+          if (decodedRuc) {
+            handleSearch(decodedRuc); 
+          }
         }
       } catch (error) {
         if (error.response) {
@@ -678,10 +657,7 @@ const DatosRecibo = () => {
     const userString = localStorage.getItem("user");
     const user = userString ? JSON.parse(userString) : null;
     const userId = user ? user.id : null;
-    // const username = user ? user.email : null;
-    // const company_name = user ? user.company_name : null;
     const gerencia = user ? user.gerencia : null;
-
     const todayDate = new Date().toISOString().split("T")[0];
 
     const requestData = {
@@ -981,7 +957,7 @@ const DatosRecibo = () => {
               )}
 
               {/* Mostrar resultado del QR */}
-              {qrResult && (
+              {/* {qrResult && (
                 <Typography
                   variant="body1"
                   color="success"
@@ -989,7 +965,7 @@ const DatosRecibo = () => {
                 >
                   Resultado: {qrResult}
                 </Typography>
-              )}
+              )} */}
 
               {/* Mostrar error en caso de fallo */}
               {error && (
@@ -1141,19 +1117,19 @@ const DatosRecibo = () => {
             ))}
 
 
-{/* trext are */}
+          {/* trext are */}
 
-<div className="form-group">
-    <label htmlFor="detalle">Detalle:</label>
-    <textarea
-      id="detalle"
-      name="detalle"
-      value={detalle}
-      onChange={(e) => setDetalle(e.target.value)}
-      className="form-control"
-      rows="4"
-    />
-  </div>
+          <div className="form-group">
+              <label htmlFor="detalle">Detalle:</label>
+              <textarea
+                id="detalle"
+                name="detalle"
+                value={detalle}
+                onChange={(e) => setDetalle(e.target.value)}
+                className="form-control"
+                rows="4"
+              />
+            </div>
 
             <Button
               type="submit"

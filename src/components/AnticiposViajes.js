@@ -154,7 +154,7 @@ const AnticiposViajes = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(`${baseURL}/users/me`, {
+        const response = await axios.get(`${baseURL}/api/users/me`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },

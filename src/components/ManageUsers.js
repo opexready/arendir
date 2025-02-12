@@ -18,7 +18,7 @@ const ManageUsers = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await api.get('/users/'); // Asegúrate de que es GET
+                const response = await api.get('/api/users/'); // Asegúrate de que es GET
                 setUsers(response.data);
             } catch (error) {
                 console.error('Error fetching users:', error);
@@ -47,7 +47,7 @@ const ManageUsers = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await api.post('/users/', formData);
+            await api.post('/api/users/', formData);
             setFormData({
                 username: '',
                 email: '',
@@ -56,7 +56,7 @@ const ManageUsers = () => {
                 company_name: '',
                 password: ''
             });
-            const response = await api.get('/users/'); // Asegúrate de que es GET
+            const response = await api.get('/api/users/'); // Asegúrate de que es GET
             setUsers(response.data);
         } catch (error) {
             console.error('Error creating user:', error);
