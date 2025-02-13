@@ -62,14 +62,14 @@ const AnticiposViajes = () => {
     total: "",
     banco: "",
     numero_cuenta: "",
-    tipo_viaje: "",
+    tipo_viaje: "NACIONAL",
     numero_rendicion: "",
     fecha_solicitud: getCurrentDate(),
     id_user: "",
     id_numero_rendicion: "",
   });
 
-  const [tipoViaje, setTipoViaje] = useState('NACIONAL');
+ 
   const [responseMessage, setResponseMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -215,12 +215,9 @@ const AnticiposViajes = () => {
 
   const handleTipoViajeChange = (e) => {
     const tipo = e.target.value;
-    console.log("aca esta el tipo");
-    console.log(tipo);
-    setTipoViaje(tipo);
     setFormData({
       ...formData,
-      tipo_viaje: tipo,
+      tipo_viaje: tipo, // Actualizar formData directamente
     });
   };
 
@@ -228,20 +225,16 @@ const AnticiposViajes = () => {
     e.preventDefault();
     setIsLoading(true);
    
-    if (!tipoViaje) {
+    if (!formData.tipo_viaje) {
       setIsLoading(false);
       setResponseMessage("Por favor, elige un tipo de viaje.");
       setOpen(true);
       return;
     }
 
-    const formData = {
-      // ...other form data...
-      tipo_viaje: tipoViaje,
-    };
-
     try {
       console.log("request para crear pdf: " , formData.toString);
+      console.log("Solicitud para crear pdf: ", formData);
       await axios.post(`${baseURL}/documentos/crear-con-pdf-custom/`, formData);
       setResponseMessage("Anticipo creado correctamente.");
       setOpen(true);
@@ -479,16 +472,16 @@ const AnticiposViajes = () => {
               label="Tipo de Viaje"
               name="tipo_viaje"
               select
-              value={tipoViaje}
+              value={formData.tipo_viaje} // Usar formData.tipo_viaje
               onChange={handleTipoViajeChange}
-              error={!tipoViaje} // Muestra un error si no se ha seleccionado un tipo de viaje
-              helperText={!tipoViaje ? "Por favor, elige un tipo de viaje" : ""}
+              error={!formData.tipo_viaje} // Verificar formData.tipo_viaje
+              helperText={!formData.tipo_viaje ? "Por favor, elige un tipo de viaje" : ""}
             >
               <MenuItem value="NACIONAL">Elegir tipo</MenuItem>
               <MenuItem value="NACIONAL">Viajes Nacionales</MenuItem>
               <MenuItem value="INTERNACIONAL">Viajes Internacionales</MenuItem>
             </TextField>
-            {tipoViaje === "NACIONAL" ? (
+            {formData.tipo_viaje === "NACIONAL"? (
               <>
                 <Button
                   variant="outlined"

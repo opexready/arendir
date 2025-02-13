@@ -526,7 +526,7 @@ const DatosRecibo = () => {
             },
           }
         );
-        console.log("############decodeResponse############");
+
         console.log(decodeResponse);
 
         if (decodeResponse.data.detail === "No QR code found in the image") {
@@ -695,10 +695,6 @@ const DatosRecibo = () => {
       id_user: userId,
       id_numero_rendicion: idRendicion,
     };
-
-    console.log("##################requestData##########",requestData);
-
-    
 
     try {
       await axios.post(`${baseURL}/documentos/`, requestData, {

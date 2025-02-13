@@ -18,6 +18,7 @@ import {
   Collapse,
   Modal,
   Box,
+  Dialog, DialogTitle, DialogContent,
 } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import axios from "axios";
@@ -218,6 +219,11 @@ const AdministracionModule2 = () => {
     } catch (error) {
       console.error("Error exporting Excel:", error);
     }
+  };
+
+  const [selectedFile, setSelectedFile] = useState(null);
+  const handleViewFile = (fileUrl) => {
+    setSelectedFile(fileUrl);
   };
 
   return (
@@ -632,17 +638,22 @@ const AdministracionModule2 = () => {
                                 </TableCell>
                                 <TableCell>{doc.empresa}</TableCell>
                                 <TableCell>
-                                  <Button
+                                <Button
+                                  variant="contained"
+                                  color="primary"
+                                  onClick={() => handleViewFile(doc.archivo)} // Llama a la función en lugar de usar href
+                                >
+                                  {/* <Button
                                     component="a"
                                     href={doc.archivo}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                  >
-                                    <img
-                                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/a71.png?alt=media&token=61d31196-774b-40ad-9a1d-327267c7b22e"
-                                  alt="Ícono Eliminar"
-                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
-                                />
+                                  > */}
+                                  <img
+                                      src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa17.png?alt=media&token=aae19df1-ae52-45f4-8653-042af6b5a59b"
+                                      alt="Ícono Número de Ítem"
+                                      style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                    />
                                   </Button>
                                 </TableCell>
                               </TableRow>
@@ -658,6 +669,23 @@ const AdministracionModule2 = () => {
           </Table>
         </TableContainer>
       </Paper>
+
+
+    <Dialog open={selectedFile!== null} onClose={() => setSelectedFile(null)} maxWidth="lg" fullWidth>
+      <DialogTitle>Archivo del Documento</DialogTitle>
+      <DialogContent>
+        {selectedFile && (
+          <iframe
+            src={selectedFile}
+            width="100%"
+            height="600px"
+            title="Archivo del Documento"
+            frameBorder="0"
+          />
+        )}
+      </DialogContent>
+    </Dialog>
+
     </Container>
   );
 };

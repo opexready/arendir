@@ -16,6 +16,9 @@ import {
   TableRow,
   Paper,
   Collapse,
+  Dialog,
+  DialogTitle,
+  DialogContent,
 } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import axios from "axios";
@@ -148,6 +151,10 @@ const ContadorModule = () => {
       ...prev,
       [id]: !prev[id],
     }));
+  };
+  const [selectedFile, setSelectedFile] = useState(null);
+  const handleViewFile = (fileUrl) => {
+    setSelectedFile(fileUrl);
   };
 
   const headerStyle = {
@@ -514,14 +521,17 @@ const ContadorModule = () => {
                                 <TableCell>{doc.empresa}</TableCell>
                                 <TableCell>
                                   <Button
-                                    component="a"
-                                    href={doc.archivo}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={() => handleViewFile(doc.archivo)}
+                                    // component="a"
+                                    // href={doc.archivo}
+                                    // target="_blank"
+                                    // rel="noopener noreferrer"
                                   >
                                     <img
-                                      src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/a71.png?alt=media&token=61d31196-774b-40ad-9a1d-327267c7b22e"
-                                      alt="Ícono Eliminar"
+                                      src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa17.png?alt=media&token=aae19df1-ae52-45f4-8653-042af6b5a59b"
+                                      alt="Ícono Número de Ítem"
                                       style={{ height: "24px" }} // Ajusta el tamaño de la imagen
                                     />
                                   </Button>
@@ -539,7 +549,29 @@ const ContadorModule = () => {
           </Table>
         </TableContainer>
       </Paper>
+
+
+      <Dialog open={selectedFile!== null} onClose={() => setSelectedFile(null)} maxWidth="lg" fullWidth>
+  <DialogTitle>Archivo del Documento</DialogTitle>
+  <DialogContent>
+    {selectedFile && (
+      <iframe
+        src={selectedFile}
+        width="100%"
+        height="600px"
+        title="Archivo del Documento"
+        frameBorder="0"
+      />
+    )}
+  </DialogContent>
+</Dialog>
+
+
     </Container>
+
+
+
+
   );
 };
 
