@@ -205,24 +205,28 @@ const DatosReciboTable = () => {
   };
 
   const [editRecord, setEditRecord] = useState(null);
+  // const handleEditRecord = (record) => {
+  //   setFormData({
+  //     fecha: record.fecha || "",
+  //     ruc: record.ruc || "",
+  //     tipoDoc: record.tipoDoc || "",
+  //     cuentaContable: record.cuenta_contable || "",
+  //     serie: record.serie || "",
+  //     numero: record.numero || "",
+  //     rubro: record.rubro || "",
+  //     moneda: record.moneda || "PEN",
+  //     afecto: record.afecto || "",
+  //     igv: record.igv || "",
+  //     inafecto: record.inafecto || "",
+  //     total: record.total || "",
+  //     archivo: record.archivo || "",
+  //   });
+  //   setEditRecord(record);
+  //   setShowForm(true);
+  // };
+
   const handleEditRecord = (record) => {
-    setFormData({
-      fecha: record.fecha || "",
-      ruc: record.ruc || "",
-      tipoDoc: record.tipoDoc || "",
-      cuentaContable: record.cuenta_contable || "",
-      serie: record.serie || "",
-      numero: record.numero || "",
-      rubro: record.rubro || "",
-      moneda: record.moneda || "PEN",
-      afecto: record.afecto || "",
-      igv: record.igv || "",
-      inafecto: record.inafecto || "",
-      total: record.total || "",
-      archivo: record.archivo || "",
-    });
-    setEditRecord(record);
-    setShowForm(true);
+    navigate(`/editar-documento/${record.id}`); // Redirigir a la nueva página con el ID del documento
   };
 
   const handleUpdate = async (e) => {

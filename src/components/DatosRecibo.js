@@ -467,23 +467,6 @@ const DatosRecibo = () => {
     setSearchRuc(e.target.value);
   };
 
-  // const handleSearch = async () => {
-  //   try {
-  //     const response = await axios.get(
-  //       `${baseURL}/consulta-ruc?ruc=${searchRuc}`
-  //     );
-  //     setSearchResult(response.data);
-  //     setFormData({
-  //       ...formData,
-  //       ruc: searchRuc,
-  //       tipoDoc: response.data.tipoDocumento,
-  //     });
-  //     setError("");
-  //   } catch (error) {
-  //     setError("Error al buscar el RUC. Asegúrese de que el número es válido.");
-  //     setSearchResult(null);
-  //   }
-  // };
 
   const handleSearch = async (ruc) => {
     try {
@@ -959,17 +942,6 @@ const DatosRecibo = () => {
                   ></div>
                 </Box>
               )}
-
-              {/* Mostrar resultado del QR */}
-              {/* {qrResult && (
-                <Typography
-                  variant="body1"
-                  color="success"
-                  sx={{ marginTop: 2 }}
-                >
-                  Resultado: {qrResult}
-                </Typography>
-              )} */}
 
               {/* Mostrar error en caso de fallo */}
               {error && (
