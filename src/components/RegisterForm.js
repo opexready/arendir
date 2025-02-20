@@ -24,6 +24,7 @@ const RegisterForm = ({ open, onClose }) => {
   });
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -34,6 +35,7 @@ const RegisterForm = ({ open, onClose }) => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
+    setLoading(true);
 
     try {
       const userString = localStorage.getItem("user");
@@ -42,6 +44,7 @@ const RegisterForm = ({ open, onClose }) => {
 
       if (!userId) {
         setError("Error: Usuario no autenticado. Por favor, inicie sesión.");
+        setLoading(false);
         return;
       }
 
@@ -52,9 +55,54 @@ const RegisterForm = ({ open, onClose }) => {
 
       setSuccess("Usuario registrado con éxito.");
       console.log("Respuesta del servidor:", response.data);
+
+      // Create Rendicion
+      try {
+        const rendicionResponse = await api.post("/rendicion/", {
+          user_id: response.data.id, // Use the ID from the user creation response
+        });
+        console.log(
+          "Respuesta del servidor (rendicion):",
+          rendicionResponse.data
+        );
+      } catch (rendicionError) {
+        console.error(
+          "Error al crear rendicion:",
+          rendicionError.response || rendicionError.message
+        );
+        // Consider whether you want to display this error to the user or just log it.
+        // setError(rendicionError.response?.data?.detail || "Error al crear rendicion.");  // Uncomment to show rendicion error
+      }
+
+      // Create Solicitud
+      try {
+        const solicitudResponse = await api.post("/solicitud/", {
+          user_id: response.data.id, // Use the ID from the user creation response
+        });
+        console.log(
+          "Respuesta del servidor (solicitud):",
+          solicitudResponse.data
+        );
+      } catch (solicitudError) {
+        console.error(
+          "Error al crear solicitud:",
+          solicitudError.response || solicitudError.message
+        );
+        // setError(solicitudError.response?.data?.detail || "Error al crear solicitud."); // Uncomment to show solicitud error
+      }
+
+      // Reset the form after successful submission (optional)
+      setFormData({
+        username: "",
+        full_name: "",
+        email: "",
+        password: "",
+      });
     } catch (err) {
       console.error("Error al registrar usuario:", err.response || err.message);
       setError(err.response?.data?.detail || "Error al registrar usuario.");
+    } finally {
+      setLoading(false); // Set loading to false regardless of success or failure
     }
   };
 

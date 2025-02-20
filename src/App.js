@@ -21,7 +21,6 @@ import AnticiposGastosLocales from './components/AnticiposGastosLocales';
 import Historial from './components/Historial'; 
 import SoportePanel from './components/SoportePanel'; 
 import HistorialGastos from './components/HistorialGastos';// Importa tu nueva clase
-import DocumentoDetail from './components/DocumentoDetail';
 import api from './api';
 
 // Define el tema
@@ -77,7 +76,6 @@ function App() {
                                     <Route path="/datos-recibo-table" element={<DatosReciboTable />} />
                                     <Route path="/detalle" element={<HistorialGastos />} />
                                     <Route path="/historial" element={<Historial />} /> {/* Nueva ruta para Historial */}
-                                    <Route path="/editar-documento/:documento_id" element={<DocumentoDetail />} />
                                 </Routes>
                             </>
                         }
