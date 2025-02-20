@@ -10,13 +10,20 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
+  useMediaQuery,
+  IconButton,
+  Menu,
+  MenuItem,
 } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 import api from "../api";
 
 const Navbar = () => {
   const [user, setUser] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const isMobile = useMediaQuery((theme) => theme.breakpoints.down("sm"));
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -39,6 +46,14 @@ const Navbar = () => {
     localStorage.removeItem("token");
     setUser(null);
     navigate("/login");
+  };
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
   };
 
   const isColaboradorPage = location.pathname.startsWith("/colaborador");
@@ -76,94 +91,163 @@ const Navbar = () => {
         <Box
           sx={{
             display: "flex",
-            justifyContent: "center",
+            justifyContent: "flex-start", // Cambiado de "center" a "flex-start"
             backgroundColor: "#f5f5f5",
             paddingY: 1,
             boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
             marginTop: "64px",
+            paddingLeft: 2, // Añadido para dar un poco de espacio a la izquierda
           }}
         >
-          <List sx={{ display: "flex", flexDirection: "row", padding: 0,gap: "60px", }}>
-            {/* Gastos */}
-            <ListItem
-              button
-              component={Link}
-              to="/datos-recibo-table"
-              sx={{ justifyContent: "center" }}
-            >
-              <ListItemIcon sx={{ minWidth: "30px" }}> 
-                <img
-                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/GASTOS.png?alt=media&token=e9261ba0-d22f-4d13-8ff0-213b23feb977"
-                  alt="Gastos"
-                  style={{ height: "24px", width: "24px" }}
+          {isMobile ? (
+            <>
+              <IconButton
+                color="inherit"
+                aria-label="menu"
+                onClick={handleMenuOpen}
+                sx={{ color: "#2E3192" }} // Añadido para que el ícono tenga color
+              >
+                <MenuIcon />
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+              >
+                <MenuItem
+                  component={Link}
+                  to="/datos-recibo-table"
+                  onClick={handleMenuClose}
+                >
+                  <ListItemIcon>
+                    <img
+                      src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/GASTOS.png?alt=media&token=e9261ba0-d22f-4d13-8ff0-213b23feb977"
+                      alt="Gastos"
+                      style={{ height: "24px", width: "24px" }}
+                    />
+                  </ListItemIcon>
+                  <ListItemText primary="Gastos" />
+                </MenuItem>
+                <MenuItem
+                  component={Link}
+                  to="/anticipo-table"
+                  onClick={handleMenuClose}
+                >
+                  <ListItemIcon>
+                    <img
+                      src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/ANTICIPOS.png?alt=media&token=f5f00653-d2c4-4919-8c33-7eb353f0cf7b"
+                      alt="Anticipos"
+                      style={{ height: "24px", width: "24px" }}
+                    />
+                  </ListItemIcon>
+                  <ListItemText primary="Anticipo" />
+                </MenuItem>
+                <MenuItem
+                  component={Link}
+                  to="/historial"
+                  onClick={handleMenuClose}
+                >
+                  <ListItemIcon>
+                    <img
+                      src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/HISTORIAL.png?alt=media&token=fb09342e-37f7-4fc5-b268-2130731bd247"
+                      alt="Historial"
+                      style={{ height: "24px", width: "24px" }}
+                    />
+                  </ListItemIcon>
+                  <ListItemText primary="Historial" />
+                </MenuItem>
+                <MenuItem
+                  component={Link}
+                  to="/detalle"
+                  onClick={handleMenuClose}
+                >
+                  <ListItemIcon>
+                    <img
+                      src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/DETALLE.png?alt=media&token=2de03c3c-1dc1-41f4-bbdf-b4c5e31857b7"
+                      alt="Detalle"
+                      style={{ height: "24px", width: "24px" }}
+                    />
+                  </ListItemIcon>
+                  <ListItemText primary="Detalle" />
+                </MenuItem>
+              </Menu>
+            </>
+          ) : (
+            <List sx={{ display: "flex", flexDirection: "row", padding: 0, gap: "60px" }}>
+              <ListItem
+                button
+                component={Link}
+                to="/datos-recibo-table"
+                sx={{ justifyContent: "center" }}
+              >
+                <ListItemIcon sx={{ minWidth: "30px" }}>
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/GASTOS.png?alt=media&token=e9261ba0-d22f-4d13-8ff0-213b23feb977"
+                    alt="Gastos"
+                    style={{ height: "24px", width: "24px" }}
+                  />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Gastos"
+                  sx={{ color: "#2E3192", textAlign: "center" }}
                 />
-              </ListItemIcon>
-              <ListItemText
-                primary="Gastos"
-                sx={{ color: "#2E3192", textAlign: "center" }}
-              />
-            </ListItem>
-
-            {/* Anticipo */}
-            <ListItem
-              button
-              component={Link}
-              to="/anticipo-table"
-              sx={{ justifyContent: "center" }}
-            >
-              <ListItemIcon sx={{ minWidth: "30px" }}> 
-                <img
-                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/ANTICIPOS.png?alt=media&token=f5f00653-d2c4-4919-8c33-7eb353f0cf7b"
-                  alt="Anticipos"
-                  style={{ height: "24px", width: "24px" }}
+              </ListItem>
+              <ListItem
+                button
+                component={Link}
+                to="/anticipo-table"
+                sx={{ justifyContent: "center" }}
+              >
+                <ListItemIcon sx={{ minWidth: "30px" }}>
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/ANTICIPOS.png?alt=media&token=f5f00653-d2c4-4919-8c33-7eb353f0cf7b"
+                    alt="Anticipos"
+                    style={{ height: "24px", width: "24px" }}
+                  />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Anticipo"
+                  sx={{ color: "#2E3192", textAlign: "center" }}
                 />
-              </ListItemIcon>
-              <ListItemText
-                primary="Anticipo"
-                sx={{ color: "#2E3192", textAlign: "center" }}
-              />
-            </ListItem>
-
-            {/* Historial */}
-            <ListItem
-              button
-              component={Link}
-              to="/historial"
-              sx={{ justifyContent: "center" }}
-            >
-              <ListItemIcon sx={{ minWidth: "30px" }}> 
-                <img
-                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/HISTORIAL.png?alt=media&token=fb09342e-37f7-4fc5-b268-2130731bd247"
-                  alt="Historial"
-                  style={{ height: "24px", width: "24px" }}
+              </ListItem>
+              <ListItem
+                button
+                component={Link}
+                to="/historial"
+                sx={{ justifyContent: "center" }}
+              >
+                <ListItemIcon sx={{ minWidth: "30px" }}>
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/HISTORIAL.png?alt=media&token=fb09342e-37f7-4fc5-b268-2130731bd247"
+                    alt="Historial"
+                    style={{ height: "24px", width: "24px" }}
+                  />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Historial"
+                  sx={{ color: "#2E3192", textAlign: "center" }}
                 />
-              </ListItemIcon>
-              <ListItemText
-                primary="Historial"
-                sx={{ color: "#2E3192", textAlign: "center" }}
-              />
-            </ListItem>
-
-            {/* Detalle */}
-            <ListItem
-              button
-              component={Link}
-              to="/detalle"
-              sx={{ justifyContent: "center" }}
-            >
-              <ListItemIcon sx={{ minWidth: "30px" }}> 
-                <img
-                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/DETALLE.png?alt=media&token=2de03c3c-1dc1-41f4-bbdf-b4c5e31857b7"
-                  alt="Detalle"
-                  style={{ height: "24px", width: "24px" }}
+              </ListItem>
+              <ListItem
+                button
+                component={Link}
+                to="/detalle"
+                sx={{ justifyContent: "center" }}
+              >
+                <ListItemIcon sx={{ minWidth: "30px" }}>
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/DETALLE.png?alt=media&token=2de03c3c-1dc1-41f4-bbdf-b4c5e31857b7"
+                    alt="Detalle"
+                    style={{ height: "24px", width: "24px" }}
+                  />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Detalle"
+                  sx={{ color: "#2E3192", textAlign: "center" }}
                 />
-              </ListItemIcon>
-              <ListItemText
-                primary="Detalle"
-                sx={{ color: "#2E3192", textAlign: "center" }}
-              />
-            </ListItem>
-          </List>
+              </ListItem>
+            </List>
+          )}
         </Box>
       )}
 
