@@ -62,6 +62,8 @@ const AdminDashboard2 = () => {
       navigate("/contador");
     } else if (selectedRole === "COLABORADOR") {
       navigate("/colaborador");
+    } else if (selectedRole === "ADMIN") {
+      navigate("/admin");
     }
   };
 
@@ -188,6 +190,32 @@ const AdminDashboard2 = () => {
                     />
                   }
                   label="Colaborador"
+                  style={{ color: "#fff" }}
+                />
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Box className={classes.card}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={selectedRole === "ADMIN"}
+                      onChange={handleRoleChange}
+                      name="ADMIN"
+                      sx={{
+                        color: "white",
+                        "&.Mui-checked": {
+                          color: "white",
+                        },
+                        "& .MuiSvgIcon-root": {
+                          border: "2px solid white",
+                          borderRadius: "4px",
+                          backgroundColor: "transparent",
+                        },
+                      }}
+                    />
+                  }
+                  label="Admin"
                   style={{ color: "#fff" }}
                 />
               </Box>

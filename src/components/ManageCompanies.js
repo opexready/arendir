@@ -10,7 +10,7 @@ const ManageCompanies = () => {
     useEffect(() => {
         const fetchCompanies = async () => {
             try {
-                const response = await api.get('/companies/'); // Asegúrate de que es GET
+                const response = await api.get('/api/companies/'); // Asegúrate de que es GET
                 setCompanies(response.data);
             } catch (error) {
                 console.error('Error fetching companies:', error);
@@ -30,13 +30,13 @@ const ManageCompanies = () => {
         e.preventDefault();
         try {
             if (editCompany) {
-                await api.put(`/companies/${editCompany.id}`, formData);
+                await api.put(`/api/companies/${editCompany.id}`, formData);
             } else {
-                await api.post('/companies/', formData);
+                await api.post('/api/companies/', formData);
             }
             setFormData({ name: '', description: '' });
             setEditCompany(null);
-            const response = await api.get('/companies/'); // Asegúrate de que es GET
+            const response = await api.get('/api/companies/'); // Asegúrate de que es GET
             setCompanies(response.data);
         } catch (error) {
             console.error('Error saving company:', error);
@@ -50,8 +50,8 @@ const ManageCompanies = () => {
 
     const handleDelete = async (companyId) => {
         try {
-            await api.delete(`/companies/${companyId}`);
-            const response = await api.get('/companies/'); // Asegúrate de que es GET
+            await api.delete(`/api/companies/${companyId}`);
+            const response = await api.get('/api/companies/'); // Asegúrate de que es GET
             setCompanies(response.data);
         } catch (error) {
             console.error('Error deleting company:', error);

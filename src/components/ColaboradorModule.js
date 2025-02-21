@@ -84,7 +84,7 @@ const ColaboradorModule = () => {
       iconUrl:
         "https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/ICONO_DETALLE.png?alt=media&token=086c4705-37f8-4c04-979f-9134eb3a9a97",
       link: "/detalle",
-    },
+    }
   ];
 
   return (

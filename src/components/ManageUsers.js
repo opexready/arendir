@@ -28,7 +28,7 @@ const ManageUsers = () => {
 
         const fetchCompanies = async () => {
             try {
-                const response = await api.get('/companies/'); // Asegúrate de que es GET
+                const response = await api.get('/api/companies/'); // Asegúrate de que es GET
                 setCompanies(response.data);
             } catch (error) {
                 console.error('Error fetching companies:', error);
