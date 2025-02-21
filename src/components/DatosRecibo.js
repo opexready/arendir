@@ -279,7 +279,7 @@ const DatosRecibo = () => {
         `${baseURL}/rendicion/last`,
         {
           params: {
-            user_id: userId,
+            id_user: userId,
             tipo: "RENDICION",
           },
         }
@@ -295,7 +295,7 @@ const DatosRecibo = () => {
 
         // Paso 3: Crear una nueva rendición
         const newRendicionResponse = await axios.post(`${baseURL}/rendicion/`, {
-          user_id: userId,
+          id_user: userId,
         });
       } else {
       }
@@ -316,7 +316,7 @@ const DatosRecibo = () => {
         if (userId) {
           const response = await api.get(`/rendicion/last`, {
             params: {
-              user_id: userId,
+              id_user: userId,
               tipo: "RENDICION", // Puedes reemplazarlo con el valor que necesites
             },
           });
@@ -729,7 +729,7 @@ const DatosRecibo = () => {
         if (userId) {
           const response = await api.get(`/rendicion/last`, {
             params: {
-              user_id: userId,
+              id_user: userId,
               tipo: "RENDICION", // Puedes reemplazarlo con el valor que necesites
             },
           });

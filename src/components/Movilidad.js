@@ -140,7 +140,7 @@ const Movilidad = () => {
       if (userId) {
         const response = await api.get(`/rendicion/last`, {
           params: {
-            user_id: userId,
+            id_user: userId,
             tipo: "RENDICION", // Puedes reemplazarlo con el valor que necesites
           },
         });
@@ -238,7 +238,7 @@ const Movilidad = () => {
         }
         const response = await api.get(`/rendicion/last`, {
           params: {
-            user_id: userId,
+            id_user: userId,
             tipo: "RENDICION",
           },
         });

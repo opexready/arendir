@@ -33,10 +33,10 @@ const Historial = () => {
         // Realizar llamadas a las APIs
         const [rendicionesResponse, solicitudesResponse] = await Promise.all([
           axios.get(`${baseURL}/rendiciones/nombres`, {
-            params: { user_id: userId, tipo: "RENDICION" },
+            params: { id_user: userId, tipo: "RENDICION" },
           }),
           axios.get(`${baseURL}/api/solicitud/nombres`, {
-            params: { user_id: userId },
+            params: { id_user: userId },
           }),
         ]);
 

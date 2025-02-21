@@ -103,7 +103,7 @@ const RendicionGastos = () => {
             }
         } else {
           try {
-            const response = await api.post("/rendicion/", { user_id: userId });
+            const response = await api.post("/rendicion/", { id_user: userId });
             const { nombre } = response.data;
             localStorage.setItem("numero_rendicion", nombre);
             navigate("/datos-recibo", {

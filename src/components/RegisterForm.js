@@ -50,7 +50,7 @@ const RegisterForm = ({ open, onClose }) => {
 
       const response = await api.post("/api/users/", {
         ...formData,
-        user_id: userId,
+        id_user: userId,
       });
 
       setSuccess("Usuario registrado con éxito.");
@@ -59,7 +59,7 @@ const RegisterForm = ({ open, onClose }) => {
       // Create Rendicion
       try {
         const rendicionResponse = await api.post("/rendicion/", {
-          user_id: response.data.id, // Use the ID from the user creation response
+          id_user: response.data.id, // Use the ID from the user creation response
         });
         console.log(
           "Respuesta del servidor (rendicion):",
@@ -77,7 +77,7 @@ const RegisterForm = ({ open, onClose }) => {
       // Create Solicitud
       try {
         const solicitudResponse = await api.post("/solicitud/", {
-          user_id: response.data.id, // Use the ID from the user creation response
+          id_user: response.data.id, // Use the ID from the user creation response
         });
         console.log(
           "Respuesta del servidor (solicitud):",

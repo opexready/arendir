@@ -99,7 +99,7 @@ const AnticiposViajes = () => {
       let numeroRendicion = "";
       try {
         const response = await axios.get(`${baseURL}/solicitud/last`, {
-          params: { user_id: userId, tipo: "ANTICIPO" },
+          params: { id_user: userId, tipo: "ANTICIPO" },
         });
         numeroRendicion = response.data.nombre;
         setUltimaSolicitud(response.data.nombre);
@@ -141,7 +141,7 @@ const AnticiposViajes = () => {
     const fetchUltimaSolicitud = async () => {
       try {
         const response = await axios.get(`${baseURL}/solicitud/last`, {
-          params: { user_id: userId, tipo: "ANTICIPO" },
+          params: { id_user: userId, tipo: "ANTICIPO" },
         });
         setUltimaSolicitud(response.data.nombre);
       } catch (error) {
@@ -166,7 +166,7 @@ const AnticiposViajes = () => {
         const userId = user ? user.id : null;
         const company_name = user ? user.company_name : null;
         const rendicionResponse = await axios.get(`${baseURL}/solicitud/last`, {
-          params: { user_id: userId, tipo: "ANTICIPO" },
+          params: { id_user: userId, tipo: "ANTICIPO" },
         });
         const rendicionData = rendicionResponse.data;
         console.log("Nombre de rendición:", rendicionData.nombre);
@@ -358,7 +358,7 @@ const AnticiposViajes = () => {
         `${baseURL}/solicitud/last`,
         {
           params: {
-            user_id: userId,
+            id_user: userId,
             tipo: "ANTICIPO",
           },
         }
@@ -374,7 +374,7 @@ const AnticiposViajes = () => {
 
         // Paso 3: Crear una nueva rendición
         const newRendicionResponse = await axios.post(`${baseURL}/solicitud/`, {
-          user_id: userId,
+          id_user: userId,
         });
 
         // Puedes manejar la respuesta según tus necesidades

@@ -102,7 +102,7 @@ const AnticipoTable = () => {
       let numeroRendicion = "";
       try {
         const response = await axios.get(`${baseURL}/solicitud/last`, {
-          params: { user_id: userId, tipo: "ANTICIPO" },
+          params: { id_user: userId, tipo: "ANTICIPO" },
         });
         numeroRendicion = response.data.nombre;
         setUltimaSolicitud(response.data.nombre);
@@ -142,7 +142,7 @@ const AnticipoTable = () => {
     const fetchUltimaSolicitud = async () => {
       try {
         const response = await axios.get(`${baseURL}/solicitud/last`, {
-          params: { user_id: userId, tipo: "ANTICIPO" },
+          params: { id_user: userId, tipo: "ANTICIPO" },
         });
         setUltimaSolicitud(response.data.nombre);
       } catch (error) {
@@ -166,7 +166,7 @@ const AnticipoTable = () => {
         const user = userString ? JSON.parse(userString) : null;
         const userId = user ? user.id : null;
         const rendicionResponse = await axios.get(`${baseURL}/solicitud/last`, {
-          params: { user_id: userId, tipo: "ANTICIPO" },
+          params: { id_user: userId, tipo: "ANTICIPO" },
         });
         const rendicionData = rendicionResponse.data;
         console.log("Nombre de rendición:", rendicionData.nombre);
@@ -350,7 +350,7 @@ const AnticipoTable = () => {
         `${baseURL}/solicitud/last`,
         {
           params: {
-            user_id: userId,
+            id_user: userId,
             tipo: "ANTICIPO",
           },
         }
@@ -366,7 +366,7 @@ const AnticipoTable = () => {
 
         // Paso 3: Crear una nueva rendición
         const newRendicionResponse = await axios.post(`${baseURL}/solicitud/`, {
-          user_id: userId,
+          id_user: userId,
         });
 
         // Puedes manejar la respuesta según tus necesidades
