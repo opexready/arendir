@@ -157,7 +157,10 @@ const DatosReciboTable = () => {
     setNoAnticiposModalOpen(false);
   };
 
+  const [isLoadingSolicitudes, setIsLoadingSolicitudes] = useState(false);
+
   const fetchSolicitudOpciones = async () => {
+    setIsLoadingSolicitudes(true); // Activar el estado de carga
     try {
       const userString = localStorage.getItem("user");
       const user = userString ? JSON.parse(userString) : null;
@@ -179,14 +182,24 @@ const DatosReciboTable = () => {
       setError(
         "Error al obtener las solicitudes. Por favor, intente nuevamente."
       );
+    } finally {
+      setIsLoadingSolicitudes(false); // Desactivar el estado de carga
     }
   };
 
+  const [hasFetchedSolicitudes, setHasFetchedSolicitudes] = useState(false);
+
   useEffect(() => {
-    if (confirmFinalizarDialogOpen) {
+    if (confirmFinalizarDialogOpen && !hasFetchedSolicitudes) {
       fetchSolicitudOpciones();
+      setHasFetchedSolicitudes(true); // Marcar que los datos se han cargado
     }
-  }, [confirmFinalizarDialogOpen]);
+  }, [confirmFinalizarDialogOpen, hasFetchedSolicitudes]);
+
+  const handleCloseFinalizarDialog = () => {
+    setConfirmFinalizarDialogOpen(false);
+    setHasFetchedSolicitudes(false); // Reiniciar el estado
+  };
 
   const handleViewDetail = async (documentId) => {
     try {
@@ -205,26 +218,6 @@ const DatosReciboTable = () => {
   };
 
   const [editRecord, setEditRecord] = useState(null);
-  // const handleEditRecord = (record) => {
-  //   setFormData({
-  //     fecha: record.fecha || "",
-  //     ruc: record.ruc || "",
-  //     tipoDoc: record.tipoDoc || "",
-  //     cuentaContable: record.cuenta_contable || "",
-  //     serie: record.serie || "",
-  //     numero: record.numero || "",
-  //     rubro: record.rubro || "",
-  //     moneda: record.moneda || "PEN",
-  //     afecto: record.afecto || "",
-  //     igv: record.igv || "",
-  //     inafecto: record.inafecto || "",
-  //     total: record.total || "",
-  //     archivo: record.archivo || "",
-  //   });
-  //   setEditRecord(record);
-  //   setShowForm(true);
-  // };
-
   const handleEditRecord = (record) => {
     navigate(`/editar-documento/${record.id}`); // Redirigir a la nueva página con el ID del documento
   };
@@ -289,7 +282,7 @@ const DatosReciboTable = () => {
           estado: "POR APROBAR",
         });
 
-        const newRendicionResponse = await axios.post(`${baseURL}/rendicion/`, {
+        await axios.post(`${baseURL}/rendicion/`, {
           id_user: userId,
         });
       } else {
@@ -1279,49 +1272,53 @@ const DatosReciboTable = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
       <Dialog
         open={confirmFinalizarDialogOpen}
-        onClose={() => setConfirmFinalizarDialogOpen(false)}
+        onClose={handleCloseFinalizarDialog}
       >
         <DialogTitle>Seleccionar Anticipos</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Seleccione los anticipos que incluirán esta rendición.
-          </DialogContentText>
-
-          {/* Renderizar el FormGroup solo si hay datos */}
-          {solicitudOpciones.length > 0 ? (
-            <FormGroup>
-              {solicitudOpciones.map((opcion) => (
-                <FormControlLabel
-                  key={opcion.id}
-                  control={
-                    <Checkbox
-                      checked={checkedOpciones.includes(opcion.id)}
-                      onChange={() => {
-                        setCheckedOpciones((prevChecked) =>
-                          prevChecked.includes(opcion.id)
-                            ? prevChecked.filter((item) => item !== opcion.id)
-                            : [...prevChecked, opcion.id]
-                        );
-                      }}
-                    />
-                  }
-                  label={opcion.nombre} // Mostrar el nombre como descripción
-                />
-              ))}
-            </FormGroup>
+          {isLoadingSolicitudes ? (
+            <CircularProgress /> // Mostrar un indicador de carga
           ) : (
-            <Typography variant="body1" sx={{ textAlign: "center", mt: 2 }}>
-              No hay anticipos disponibles.
-            </Typography>
+            <>
+              <DialogContentText>
+                Seleccione los anticipos que incluirán esta rendición.
+              </DialogContentText>
+              {solicitudOpciones.length > 0 ? (
+                <FormGroup>
+                  {solicitudOpciones.map((opcion) => (
+                    <FormControlLabel
+                      key={opcion.id}
+                      control={
+                        <Checkbox
+                          checked={checkedOpciones.includes(opcion.id)}
+                          onChange={() => {
+                            setCheckedOpciones((prevChecked) =>
+                              prevChecked.includes(opcion.id)
+                                ? prevChecked.filter(
+                                    (item) => item !== opcion.id
+                                  )
+                                : [...prevChecked, opcion.id]
+                            );
+                          }}
+                        />
+                      }
+                      label={opcion.nombre}
+                    />
+                  ))}
+                </FormGroup>
+              ) : (
+                <Typography variant="body1" sx={{ textAlign: "center", mt: 2 }}>
+                  No hay anticipos disponibles.
+                </Typography>
+              )}
+            </>
           )}
         </DialogContent>
         <DialogActions>
-          <Button
-            onClick={() => setConfirmFinalizarDialogOpen(false)}
-            color="primary"
-          >
+          <Button onClick={handleCloseFinalizarDialog} color="primary">
             Cancelar
           </Button>
           <Button
@@ -1388,7 +1385,7 @@ const DatosReciboTable = () => {
               }
             }}
             color="secondary"
-            disabled={solicitudOpciones.length === 0} // Deshabilitar el botón si no hay anticipos
+            disabled={solicitudOpciones.length === 0}
           >
             Confirmar
           </Button>

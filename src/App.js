@@ -22,6 +22,7 @@ import Historial from './components/Historial';
 import SoportePanel from './components/SoportePanel'; 
 import HistorialGastos from './components/HistorialGastos';// Importa tu nueva clase
 import api from './api';
+import DocumentoDetail from './components/DocumentoDetail';
 
 // Define el tema
 const theme = createTheme({
@@ -76,6 +77,7 @@ function App() {
                                     <Route path="/datos-recibo-table" element={<DatosReciboTable />} />
                                     <Route path="/detalle" element={<HistorialGastos />} />
                                     <Route path="/historial" element={<Historial />} /> {/* Nueva ruta para Historial */}
+                                    <Route path="/editar-documento/:documento_id" element={<DocumentoDetail />} />
                                 </Routes>
                             </>
                         }
