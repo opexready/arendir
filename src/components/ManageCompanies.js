@@ -6,18 +6,29 @@ const ManageCompanies = () => {
     const [companies, setCompanies] = useState([]);
     const [formData, setFormData] = useState({ name: '', description: '' });
     const [editCompany, setEditCompany] = useState(null);
+    const [userId, setUserId] = useState(null);
 
     useEffect(() => {
         const fetchCompanies = async () => {
-            try {
-                const response = await api.get('/api/companies/'); // Asegúrate de que es GET
-                setCompanies(response.data);
-            } catch (error) {
-                console.error('Error fetching companies:', error);
+            if (userId) {
+                try {
+                    const response = await api.get(`/api/companies/user/${userId}`);
+                    setCompanies(response.data);
+                } catch (error) {
+                    console.error('Error fetching companies:', error);
+                }
             }
         };
         fetchCompanies();
-    }, []);
+        const userString = localStorage.getItem("user");
+        const user = userString ? JSON.parse(userString) : null;
+        if (user && user.id) {
+            setUserId(user.id);
+            console.log("UserID obtenido:", user.id); // Imprimir el userId
+        } else {
+            console.error("UserID no encontrado en localStorage.");
+        }
+    }, [userId]);
 
     const handleChange = (e) => {
         setFormData({
@@ -29,14 +40,18 @@ const ManageCompanies = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            const dataToSend = {
+                ...formData,
+                id_user: userId // Agregar userId al cuerpo de la petición
+            };
             if (editCompany) {
                 await api.put(`/api/companies/${editCompany.id}`, formData);
             } else {
-                await api.post('/api/companies/', formData);
+                await api.post('/api/companies/', dataToSend);
             }
             setFormData({ name: '', description: '' });
             setEditCompany(null);
-            const response = await api.get('/api/companies/'); // Asegúrate de que es GET
+            const response = await api.get(`/api/companies/user/${userId}`);
             setCompanies(response.data);
         } catch (error) {
             console.error('Error saving company:', error);
