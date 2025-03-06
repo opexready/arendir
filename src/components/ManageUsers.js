@@ -5,37 +5,66 @@ import api from '../api';
 const ManageUsers = () => {
     const [users, setUsers] = useState([]);
     const [formData, setFormData] = useState({
+        id_user:'',
         username: '',
         email: '',
         full_name: '',
         role: '',
         company_name: '',
-        password: ''
+        password: '',
+        id_empresa:''
     });
-    const [roles] = useState(['colaborador', 'admin', 'contador']);
+    const [roles] = useState(['COLABORADOR', 'ADMINISTRACION', 'CONTADOR']);
     const [companies, setCompanies] = useState([]);
+    const [userId, setUserId] = useState(null);
 
     useEffect(() => {
         const fetchUsers = async () => {
-            try {
-                const response = await api.get('/api/users/'); // Asegúrate de que es GET
-                setUsers(response.data);
-            } catch (error) {
-                console.error('Error fetching users:', error);
+            if (userId) { // Solo si userId está disponible
+                try {
+                    const response = await api.get('/api/users/by-id-user/', {
+                        params: {
+                            id_user: userId 
+                        }
+                    });
+                    setUsers(response.data);
+                } catch (error) {
+                    console.error('Error fetching users:', error);
+                }
             }
         };
-        fetchUsers();
 
         const fetchCompanies = async () => {
             try {
-                const response = await api.get('/api/companies/'); // Asegúrate de que es GET
+                const response = await api.get(`/api/companies/user/${userId}`);
                 setCompanies(response.data);
+
+                // Actualizar formData.id_empresa con el id de la primera compañía
+                if (response.data.length > 0) {
+                    setFormData({
+                        ...formData,
+                        id_empresa: response.data[0].id // Asignar el id de la compañía
+                    });
+                }
             } catch (error) {
                 console.error('Error fetching companies:', error);
             }
         };
+
+        // Obtener userId del localStorage
+        const userString = localStorage.getItem("user");
+        const user = userString ? JSON.parse(userString) : null;
+        if (user && user.id) {
+            setUserId(user.id);
+            console.log("UserID obtenido:", user.id);
+            setFormData({...formData, id_user: user.id}); 
+        } else {
+            console.error("UserID no encontrado en localStorage.");
+        }
+
+        fetchUsers(); // Llamar a fetchUsers después de obtener userId
         fetchCompanies();
-    }, []);
+    }, [userId]);
 
     const handleChange = (e) => {
         setFormData({
@@ -47,14 +76,46 @@ const ManageUsers = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await api.post('/api/users/', formData);
+            const responseData = await api.post('/api/users/', formData);
+
+            // Create Rendicion
+            try {
+                const rendicionResponse = await api.post("/rendicion/", {
+                    id_user: responseData.data.id,
+                });
+                console.log(
+                    "Respuesta del servidor (rendicion):",
+                    rendicionResponse.data
+                );
+            } catch (rendicionError) {
+                console.error(
+                    "Error al crear rendicion:",
+                    rendicionError.response || rendicionError.message
+                );
+            }
+            // Create Solicitud
+            try {
+                const solicitudResponse = await api.post("/solicitud/", {
+                    id_user: responseData.data.id,
+                });
+                console.log(
+                    "Respuesta del servidor (solicitud):",
+                    solicitudResponse.data
+                );
+            } catch (solicitudError) {
+                console.error(
+                    "Error al crear solicitud:",
+                    solicitudError.response || solicitudError.message
+                );
+            }
             setFormData({
+                id_user: userId,
                 username: '',
                 email: '',
                 full_name: '',
                 role: '',
                 company_name: '',
-                password: ''
+                id_empresa: companies.length > 0 ? companies[0].id : '' // Restablecer id_empresa
             });
             const response = await api.get('/api/users/'); // Asegúrate de que es GET
             setUsers(response.data);
