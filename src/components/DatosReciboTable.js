@@ -1233,6 +1233,7 @@ const DatosReciboTable = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
       <Dialog
         open={detailDialogOpen}
         onClose={handleCloseDetailDialog}
@@ -1245,20 +1246,103 @@ const DatosReciboTable = () => {
             <TableContainer component={Paper}>
               <Table>
                 <TableBody>
-                  {Object.entries(documentDetail).map(
-                    ([key, value]) =>
-                      key !== "id" &&
-                      key !== "archivo" && (
-                        <TableRow key={key}>
-                          <TableCell sx={{ fontWeight: "bold" }}>
-                            {key}
-                          </TableCell>
-                          <TableCell>
-                            {value ? value.toString() : "-"}
-                          </TableCell>
-                        </TableRow>
-                      )
-                  )}
+                  {/* Información básica del documento */}
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      Fecha de Solicitud
+                    </TableCell>
+                    <TableCell>
+                      {documentDetail.fecha_solicitud
+                        ? new Date(
+                            documentDetail.fecha_solicitud
+                          ).toLocaleDateString()
+                        : "-"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      Fecha de Rendición
+                    </TableCell>
+                    <TableCell>
+                      {documentDetail.fecha_rendicion
+                        ? new Date(
+                            documentDetail.fecha_rendicion
+                          ).toLocaleDateString()
+                        : "-"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>RUC</TableCell>
+                    <TableCell>{documentDetail.ruc || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Proveedor</TableCell>
+                    <TableCell>{documentDetail.proveedor || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      Tipo de Documento
+                    </TableCell>
+                    <TableCell>
+                      {documentDetail.tipo_documento || "-"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Serie</TableCell>
+                    <TableCell>{documentDetail.serie || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      Correlativo
+                    </TableCell>
+                    <TableCell>{documentDetail.correlativo || "-"}</TableCell>
+                  </TableRow>
+
+                  {/* Información financiera */}
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Sub Total</TableCell>
+                    <TableCell>{documentDetail.sub_total || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>IGV</TableCell>
+                    <TableCell>{documentDetail.igv || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Total</TableCell>
+                    <TableCell>{documentDetail.total || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Moneda</TableCell>
+                    <TableCell>{documentDetail.moneda || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      Tipo de Cambio
+                    </TableCell>
+                    <TableCell>{documentDetail.tipo_cambio || "-"}</TableCell>
+                  </TableRow>
+
+                  {/* Información adicional */}
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Rubro</TableCell>
+                    <TableCell>{documentDetail.rubro || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      Cuenta Contable
+                    </TableCell>
+                    <TableCell>
+                      {documentDetail.cuenta_contable || "-"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Estado</TableCell>
+                    <TableCell>{documentDetail.estado || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Detalle</TableCell>
+                    <TableCell>{documentDetail.detalle || "-"}</TableCell>
+                  </TableRow>
                 </TableBody>
               </Table>
             </TableContainer>

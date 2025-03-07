@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { QrReader } from "react-qr-reader";
-
 import {
   Container,
   Card,
@@ -664,7 +663,7 @@ const DatosRecibo = () => {
       anticipo: 0.0,
       total: parseFloat(formData.total),
       pago: parseFloat(formData.total),
-      detalle: "",
+      detalle: detalle,
       estado: "POR APROBAR",
       tipo_solicitud: "RENDICION",
       empresa: user.company_name,
@@ -720,6 +719,7 @@ const DatosRecibo = () => {
       setSearchRuc("");
       setSearchResult(null);
       setError("");
+      setDetalle("");
 
       try {
         const userString = localStorage.getItem("user");
