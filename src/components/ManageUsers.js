@@ -20,7 +20,7 @@ const ManageUsers = () => {
 
     useEffect(() => {
         const fetchUsers = async () => {
-            if (userId) { // Solo si userId está disponible
+            if (userId) { 
                 try {
                     const response = await api.get('/api/users/by-id-user/', {
                         params: {
@@ -38,12 +38,10 @@ const ManageUsers = () => {
             try {
                 const response = await api.get(`/api/companies/user/${userId}`);
                 setCompanies(response.data);
-
-                // Actualizar formData.id_empresa con el id de la primera compañía
                 if (response.data.length > 0) {
                     setFormData({
                         ...formData,
-                        id_empresa: response.data[0].id // Asignar el id de la compañía
+                        id_empresa: response.data[0].id 
                     });
                 }
             } catch (error) {
@@ -51,7 +49,6 @@ const ManageUsers = () => {
             }
         };
 
-        // Obtener userId del localStorage
         const userString = localStorage.getItem("user");
         const user = userString ? JSON.parse(userString) : null;
         if (user && user.id) {
@@ -61,8 +58,7 @@ const ManageUsers = () => {
         } else {
             console.error("UserID no encontrado en localStorage.");
         }
-
-        fetchUsers(); // Llamar a fetchUsers después de obtener userId
+        fetchUsers(); 
         fetchCompanies();
     }, [userId]);
 
@@ -77,8 +73,6 @@ const ManageUsers = () => {
         e.preventDefault();
         try {
             const responseData = await api.post('/api/users/', formData);
-
-            // Create Rendicion
             try {
                 const rendicionResponse = await api.post("/rendicion/", {
                     id_user: responseData.data.id,
@@ -93,7 +87,6 @@ const ManageUsers = () => {
                     rendicionError.response || rendicionError.message
                 );
             }
-            // Create Solicitud
             try {
                 const solicitudResponse = await api.post("/solicitud/", {
                     id_user: responseData.data.id,
@@ -115,9 +108,13 @@ const ManageUsers = () => {
                 full_name: '',
                 role: '',
                 company_name: '',
-                id_empresa: companies.length > 0 ? companies[0].id : '' // Restablecer id_empresa
+                id_empresa: companies.length > 0 ? companies[0].id : '' 
             });
-            const response = await api.get('/api/users/'); // Asegúrate de que es GET
+            const response = await api.get('/api/users/by-id-user/', {
+                params: {
+                    id_user: userId
+                }
+            });
             setUsers(response.data);
         } catch (error) {
             console.error('Error creating user:', error);
