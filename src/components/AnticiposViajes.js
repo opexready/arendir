@@ -23,7 +23,8 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import "./AnticiposViajes.css";
-import { baseURL, api } from "../api";
+//import { baseURL, api } from "../api";
+import api, { baseURL } from "../api";
 import ubigeoData from "../data/ubigeoData";
 import paisesSudamerica from "../data/paisesMundo";
 import { useNavigate } from "react-router-dom";
@@ -154,11 +155,12 @@ const AnticiposViajes = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(`${baseURL}/api/users/me`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        // const response = await axios.get(`${baseURL}/api/users/me`, {
+        //   headers: {
+        //     Authorization: `Bearer ${localStorage.getItem("token")}`,
+        //   },
+        // });
+        const response = await api.get('/api/users/me/');
         const userData = response.data;
         console.log("User ID:", userData.id);
         const userString = localStorage.getItem("user");

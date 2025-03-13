@@ -15,7 +15,8 @@ import {
   Backdrop,
 } from "@mui/material";
 import axios from "axios";
-import { baseURL, api } from "../api";
+//import { baseURL, api } from "../api";
+import api, { baseURL } from "../api";
 import "./AnticiposGastosLocales.css"; // Mantén tu archivo CSS personalizado si es necesario
 import { useNavigate } from "react-router-dom";
 const AnticiposGastosLocales = () => {
@@ -55,12 +56,12 @@ const AnticiposGastosLocales = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const userResponse = await axios.get(`${baseURL}/api/users/me`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-
+        // const userResponse = await axios.get(`${baseURL}/api/users/me`, {
+        //   headers: {
+        //     Authorization: `Bearer ${localStorage.getItem("token")}`,
+        //   },
+        // });
+        const userResponse = await api.get('/api/users/me/');
         const userData = userResponse.data;
         console.log("userData", userData);
         let numeroRendicion = "";
