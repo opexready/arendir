@@ -80,7 +80,7 @@ const ManageCompanies = () => {
                     <input
                         type="text"
                         name="name"
-                        placeholder="Company Name"
+                        placeholder="Nombre"
                         value={formData.name}
                         onChange={handleChange}
                         className="form-control"
@@ -91,20 +91,20 @@ const ManageCompanies = () => {
                     <input
                         type="text"
                         name="description"
-                        placeholder="Description"
+                        placeholder="Descripción"
                         value={formData.description}
                         onChange={handleChange}
                         className="form-control"
                     />
                 </div>
-                <button type="submit" className="btn btn-primary">{editCompany ? 'Update' : 'Create'}</button>
+                <button type="submit" className="btn btn-primary">{editCompany ? 'Update' : 'Crear Empresa'}</button>
             </form>
             <table className="table table-striped table-hover">
                 <thead className="thead-dark">
                     <tr>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Actions</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -113,8 +113,8 @@ const ManageCompanies = () => {
                             <td>{company.name}</td>
                             <td>{company.description}</td>
                             <td>
-                                <button className="btn btn-warning" onClick={() => handleEdit(company)}>Edit</button>
-                                <button className="btn btn-danger" onClick={() => handleDelete(company.id)}>Delete</button>
+                                <button className="btn btn-warning" onClick={() => handleEdit(company)}>Modificar</button>
+                                <button className="btn btn-danger" onClick={() => handleDelete(company.id)}>Borrar</button>
                             </td>
                         </tr>
                     ))}

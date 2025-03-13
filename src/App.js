@@ -23,6 +23,7 @@ import SoportePanel from './components/SoportePanel';
 import HistorialGastos from './components/HistorialGastos';// Importa tu nueva clase
 import api from './api';
 import DocumentoDetail from './components/DocumentoDetail';
+import Profile from "./components/Profile";
 
 // Define el tema
 const theme = createTheme({
@@ -55,6 +56,7 @@ function App() {
                     <Route path="/admin-dashboard" element={<AdminDashboard2 />} />
                     <Route path="/payment-methods" element={<PaymentMethodsPage />} />
                     <Route path="/soportePanel" element={<SoportePanel />} />
+                   
 
                     {/* Con Navbar */}
                     <Route
@@ -78,6 +80,7 @@ function App() {
                                     <Route path="/detalle" element={<HistorialGastos />} />
                                     <Route path="/historial" element={<Historial />} /> {/* Nueva ruta para Historial */}
                                     <Route path="/editar-documento/:documento_id" element={<DocumentoDetail />} />
+                                    <Route path="/profile" element={<Profile />} />
                                 </Routes>
                             </>
                         }

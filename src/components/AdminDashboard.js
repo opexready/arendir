@@ -11,14 +11,14 @@ const AdminDashboard = ({ user }) => {
 
     return (
         <div className="container mt-5">
-            <h1 className="text-primary">Admin Dashboard</h1>
+            <h1 className="text-primary">Panel Administrador</h1>
             <div className="row">
                 <div className="col-md-6">
-                    <h2 className="text-white bg-primary p-2">Manage Users</h2>
+                    <h2 className="text-white bg-primary p-2">Gestión de usuarios</h2>
                     <ManageUsers />
                 </div>
                 <div className="col-md-6">
-                    <h2 className="text-white bg-primary p-2">Manage Companies</h2>
+                    <h2 className="text-white bg-primary p-2">Gestión de empresas</h2>
                     <ManageCompanies />
                 </div>
             </div>

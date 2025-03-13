@@ -150,7 +150,7 @@ const ManageUsers = () => {
                     <input
                         type="text"
                         name="full_name"
-                        placeholder="Full Name"
+                        placeholder="Nombre Completo"
                         value={formData.full_name}
                         onChange={handleChange}
                         className="form-control"
@@ -159,7 +159,7 @@ const ManageUsers = () => {
                 </div>
                 <div className="form-group">
                     <select name="role" onChange={handleChange} className="form-control" required>
-                        <option value="" disabled selected>Select Role</option>
+                        <option value="" disabled selected>Seleccione el rol</option>
                         {roles.map(role => (
                             <option key={role} value={role}>{role}</option>
                         ))}
@@ -167,7 +167,7 @@ const ManageUsers = () => {
                 </div>
                 <div className="form-group">
                     <select name="company_name" onChange={handleChange} className="form-control" required>
-                        <option value="" disabled selected>Select Company</option>
+                        <option value="" disabled selected>Seleccione la empresa</option>
                         {companies.map(company => (
                             <option key={company.id} value={company.name}>{company.name}</option>
                         ))}
@@ -184,15 +184,15 @@ const ManageUsers = () => {
                         required
                     />
                 </div>
-                <button type="submit" className="btn btn-primary">Create User</button>
+                <button type="submit" className="btn btn-primary">Crear usuario</button>
             </form>
             <table className="table table-striped table-hover">
                 <thead className="thead-dark">
                     <tr>
-                        <th>Full Name</th>
+                        <th>Nombre Completo</th>
                         <th>Email</th>
-                        <th>Role</th>
-                        <th>Company</th>
+                        <th>Rol</th>
+                        <th>Empresa</th>
                     </tr>
                 </thead>
                 <tbody>

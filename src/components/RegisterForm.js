@@ -18,7 +18,7 @@ const RegisterForm = ({ open, onClose }) => {
     username: "",
     full_name: "",
     email: "",
-    company_name: "innova",
+    company_name: "ARENDIR",
     role: "ADMIN",
     password: "",
   });
@@ -70,10 +70,7 @@ const RegisterForm = ({ open, onClose }) => {
           "Error al crear rendicion:",
           rendicionError.response || rendicionError.message
         );
-        // Consider whether you want to display this error to the user or just log it.
-        // setError(rendicionError.response?.data?.detail || "Error al crear rendicion.");  // Uncomment to show rendicion error
-      }
-
+            }
       // Create Solicitud
       try {
         const solicitudResponse = await api.post("/solicitud/", {
@@ -87,11 +84,9 @@ const RegisterForm = ({ open, onClose }) => {
         console.error(
           "Error al crear solicitud:",
           solicitudError.response || solicitudError.message
-        );
-        // setError(solicitudError.response?.data?.detail || "Error al crear solicitud."); // Uncomment to show solicitud error
+        );      
       }
 
-      // Reset the form after successful submission (optional)
       setFormData({
         username: "",
         full_name: "",
