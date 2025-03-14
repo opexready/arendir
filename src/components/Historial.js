@@ -11,7 +11,7 @@ import {
   Alert,
 } from "@mui/material";
 import axios from "axios";
-import { baseURL } from "../api";
+import api, { baseURL } from "../api";
 
 const Historial = () => {
   const [rendiciones, setRendiciones] = useState([]);
@@ -23,11 +23,12 @@ const Historial = () => {
     const fetchHistorialData = async () => {
       try {
         // Obtener datos del usuario desde la sesión
-        const userResponse = await axios.get(`${baseURL}/api/users/me`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        // const userResponse = await axios.get(`${baseURL}/api/users/me`, {
+        //   headers: {
+        //     Authorization: `Bearer ${localStorage.getItem("token")}`,
+        //   },
+        // });
+        const userResponse = await api.get('/api/users/me/');
         const userId = userResponse.data.id;
 
         // Realizar llamadas a las APIs

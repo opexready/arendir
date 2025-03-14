@@ -70,7 +70,7 @@ const Profile = () => {
       <h1 className="text-primary">Perfil de Usuario</h1>
       <div className="row">
         <div className="col-md-8">
-          <h2 className="text-white bg-primary p-2">Información del Usuario</h2>
+          <h2 className="text-white bg-success p-2">Información del Usuario</h2>
           {user && (
             <form onSubmit={handleSubmit}>
               <div className="mb-3">

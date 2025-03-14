@@ -44,6 +44,7 @@ const HistorialGastos = () => {
           fecha_registro_to: fechaRegistroTo || undefined,
         },
       });
+      console.log("Respuesta de la API:", response.data); // Depuración
       setRendiciones(response.data);
       setOpenRendiciones({}); // Reinicia el estado de las filas abiertas
     } catch (error) {
@@ -100,8 +101,6 @@ const HistorialGastos = () => {
                 onChange={(e) => setEstado(e.target.value)}
               >
                 <MenuItem value="">Todos</MenuItem>
-                {/* <MenuItem value="CREADO">CREADO</MenuItem>
-                <MenuItem value="PREPARADO">PREPARADO</MenuItem> */}
                 <MenuItem value="POR APROBAR">POR APROBAR</MenuItem>
                 <MenuItem value="APROBADO">POR ABONAR</MenuItem>
                 <MenuItem value="ABONADO">ABONADO</MenuItem>
@@ -133,7 +132,6 @@ const HistorialGastos = () => {
               InputLabelProps={{ shrink: true }}
             />
           </Grid>
-    
           <Grid item xs={12} sm={6} md={4}>
             <TextField
               label="Fecha Registro Hasta"
@@ -155,11 +153,11 @@ const HistorialGastos = () => {
                 color: "white",
               }}
             >
-               <img
-                        src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
-                        alt="Ícono Eliminar"
-                        style={{ height: "24px" }} // Ajusta el tamaño de la imagen
-                      />
+              <img
+                src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
+                alt="Ícono Eliminar"
+                style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+              />
               Aplicar Filtros
             </Button>
           </Grid>
@@ -181,88 +179,78 @@ const HistorialGastos = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rendiciones.map((rendicion) => (
-                <React.Fragment key={rendicion.rendicion.id}>
-                  <TableRow>
-                    <TableCell>{rendicion.rendicion.nombre}</TableCell>
-                    <TableCell>{rendicion.rendicion.tipo}</TableCell>
-                    <TableCell>{rendicion.rendicion.estado}</TableCell>
-                    <TableCell>{rendicion.rendicion.fecha_registro}</TableCell>
-                    <TableCell>
-                      {rendicion.rendicion.fecha_actualizacion || "N/A"}
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        onClick={() =>
-                          toggleRendicion(rendicion.rendicion.id)
-                        }
-                        size="small"
-                        sx={{
-                          backgroundColor: "#F15A29",
-                          color: "white",
-                          "&:hover": { backgroundColor: "#D14A23" },
-                        }}
-                      >
-                        {openRendiciones[rendicion.rendicion.id] ? (
-                          <>
-                            Cerrar
-                            <ExpandLess />
-                          </>
-                        ) : (
-                          <>
-                            Abrir
-                            <ExpandMore />
-                          </>
-                        )}
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                  {/* Subnivel de documentos */}
-                  <TableRow>
-                    <TableCell
-                      colSpan={6}
-                      style={{ padding: 0, border: "none" }}
-                    >
-                      <Collapse
-                        in={openRendiciones[rendicion.rendicion.id]}
-                        timeout="auto"
-                        unmountOnExit
-                      >
-                        <Table size="small">
-                          <TableHead>
-                            <TableRow>
-                              <TableCell style={headerStyle}>RUC</TableCell>
-                              <TableCell style={headerStyle}>
-                                Proveedor
-                              </TableCell>
-                              <TableCell style={headerStyle}>
-                                Fecha Emisión
-                              </TableCell>
-                              <TableCell style={headerStyle}>Moneda</TableCell>
-                              <TableCell style={headerStyle}>
-                                Tipo Documento
-                              </TableCell>
-                              <TableCell style={headerStyle}>Total</TableCell>
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {rendicion.documentos.map((doc) => (
-                              <TableRow key={doc.id} style={rowStyle}>
-                                <TableCell>{doc.ruc}</TableCell>
-                                <TableCell>{doc.proveedor}</TableCell>
-                                <TableCell>{doc.fecha_emision}</TableCell>
-                                <TableCell>{doc.moneda}</TableCell>
-                                <TableCell>{doc.tipo_documento}</TableCell>
-                                <TableCell>{doc.total}</TableCell>
+              {rendiciones.map((item) => {
+                const data = item.rendicion || item.solicitud; // Maneja tanto rendicion como solicitud
+                return (
+                  <React.Fragment key={data.id}>
+                    <TableRow>
+                      <TableCell>{data.nombre}</TableCell>
+                      <TableCell>{data.tipo}</TableCell>
+                      <TableCell>{data.estado}</TableCell>
+                      <TableCell>{data.fecha_registro}</TableCell>
+                      <TableCell>{data.fecha_actualizacion || "N/A"}</TableCell>
+                      <TableCell>
+                        <Button
+                          onClick={() => toggleRendicion(data.id)}
+                          size="small"
+                          sx={{
+                            backgroundColor: "#F15A29",
+                            color: "white",
+                            "&:hover": { backgroundColor: "#D14A23" },
+                          }}
+                        >
+                          {openRendiciones[data.id] ? (
+                            <>
+                              Cerrar
+                              <ExpandLess />
+                            </>
+                          ) : (
+                            <>
+                              Abrir
+                              <ExpandMore />
+                            </>
+                          )}
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                    {/* Subnivel de documentos */}
+                    <TableRow>
+                      <TableCell colSpan={6} style={{ padding: 0, border: "none" }}>
+                        <Collapse
+                          in={openRendiciones[data.id]}
+                          timeout="auto"
+                          unmountOnExit
+                        >
+                          <Table size="small">
+                            <TableHead>
+                              <TableRow>
+                                <TableCell style={headerStyle}>RUC</TableCell>
+                                <TableCell style={headerStyle}>Proveedor</TableCell>
+                                <TableCell style={headerStyle}>Fecha Emisión</TableCell>
+                                <TableCell style={headerStyle}>Moneda</TableCell>
+                                <TableCell style={headerStyle}>Tipo Documento</TableCell>
+                                <TableCell style={headerStyle}>Total</TableCell>
                               </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </Collapse>
-                    </TableCell>
-                  </TableRow>
-                </React.Fragment>
-              ))}
+                            </TableHead>
+                            <TableBody>
+                              {item.documentos.map((doc) => (
+                                <TableRow key={doc.id} style={rowStyle}>
+                                  <TableCell>{doc.ruc}</TableCell>
+                                  <TableCell>{doc.proveedor}</TableCell>
+                                  <TableCell>{doc.fecha_emision}</TableCell>
+                                  <TableCell>{doc.moneda}</TableCell>
+                                  <TableCell>{doc.tipo_documento}</TableCell>
+                                  <TableCell>{doc.total}</TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </Collapse>
+                      </TableCell>
+                    </TableRow>
+                  </React.Fragment>
+                );
+              })}
             </TableBody>
           </Table>
         </TableContainer>

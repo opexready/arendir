@@ -1,4 +1,3 @@
-// src/components/ManageCompanies.js
 import React, { useState, useEffect } from 'react';
 import api from '../api';
 
@@ -24,7 +23,7 @@ const ManageCompanies = () => {
         const user = userString ? JSON.parse(userString) : null;
         if (user && user.id) {
             setUserId(user.id);
-            console.log("UserID obtenido:", user.id); // Imprimir el userId
+            console.log("UserID obtenido:", user.id); 
         } else {
             console.error("UserID no encontrado en localStorage.");
         }
@@ -42,7 +41,7 @@ const ManageCompanies = () => {
         try {
             const dataToSend = {
                 ...formData,
-                id_user: userId // Agregar userId al cuerpo de la petición
+                id_user: userId 
             };
             if (editCompany) {
                 await api.put(`/api/companies/${editCompany.id}`, formData);
@@ -51,8 +50,10 @@ const ManageCompanies = () => {
             }
             setFormData({ name: '', description: '' });
             setEditCompany(null);
+            
             const response = await api.get(`/api/companies/user/${userId}`);
             setCompanies(response.data);
+            window.location.reload();
         } catch (error) {
             console.error('Error saving company:', error);
         }
@@ -66,7 +67,7 @@ const ManageCompanies = () => {
     const handleDelete = async (companyId) => {
         try {
             await api.delete(`/api/companies/${companyId}`);
-            const response = await api.get('/api/companies/'); // Asegúrate de que es GET
+            const response = await api.get('/api/companies/'); 
             setCompanies(response.data);
         } catch (error) {
             console.error('Error deleting company:', error);

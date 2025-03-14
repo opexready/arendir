@@ -5,10 +5,6 @@ import ManageUsers from './ManageUsers';
 import ManageCompanies from './ManageCompanies';
 
 const AdminDashboard = ({ user }) => {
-    // if (!user || user.role !== 'ADMIN') {
-    //     return <Navigate to="/login" />;
-    // }
-
     return (
         <div className="container mt-5">
             <h1 className="text-primary">Panel Administrador</h1>

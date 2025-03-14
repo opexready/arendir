@@ -14,14 +14,20 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle"; // Nuevo ícono de perfil
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack"; // Importar el ícono de flecha
 import api from "../api";
 
 const Navbar = () => {
   const [user, setUser] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [openLogoutDialog, setOpenLogoutDialog] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useMediaQuery((theme) => theme.breakpoints.down("sm"));
@@ -58,7 +64,24 @@ const Navbar = () => {
   };
 
   const handleProfileClick = () => {
-    navigate("/profile"); // Redirige al dashboard de perfil
+    navigate("/profile");
+  };
+
+  const handleLogoutClick = () => {
+    setOpenLogoutDialog(true);
+  };
+
+  const handleLogoutConfirm = () => {
+    setOpenLogoutDialog(false);
+    handleLogout();
+  };
+
+  const handleLogoutCancel = () => {
+    setOpenLogoutDialog(false);
+  };
+
+  const handleGoBack = () => {
+    navigate(-1); // Navegar a la página anterior
   };
 
   const isColaboradorPage = location.pathname.startsWith("/colaborador");
@@ -73,6 +96,15 @@ const Navbar = () => {
         }}
       >
         <Toolbar>
+          {/* Botón de flecha para retroceder */}
+          <IconButton
+            color="inherit"
+            onClick={handleGoBack}
+            sx={{ marginRight: 2 }}
+          >
+            <ArrowBackIcon />
+          </IconButton>
+
           <Typography variant="h6" sx={{ flexGrow: 1, marginLeft: "10px" }} />
           <Box sx={{ display: "flex", alignItems: "center" }}>
             {user ? (
@@ -88,7 +120,7 @@ const Navbar = () => {
                   src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/logoblanco2.png?alt=media&token=94ceb944-93e9-4361-83d3-75017559ab67"
                   alt="Logo"
                   style={{ height: "40px", cursor: "pointer" }}
-                  onClick={handleLogout}
+                  onClick={handleLogoutClick}
                 />
               </>
             ) : (
@@ -99,6 +131,22 @@ const Navbar = () => {
           </Box>
         </Toolbar>
       </AppBar>
+
+      {/* Diálogo de confirmación para cerrar sesión */}
+      <Dialog open={openLogoutDialog} onClose={handleLogoutCancel}>
+        <DialogTitle>¿Está seguro que quiere cerrar sesión?</DialogTitle>
+        <DialogContent>
+          <Typography>Esta acción cerrará su sesión actual.</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleLogoutCancel} color="primary">
+            No
+          </Button>
+          <Button onClick={handleLogoutConfirm} color="primary" autoFocus>
+            Sí
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Render options bar only if the user is logged in as "COLABORADOR" and not on a collaborator page */}
       {user && user.role === "COLABORADOR" && !isColaboradorPage && (
