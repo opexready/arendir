@@ -1202,7 +1202,7 @@ const DatosReciboTable = () => {
           </Button>
         </DialogActions>
       </Dialog>
-      <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
+      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>Archivo del Documento</DialogTitle>
         <DialogContent>
           {selectedFile && (
@@ -1212,6 +1212,7 @@ const DatosReciboTable = () => {
               height="600px"
               title="Archivo del Documento"
               frameBorder="0"
+              //style={{ transform: "scale(0.4)", transformOrigin: "top" }}
             />
           )}
         </DialogContent>

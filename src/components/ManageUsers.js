@@ -13,7 +13,7 @@ const ManageUsers = () => {
         password: '',
         id_empresa:''
     });
-    const [roles] = useState(['COLABORADOR', 'ADMINISTRACION', 'CONTADOR']);
+    const [roles] = useState(['COLABORADOR', 'ADMINISTRACION', 'APROBADOR']);
     const [companies, setCompanies] = useState([]);
     const [userId, setUserId] = useState(null);
 

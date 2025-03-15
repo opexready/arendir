@@ -215,7 +215,7 @@ const AdminDashboard2 = () => {
                       }}
                     />
                   }
-                  label="Admin"
+                  label="Gestión de usuarios"
                   style={{ color: "#fff" }}
                 />
               </Box>
