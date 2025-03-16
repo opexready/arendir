@@ -186,7 +186,7 @@ const Profile = () => {
                   onChange={handleChange}
                 />
               </div>
-              <div className="mb-3">
+              {/* <div className="mb-3">
                 <label className="form-label">Jefe ID</label>
                 <input
                   type="text"
@@ -195,7 +195,7 @@ const Profile = () => {
                   value={formData.jefe_id || ""}
                   onChange={handleChange}
                 />
-              </div>
+              </div> */}
               <div className="mb-3">
                 <label className="form-label">Cuenta bancaria</label>
                 <input
