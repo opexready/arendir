@@ -117,7 +117,7 @@ const DatosRecibo = () => {
     total: "",
     archivo: "",
   });
-  const [tipoCambio, setTipoCambio] = useState("");
+  const [tipoCambio, setTipoCambio] = useState(1); // Inicialmente 1 para PEN
   const [searchRuc, setSearchRuc] = useState("");
   const [searchResult, setSearchResult] = useState(null);
   const [error, setError] = useState("");
@@ -134,19 +134,19 @@ const DatosRecibo = () => {
   const [formErrors, setFormErrors] = useState({});
   const [documentDetail, setDocumentDetail] = useState(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
-  const [showQrReader, setShowQrReader] = useState(false); // Controla visibilidad del lector
-  const [qrResult, setQrResult] = useState(null); // Almacena resultado del QR
-  const [qrError, setQrError] = useState(null); // Almacena errores del lector
-  const [isScanning, setIsScanning] = useState(false); // Indica si está escaneando
-  const [availableCameras, setAvailableCameras] = useState([]); // Lista de cámaras
+  const [showQrReader, setShowQrReader] = useState(false);
+  const [qrResult, setQrResult] = useState(null);
+  const [qrError, setQrError] = useState(null);
+  const [isScanning, setIsScanning] = useState(false);
+  const [availableCameras, setAvailableCameras] = useState([]);
   const [selectedCamera, setSelectedCamera] = useState(null);
-  const [cameraFacingMode, setCameraFacingMode] = useState("environment"); // Estado para alternar entre cámaras
+  const [cameraFacingMode, setCameraFacingMode] = useState("environment");
 
   useEffect(() => {
     if (qrResult) {
-      handleProcessQrResult(); 
+      handleProcessQrResult();
     }
-  }, [qrResult]); //
+  }, [qrResult]);
 
   const handleProcessQrResult = async () => {
     try {
@@ -158,7 +158,7 @@ const DatosRecibo = () => {
       console.log("Llamando a la API con el resultado:", qrResult);
 
       const response = await axios.post(`${baseURL}/api/process-qr/`, {
-        data: qrResult, 
+        data: qrResult,
       });
 
       console.log("Respuesta del backend:", response.data);
@@ -178,10 +178,10 @@ const DatosRecibo = () => {
       setSearchRuc(processedData.ruc || "");
       setError("");
 
-      if (processedData.ruc) { // NUEVA LÍNEA: Si se obtuvo el RUC, ejecutar handleSearch
-        handleSearch(processedData.ruc); // NUEVA LÍNEA: Llamar a handleSearch con el RUC
+      if (processedData.ruc) {
+        handleSearch(processedData.ruc);
       }
-      
+	  
     } catch (error) {
       setError("Error al procesar el QR. Por favor, inténtalo nuevamente.");
       console.error("Error al llamar a /api/process-qr/:", error);
@@ -190,12 +190,12 @@ const DatosRecibo = () => {
 
   const handleCameraSwitch = (mode) => {
     setCameraFacingMode(mode);
-    setShowQrReader(false); // Ocultar y reiniciar el lector QR
-    setTimeout(() => setShowQrReader(true), 100); // Mostrar lector con la nueva cámara
+    setShowQrReader(false);
+    setTimeout(() => setShowQrReader(true), 100);
   };
 
   useEffect(() => {
-    // Enumerar cámaras disponibles
+									
     navigator.mediaDevices
       .enumerateDevices()
       .then((devices) => {
@@ -204,14 +204,14 @@ const DatosRecibo = () => {
         );
         setAvailableCameras(videoDevices);
         if (videoDevices.length > 0) {
-          setSelectedCamera(videoDevices[0].deviceId); // Selecciona la primera cámara disponible
+          setSelectedCamera(videoDevices[0].deviceId);
         }
       })
       .catch((error) => {
         console.error("Error al enumerar dispositivos:", error);
-        setQrError(
-          "No se pudieron enumerar las cámaras. Verifica los permisos."
-        );
+				   
+        setQrError("No se pudieron enumerar las cámaras. Verifica los permisos.");
+		  
       });
   }, []);
 
@@ -220,7 +220,7 @@ const DatosRecibo = () => {
       const [day, month, year] = dateString.split("/");
       return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
     }
-    return dateString; // Devuelve la fecha como está si ya tiene el formato correcto
+    return dateString;
   };
 
   const handleCloseDetailDialog = () => {
@@ -256,9 +256,9 @@ const DatosRecibo = () => {
       setShowForm(false);
       fetchRecords();
     } catch (error) {
-      setError(
-        "Error al actualizar el documento. Por favor, intente nuevamente."
-      );
+			   
+      setError("Error al actualizar el documento. Por favor, intente nuevamente.");
+		
     }
   };
 
@@ -273,36 +273,36 @@ const DatosRecibo = () => {
         return;
       }
 
-      // Paso 1: Obtener la última rendición
-      const lastRendicionResponse = await axios.get(
-        `${baseURL}/rendicion/last`,
-        {
-          params: {
-            id_user: userId,
-            tipo: "RENDICION",
-          },
-        }
-      );
+											  
+      const lastRendicionResponse = await axios.get(`${baseURL}/api/rendicion/last`, {
+									
+		 
+        params: {
+          id_user: userId,
+          tipo: "RENDICION",
+        },
+      });
+		
 
       if (lastRendicionResponse.data && lastRendicionResponse.data.id) {
         const rendicionId = lastRendicionResponse.data.id;
 
-        // Paso 2: Actualizar la rendición obtenida a estado "ACTIVO"
-        await axios.put(`${baseURL}/rendicion/${rendicionId}`, {
+																	  
+        await axios.put(`${baseURL}/api/rendicion/${rendicionId}`, {
           estado: "POR APROBAR",
         });
 
-        // Paso 3: Crear una nueva rendición
-        const newRendicionResponse = await axios.post(`${baseURL}/rendicion/`, {
+											 
+        const newRendicionResponse = await axios.post(`${baseURL}/api/rendicion/`, {
           id_user: userId,
         });
       } else {
       }
     } catch (error) {
       console.error("Error al finalizar la rendición:", error);
-      setError(
-        "Error al finalizar la rendición. Por favor, intente nuevamente."
-      );
+			   
+      setError("Error al finalizar la rendición. Por favor, intente nuevamente.");
+		
     }
   };
 
@@ -313,10 +313,10 @@ const DatosRecibo = () => {
         const user = userString ? JSON.parse(userString) : null;
         const userId = user ? user.id : null;
         if (userId) {
-          const response = await api.get(`/rendicion/last`, {
+          const response = await api.get(`/api/rendicion/last`, {
             params: {
               id_user: userId,
-              tipo: "RENDICION", // Puedes reemplazarlo con el valor que necesites
+              tipo: "RENDICION",
             },
           });
           setNombreRendicion(response.data.nombre);
@@ -352,15 +352,15 @@ const DatosRecibo = () => {
     if (documentoIdToDelete) {
       try {
         await axios.delete(`${baseURL}/documentos/${documentoIdToDelete}`);
-        setRecords(
-          records.filter((record) => record.id !== documentoIdToDelete)
-        );
+				   
+        setRecords(records.filter((record) => record.id !== documentoIdToDelete));
+		  
         handleCloseConfirmDeleteDialog();
       } catch (error) {
         console.error("Error al eliminar el documento:", error);
-        setError(
-          "Error al eliminar el documento. Por favor, intente nuevamente."
-        );
+				 
+        setError("Error al eliminar el documento. Por favor, intente nuevamente.");
+		  
         handleCloseConfirmDeleteDialog();
       }
     }
@@ -421,24 +421,30 @@ const DatosRecibo = () => {
       }));
     }
   }, [formData.igv]);
-  useEffect(() => {
-    if (formData.moneda === "USD" && formData.fecha) {
-      fetchTipoCambio(formData.fecha);
-    }
-  }, [formData.moneda, formData.fecha]);
-  useEffect(() => {
-    if (formData.total && formData.afecto && formData.igv) {
-      const total = parseFloat(formData.total);
-      const afecto = parseFloat(formData.afecto);
-      const igv = parseFloat(formData.igv);
-      const inafectoValue = (total - (afecto + igv)).toFixed(2);
 
+  const fetchTipoCambio = async (fecha) => {
+    try {
+      const response = await axios.get(`${baseURL}/tipo-cambio/?fecha=${fecha}`);
+      const precioVenta = response.data.precioVenta;
+      setTipoCambio(precioVenta);
+      console.log("Tipo de cambio obtenido:", precioVenta);
+											   
+												 
+										   
+																
+
+      // Actualizar los valores de Afecto, Igv, inafecto y Total multiplicados por el tipo de cambio
       setFormData((prevFormData) => ({
         ...prevFormData,
-        inafecto: inafectoValue,
+        afecto: (parseFloat(prevFormData.afecto) * precioVenta),
+        igv: (parseFloat(prevFormData.igv) * precioVenta),
+        inafecto: prevFormData.inafecto ? (parseFloat(prevFormData.inafecto) * precioVenta) : 0,
+        total: (parseFloat(prevFormData.total) * precioVenta),
       }));
+    } catch (error) {
+      setError("Error al obtener el tipo de cambio. Por favor, intente nuevamente.");
     }
-  }, [formData.total, formData.afecto, formData.igv]);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -446,19 +452,25 @@ const DatosRecibo = () => {
       ...formData,
       [name]: value,
     });
-  };
+	
 
-  const fetchTipoCambio = async (fecha) => {
-    try {
-      const response = await axios.get(
-        `${baseURL}/tipo-cambio/?fecha=${fecha}`
-      );
-      setTipoCambio(response.data.precioVenta);
-      console.log("Tipo de cambio obtenido:", response.data.precioVenta);
-    } catch (error) {
-      setError(
-        "Error al obtener el tipo de cambio. Por favor, intente nuevamente."
-      );
+    if (name === "moneda") {
+      if (value === "PEN") {
+									   
+												
+		
+        setTipoCambio(1);
+        // Restaurar los valores originales si se selecciona PEN
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          afecto: (parseFloat(prevFormData.afecto) / tipoCambio),
+          igv: (parseFloat(prevFormData.igv) / tipoCambio),
+          inafecto: prevFormData.inafecto ? (parseFloat(prevFormData.inafecto)) / tipoCambio : 0,
+          total: (parseFloat(prevFormData.total) / tipoCambio),
+        }));
+      } else if (value === "USD" && formData.fecha) {
+        fetchTipoCambio(formData.fecha);
+      }
     }
   };
 
@@ -469,18 +481,18 @@ const DatosRecibo = () => {
 
   const handleSearch = async (ruc) => {
     try {
-      const response = await axios.get(
-        `${baseURL}/consulta-ruc?ruc=${ruc || searchRuc}`
-      );
+									   
+      const response = await axios.get(`${baseURL}/consulta-ruc?ruc=${ruc || searchRuc}`);
+		
       setSearchResult(response.data);
-  
-      // Actualiza formData manteniendo los datos existentes
+
+															
       setFormData((prevFormData) => ({
-      ...prevFormData,
+        ...prevFormData,
         ruc: ruc || searchRuc,
-        //tipoDoc: response.data.tipoDocumento,
+											   
       }));
-  
+
       setError("");
     } catch (error) {
       setError("Error al buscar el RUC. Asegúrese de que el número es válido.");
@@ -499,15 +511,15 @@ const DatosRecibo = () => {
       console.log(file);
       console.log(formData);
       try {
-        const decodeResponse = await axios.post(
-          `${baseURL}/decode-qr/`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
+        const decodeResponse = await axios.post(`${baseURL}/decode-qr/`, formData, {
+								  
+				   
+		   
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+		  
         console.log("############decodeResponse############");
         console.log(decodeResponse);
 
@@ -519,19 +531,19 @@ const DatosRecibo = () => {
           const decodedRuc = decodeResponse.data.ruc;
           console.log(decodedRuc);
 
-          let razonSocial = "Proveedor Desconocido"; // Valor por defecto
+          let razonSocial = "Proveedor Desconocido";
           try {
-            const rucResponse = await axios.get(
-              `${baseURL}/consulta-ruc?ruc=${decodedRuc}`
-            );
+												
+            const rucResponse = await axios.get(`${baseURL}/consulta-ruc?ruc=${decodedRuc}`);
+			  
             razonSocial = rucResponse.data.razonSocial || razonSocial;
           } catch (error) {
             if (error.response && error.response.status === 404) {
-              console.warn(
-                "RUC no encontrado, utilizando valor por defecto para Razón Social."
-              );
+						   
+              console.warn("RUC no encontrado, utilizando valor por defecto para Razón Social.");
+				
             } else {
-              throw error; // Si no es 404, lanzamos el error para manejarlo fuera
+              throw error;
             }
           }
 
@@ -549,26 +561,26 @@ const DatosRecibo = () => {
           setSearchRuc(decodeResponse.data.ruc || "");
           setError("");
           if (decodedRuc) {
-            handleSearch(decodedRuc); 
+            handleSearch(decodedRuc);
           }
         }
       } catch (error) {
         if (error.response) {
-          // El servidor respondió con un código de error (código de estado no 2xx)
-          console.error(
-            "Error de respuesta del servidor:",
-            error.response.data
-          );
-          setError(
-            "Error al procesar el QR: " +
-              (error.response.data.message || "Por favor, intente nuevamente.")
-          );
+																					  
+						
+          console.error("Error de respuesta del servidor:", error.response.data);
+							   
+			
+				   
+										 
+          setError("Error al procesar el QR: " + (error.response.data.message || "Por favor, intente nuevamente."));
+			
         } else if (error.request) {
-          // La solicitud se hizo pero no se recibió respuesta
+															   
           console.error("No se recibió respuesta:", error.request);
           setError("No se recibió respuesta del servidor. Intente nuevamente.");
         } else {
-          // Algo salió mal al configurar la solicitud
+													   
           console.error("Error al configurar la solicitud:", error.message);
           setError("Ocurrió un error. Intente nuevamente.");
         }
@@ -587,15 +599,15 @@ const DatosRecibo = () => {
       setIsLoading(true);
 
       try {
-        const uploadResponse = await axios.post(
-          `${baseURL}/upload-file-firebase/`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
+        const uploadResponse = await axios.post(`${baseURL}/upload-file-firebase/`, formData, {
+											 
+				   
+		   
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+		  
         const fileLocation = uploadResponse.data.file_url;
 
         setFormData((prevFormData) => ({
@@ -678,9 +690,9 @@ const DatosRecibo = () => {
       id_numero_rendicion: idRendicion,
     };
 
-    console.log("##################requestData##########",requestData);
+    console.log("##################requestData##########", requestData);
 
-    
+	
 
     try {
       await axios.post(`${baseURL}/documentos/`, requestData, {
@@ -727,10 +739,10 @@ const DatosRecibo = () => {
         const userId = user ? user.id : null;
 
         if (userId) {
-          const response = await api.get(`/rendicion/last`, {
+          const response = await api.get(`/api/rendicion/last`, {
             params: {
               id_user: userId,
-              tipo: "RENDICION", // Puedes reemplazarlo con el valor que necesites
+              tipo: "RENDICION",
             },
           });
           const { nombre } = response.data;
@@ -743,7 +755,7 @@ const DatosRecibo = () => {
         alert("Error al obtener la última rendición. Intente nuevamente.");
       }
     } else {
-      // localStorage.removeItem("numero_rendicion");
+													 
       navigate("/datos-recibo-table");
     }
   };
@@ -838,16 +850,16 @@ const DatosRecibo = () => {
                   },
                 }}
                 onClick={() => {
-                  setShowQrReader(true); // Mostrar lector QR
-                  setIsScanning(true); // Mostrar mensaje de escaneando
-                  setError(""); // Limpiar errores previos
-                  setQrResult(null); // Limpiar resultado previo
+                  setShowQrReader(true);
+                  setIsScanning(true);
+                  setError("");
+                  setQrResult(null);
                 }}
               >
                 Escanear QR
               </Button>
 
-              {/* Botones para cambiar de cámara */}
+													 
               <Box
                 sx={{
                   display: "flex",
@@ -864,9 +876,9 @@ const DatosRecibo = () => {
                     "&:hover": { backgroundColor: "#1F237A" },
                   }}
                   onClick={() => {
-                    setCameraFacingMode("environment"); // Cambiar a cámara trasera
-                    setShowQrReader(false); // Reiniciar lector QR
-                    setTimeout(() => setShowQrReader(true), 100); // Mostrar nuevamente con nueva configuración
+                    setCameraFacingMode("environment");
+                    setShowQrReader(false);
+                    setTimeout(() => setShowQrReader(true), 100);
                   }}
                 >
                   Cámara Trasera
@@ -879,16 +891,16 @@ const DatosRecibo = () => {
                     "&:hover": { backgroundColor: "#D44115" },
                   }}
                   onClick={() => {
-                    setCameraFacingMode("user"); // Cambiar a cámara frontal
-                    setShowQrReader(false); // Reiniciar lector QR
-                    setTimeout(() => setShowQrReader(true), 100); // Mostrar nuevamente con nueva configuración
+                    setCameraFacingMode("user");
+                    setShowQrReader(false);
+                    setTimeout(() => setShowQrReader(true), 100);
                   }}
                 >
                   Cámara Frontal
                 </Button>
               </Box>
 
-              {/* Mensaje de estado */}
+									   
               {isScanning && (
                 <Typography
                   variant="body1"
@@ -899,34 +911,34 @@ const DatosRecibo = () => {
                 </Typography>
               )}
 
-              {/* Lector QR */}
+							   
               {showQrReader && (
                 <Box sx={{ marginTop: 2, position: "relative" }}>
                   <QrReader
                     constraints={{
-                      facingMode: cameraFacingMode, // Alternar entre cámaras
-                      width: { ideal: 1920 }, // Resolución ideal
+                      facingMode: cameraFacingMode,
+                      width: { ideal: 1920 },
                       height: { ideal: 1080 },
                     }}
-                    scanDelay={500} // Escanea cada 500ms
+                    scanDelay={500}
                     onResult={(result, error) => {
                       if (result) {
                         console.log("Resultado del QR:", result.text);
-                        setShowQrReader(false); // Oculta el lector QR
-                        setIsScanning(false); // Detén el mensaje de escaneo
-                        setError(""); // Limpia cualquier mensaje de error
-                        setQrResult(result.text); // Almacena el resultado
+                        setShowQrReader(false);
+                        setIsScanning(false);
+                        setError("");
+                        setQrResult(result.text);
                       }
                       if (error && error.name !== "NotFoundError") {
                         console.error("Error al leer el QR:", error);
-                        setError(
-                          "No se pudo leer el QR. Por favor, intenta nuevamente."
-                        );
+								 
+                        setError("No se pudo leer el QR. Por favor, intenta nuevamente.");
+						  
                       }
                     }}
                     style={{ width: "100%" }}
                   />
-                  {/* Marco visual */}
+									  
                   <div
                     style={{
                       position: "absolute",
@@ -943,7 +955,7 @@ const DatosRecibo = () => {
                 </Box>
               )}
 
-              {/* Mostrar error en caso de fallo */}
+													
               {error && (
                 <Typography variant="body1" color="error" sx={{ marginTop: 2 }}>
                   {error}
@@ -1093,9 +1105,9 @@ const DatosRecibo = () => {
             ))}
 
 
-          {/* trext are */}
+						   
 
-          <div className="form-group">
+            <div className="form-group">
               <label htmlFor="detalle">Detalle:</label>
               <textarea
                 id="detalle"
@@ -1136,7 +1148,7 @@ const DatosRecibo = () => {
           </Button>
           <Button
             onClick={async () => {
-              // await handleFinalizarRendicion();
+												  
               handleDialogClose(false);
             }}
             color="secondary"

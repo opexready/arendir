@@ -73,7 +73,7 @@ const ManageUsers = () => {
         try {
             const responseData = await api.post('/api/users/', formData);
             try {
-                const rendicionResponse = await api.post("/rendicion/", {
+                const rendicionResponse = await api.post("/api/rendicion/", {
                     id_user: responseData.data.id,
                 });
                 console.log(

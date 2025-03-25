@@ -22,18 +22,10 @@ const Historial = () => {
   useEffect(() => {
     const fetchHistorialData = async () => {
       try {
-        // Obtener datos del usuario desde la sesión
-        // const userResponse = await axios.get(`${baseURL}/api/users/me`, {
-        //   headers: {
-        //     Authorization: `Bearer ${localStorage.getItem("token")}`,
-        //   },
-        // });
         const userResponse = await api.get('/api/users/me/');
         const userId = userResponse.data.id;
-
-        // Realizar llamadas a las APIs
         const [rendicionesResponse, solicitudesResponse] = await Promise.all([
-          axios.get(`${baseURL}/rendiciones/nombres`, {
+          axios.get(`${baseURL}/api/rendicion/nombres`, {
             params: { id_user: userId, tipo: "RENDICION" },
           }),
           axios.get(`${baseURL}/api/solicitud/nombres`, {

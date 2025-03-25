@@ -92,7 +92,7 @@ const ManageCompanies = () => {
                     <input
                         type="text"
                         name="description"
-                        placeholder="Descripción"
+                        placeholder="RUC"
                         value={formData.description}
                         onChange={handleChange}
                         className="form-control"

@@ -129,7 +129,6 @@ const Movilidad = () => {
       return;
     }
 
-    // Obtener el numero_rendicion desde el endpoint
     let numeroRendicion = "|";
     let idRendicion;
     try {
@@ -138,10 +137,10 @@ const Movilidad = () => {
       const userId = user?.id;
 
       if (userId) {
-        const response = await api.get(`/rendicion/last`, {
+        const response = await api.get(`/api/rendicion/last`, {
           params: {
             id_user: userId,
-            tipo: "RENDICION", // Puedes reemplazarlo con el valor que necesites
+            tipo: "RENDICION", 
           },
         });
         if (response?.data?.nombre) {
@@ -204,6 +203,7 @@ const Movilidad = () => {
     };
 
     try {
+      console.log("##################### dataToSend #################",dataToSend)
       await axios.post(`${baseURL}/generar-pdf-movilidad/`, dataToSend);
       setResponseMessage("Documento creado correctamente.");
       setOpen(true);
@@ -236,7 +236,7 @@ const Movilidad = () => {
           );
           return;
         }
-        const response = await api.get(`/rendicion/last`, {
+        const response = await api.get(`/api/rendicion/last`, {
           params: {
             id_user: userId,
             tipo: "RENDICION",
@@ -259,7 +259,6 @@ const Movilidad = () => {
         alert("Error al obtener la última rendición. Intente nuevamente.");
       }
     } else {
-      // localStorage.removeItem("numero_rendicion");
       navigate("/datos-recibo-table");
     }
   };
@@ -270,7 +269,7 @@ const Movilidad = () => {
         <Button
           variant="contained"
           color="warning"
-          onClick={() => navigate(-1)} // Retrocede a la pestaña anterior
+          onClick={() => navigate(-1)} 
         >
           Regresar
         </Button>

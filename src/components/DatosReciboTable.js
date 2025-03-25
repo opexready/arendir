@@ -266,7 +266,7 @@ const DatosReciboTable = () => {
       }
 
       const lastRendicionResponse = await axios.get(
-        `${baseURL}/rendicion/last`,
+        `${baseURL}/api/rendicion/last`,
         {
           params: {
             id_user: userId,
@@ -278,11 +278,11 @@ const DatosReciboTable = () => {
       if (lastRendicionResponse.data && lastRendicionResponse.data.id) {
         const rendicionId = lastRendicionResponse.data.id;
 
-        await axios.put(`${baseURL}/rendicion/${rendicionId}`, {
+        await axios.put(`${baseURL}/api/rendicion/${rendicionId}`, {
           estado: "POR APROBAR",
         });
 
-        await axios.post(`${baseURL}/rendicion/`, {
+        await axios.post(`${baseURL}/api/rendicion/`, {
           id_user: userId,
         });
       } else {
@@ -302,7 +302,7 @@ const DatosReciboTable = () => {
         const user = userString ? JSON.parse(userString) : null;
         const userId = user ? user.id : null;
         if (userId) {
-          const response = await api.get(`/rendicion/last`, {
+          const response = await api.get(`/api/rendicion/last`, {
             params: {
               id_user: userId,
               tipo: "RENDICION",
@@ -702,7 +702,7 @@ const DatosReciboTable = () => {
         const userId = user ? user.id : null;
 
         if (userId) {
-          const response = await api.get(`/rendicion/last`, {
+          const response = await api.get(`/api/rendicion/last`, {
             params: {
               id_user: userId,
               tipo: "RENDICION", // Puedes reemplazarlo con el valor que necesites
@@ -1419,7 +1419,7 @@ const DatosReciboTable = () => {
                 }
 
                 const lastRendicionResponse = await axios.get(
-                  `${baseURL}/rendicion/last`,
+                  `${baseURL}/api/rendicion/last`,
                   {
                     params: { id_user: userId, tipo: "RENDICION" },
                   }
@@ -1432,7 +1432,7 @@ const DatosReciboTable = () => {
                   return;
                 }
 
-                await axios.put(`${baseURL}/rendicion/${rendicionId}`, {
+                await axios.put(`${baseURL}/api/rendicion/${rendicionId}`, {
                   estado: "POR APROBAR",
                 });
 
@@ -1450,7 +1450,7 @@ const DatosReciboTable = () => {
 
                   if (!isRendicionCreated) {
                     const newRendicionResponse = await axios.post(
-                      `${baseURL}/rendicion/`,
+                      `${baseURL}/api/rendicion/`,
                       {
                         id_user: userId,
                       }
@@ -1503,7 +1503,7 @@ const DatosReciboTable = () => {
                 }
 
                 const lastRendicionResponse = await axios.get(
-                  `${baseURL}/rendicion/last`,
+                  `${baseURL}/api/rendicion/last`,
                   {
                     params: { id_user: userId, tipo: "RENDICION" },
                   }
@@ -1511,13 +1511,13 @@ const DatosReciboTable = () => {
 
                 const rendicionId = lastRendicionResponse.data.id;
 
-                await axios.put(`${baseURL}/rendicion/${rendicionId}`, {
+                await axios.put(`${baseURL}/api/rendicion/${rendicionId}`, {
                   estado: "POR APROBAR",
                 });
 
                 // Llamar a la API para crear una nueva rendición
                 const newRendicionResponse = await axios.post(
-                  `${baseURL}/rendicion/`,
+                  `${baseURL}/api/rendicion/`,
                   {
                     id_user: userId,
                   }

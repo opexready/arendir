@@ -40,7 +40,7 @@ const ContadorModule = () => {
   const updateEstadoRendicion = async (id, tipo, nuevoEstado) => {
     try {
       if (tipo === "RENDICION") {
-        await axios.put(`${baseURL}/rendicion/${id}`, { estado: nuevoEstado });
+        await axios.put(`${baseURL}/api/rendicion/${id}`, { estado: nuevoEstado });
       } else if (tipo === "ANTICIPO") {
         await axios.put(`${baseURL}/api/solicitud/${id}`, {
           estado: nuevoEstado,

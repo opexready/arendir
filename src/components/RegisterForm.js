@@ -58,7 +58,7 @@ const RegisterForm = ({ open, onClose }) => {
 
       // Create Rendicion
       try {
-        const rendicionResponse = await api.post("/rendicion/", {
+        const rendicionResponse = await api.post("/api/rendicion/", {
           id_user: response.data.id, // Use the ID from the user creation response
         });
         console.log(
