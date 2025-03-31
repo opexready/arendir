@@ -619,32 +619,65 @@ const AnticipoTable = () => {
         fullWidth
       >
         <DialogTitle>Detalle del Documento</DialogTitle>
-        <DialogContent>
-          {documentDetail ? (
-            <TableContainer component={Paper}>
-              <Table>
-                <TableBody>
-                  {Object.entries(documentDetail).map(
-                    ([key, value]) =>
-                      key !== "id" &&
-                      key !== "archivo" && (
-                        <TableRow key={key}>
-                          <TableCell sx={{ fontWeight: "bold" }}>
-                            {key}
-                          </TableCell>
-                          <TableCell>
-                            {value ? value.toString() : "-"}
-                          </TableCell>
-                        </TableRow>
-                      )
+                <DialogContent>
+                  {documentDetail ? (
+                    <TableContainer component={Paper}>
+                      <Table>
+                        <TableBody>
+                          {/* Información básica del documento */}
+                          <TableRow>
+                            <TableCell sx={{ fontWeight: "bold" }}>
+                              Fecha de Solicitud
+                            </TableCell>
+                            <TableCell>
+                              {documentDetail.fecha_solicitud
+                                ? new Date(
+                                    documentDetail.fecha_solicitud
+                                  ).toLocaleDateString()
+                                : "-"}
+                            </TableCell>
+                          </TableRow>
+                          
+                    
+                          <TableRow>
+                            <TableCell sx={{ fontWeight: "bold" }}>
+                              Tipo de Documento
+                            </TableCell>
+                            <TableCell>
+                              {documentDetail.tipo_documento || "-"}
+                            </TableCell>
+                          </TableRow>
+                    
+                          
+        
+                          {/* Información financiera */}
+                     
+                          <TableRow>
+                            <TableCell sx={{ fontWeight: "bold" }}>Total</TableCell>
+                            <TableCell>{documentDetail.total || "-"}</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell sx={{ fontWeight: "bold" }}>Moneda</TableCell>
+                            <TableCell>{documentDetail.moneda || "-"}</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell sx={{ fontWeight: "bold" }}>
+                              Tipo de Cambio
+                            </TableCell>
+                            <TableCell>{documentDetail.tipo_cambio || "-"}</TableCell>
+                          </TableRow>
+        
+                    
+                      
+                          
+                       
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  ) : (
+                    <CircularProgress />
                   )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          ) : (
-            <CircularProgress />
-          )}
-        </DialogContent>
+                </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDetailDialog} color="primary">
             Cerrar

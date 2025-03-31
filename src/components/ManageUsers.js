@@ -16,6 +16,7 @@ const ManageUsers = () => {
     const [roles] = useState(['COLABORADOR', 'ADMINISTRACION', 'APROBADOR']);
     const [companies, setCompanies] = useState([]);
     const [userId, setUserId] = useState(null);
+    const [selectedCompanyId, setSelectedCompanyId] = useState('');
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -33,15 +34,34 @@ const ManageUsers = () => {
             }
         };
 
+        // const fetchCompanies = async () => {
+        //     try {
+        //         const response = await api.get(`/api/companies/user/${userId}`);
+        //         setCompanies(response.data);
+        //         if (response.data.length > 0) {
+        //             setFormData({
+        //                 ...formData,
+        //                 id_empresa: response.data[0].id 
+        //             });
+        //         }
+        //     } catch (error) {
+        //         console.error('Error fetching companies:', error);
+        //     }
+        // };
+
         const fetchCompanies = async () => {
             try {
                 const response = await api.get(`/api/companies/user/${userId}`);
                 setCompanies(response.data);
                 if (response.data.length > 0) {
-                    setFormData({
-                        ...formData,
-                        id_empresa: response.data[0].id 
-                    });
+                    // Establecer el primer id_empresa como valor por defecto
+                    const firstCompanyId = response.data[0].id;
+                    setSelectedCompanyId(firstCompanyId);
+                    setFormData(prev => ({
+                        ...prev,
+                        id_empresa: firstCompanyId,
+                        company_name: response.data[0].name
+                    }));
                 }
             } catch (error) {
                 console.error('Error fetching companies:', error);
@@ -53,7 +73,7 @@ const ManageUsers = () => {
         if (user && user.id) {
             setUserId(user.id);
             console.log("UserID obtenido:", user.id);
-            setFormData({...formData, id_user: user.id}); 
+            setFormData(prev => ({...prev, id_user: user.id})); 
         } else {
             console.error("UserID no encontrado en localStorage.");
         }
@@ -61,11 +81,47 @@ const ManageUsers = () => {
         fetchCompanies();
     }, [userId]);
 
+
+    //     const userString = localStorage.getItem("user");
+    //     const user = userString ? JSON.parse(userString) : null;
+    //     if (user && user.id) {
+    //         setUserId(user.id);
+    //         console.log("UserID obtenido:", user.id);
+    //         setFormData({...formData, id_user: user.id}); 
+    //     } else {
+    //         console.error("UserID no encontrado en localStorage.");
+    //     }
+    //     fetchUsers(); 
+    //     fetchCompanies();
+    // }, [userId]);
+
+    // const handleChange = (e) => {
+    //     setFormData({
+    //         ...formData,
+    //         [e.target.name]: e.target.value
+    //     });
+    // };
+
     const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
+        const { name, value } = e.target;
+        
+        // Manejar cambio de empresa para actualizar id_empresa
+        if (name === 'company_name') {
+            const selectedCompany = companies.find(c => c.name === value);
+            if (selectedCompany) {
+                setSelectedCompanyId(selectedCompany.id);
+                setFormData(prev => ({
+                    ...prev,
+                    company_name: value,
+                    id_empresa: selectedCompany.id
+                }));
+            }
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                [name]: value
+            }));
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -75,6 +131,8 @@ const ManageUsers = () => {
             try {
                 const rendicionResponse = await api.post("/api/rendicion/", {
                     id_user: responseData.data.id,
+                    id_empresa: selectedCompanyId
+                    
                 });
                 console.log(
                     "Respuesta del servidor (rendicion):",
@@ -89,6 +147,7 @@ const ManageUsers = () => {
             try {
                 const solicitudResponse = await api.post("/solicitud/", {
                     id_user: responseData.data.id,
+                    id_empresa: selectedCompanyId
                 });
                 console.log(
                     "Respuesta del servidor (solicitud):",
@@ -107,7 +166,7 @@ const ManageUsers = () => {
                 full_name: '',
                 role: '',
                 company_name: '',
-                id_empresa: companies.length > 0 ? companies[0].id : '' 
+                id_empresa: companies.length > 0 ? companies[0].id : ''
             });
             const response = await api.get('/api/users/by-id-user/', {
                 params: {

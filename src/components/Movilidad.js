@@ -199,7 +199,8 @@ const Movilidad = () => {
       id_user: userId,
       id_numero_rendicion: idRendicion,
       empresa: user.company_name,
-      full_name: full_name
+      full_name: full_name,
+      id_empresa: user.id_empresa,
     };
 
     try {

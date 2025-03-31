@@ -47,20 +47,32 @@ const AnticiposGastosLocales = () => {
     numero_rendicion: "",
     id_user: "",
     id_numero_rendicion: "",
+    tipo_cambio: 1,
+    id_empresa:"",
   });
 
   const [responseMessage, setResponseMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [tipoCambio, setTipoCambio] = useState(1); // Valor inicial: 1 (PEN)
+
+  // Agrega esta función
+const fetchTipoCambio = async (fecha) => {
+  try {
+    const response = await axios.get(`${baseURL}/tipo-cambio/?fecha=${fecha}`);
+    const precioVenta = response.data.precioVenta;
+    setTipoCambio(precioVenta); // Guardar en el estado
+    return precioVenta;
+  } catch (error) {
+    console.error("Error al obtener el tipo de cambio:", error);
+    setTipoCambio(1); // Valor por defecto (PEN)
+    return 1;
+  }
+};
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        // const userResponse = await axios.get(`${baseURL}/api/users/me`, {
-        //   headers: {
-        //     Authorization: `Bearer ${localStorage.getItem("token")}`,
-        //   },
-        // });
         const userResponse = await api.get('/api/users/me/');
         const userData = userResponse.data;
         console.log("userData", userData);
@@ -96,6 +108,7 @@ const AnticiposGastosLocales = () => {
           numero_rendicion: numeroRendicion,
           id_user: userData.id,
           id_numero_rendicion: idRendicion,
+          id_empresa: userData.id_empresa,
         });
       } catch (error) {
         console.error("Error al obtener los datos del usuario:", error);
@@ -105,12 +118,39 @@ const AnticiposGastosLocales = () => {
     fetchUserData();
   }, []); // Se ejecuta solo una vez cuando el componente se monta
 
-  const handleChange = (e) => {
+  const handleChange = async (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+  
+    if (name === "moneda") {
+      if (value === "USD" && formData.fecha_emision) {
+        const cambio = await fetchTipoCambio(formData.fecha_emision);
+        setFormData({
+          ...formData,
+          [name]: value,
+          total: (parseFloat(formData.total || 0) * cambio),
+          tipo_cambio: cambio
+        });
+      } else if (value === "PEN") {
+        setFormData({
+          ...formData,
+          [name]: value,
+          total: (parseFloat(formData.total || 0) / tipoCambio),
+          tipo_cambio: 1
+        });
+      }
+    } else if (name === "total") {
+      const nuevoValor = parseFloat(value || 0);
+      setFormData({
+        ...formData,
+        total: nuevoValor,
+        importe_facturado: formData.moneda === "USD" ? nuevoValor * tipoCambio : nuevoValor,
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
 
   const handleSubmit = async (e) => {

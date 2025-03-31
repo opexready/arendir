@@ -68,6 +68,7 @@ const AnticiposViajes = () => {
     fecha_solicitud: getCurrentDate(),
     id_user: "",
     id_numero_rendicion: "",
+    tipo_cambio: 1,
   });
 
  
@@ -86,6 +87,7 @@ const AnticiposViajes = () => {
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false);
   const [documentoIdToDelete, setDocumentoIdToDelete] = useState(null);
+  const [tipoCambio, setTipoCambio] = useState(1); // Valor inicial: 1 (PEN)
 
   useEffect(() => {
     const fetchDocumentos = async () => {
@@ -191,6 +193,7 @@ const AnticiposViajes = () => {
           correlativo: "0001",
           id_user: userId,
           id_numero_rendicion: rendicionData.id,
+          id_empresa: userData.id_empresa,
         });
       } catch (error) {
         console.error("Error al obtener los datos del usuario:", error);
@@ -199,13 +202,48 @@ const AnticiposViajes = () => {
     fetchUserData();
   }, []);
 
-  const handleChange = (e) => {
+  const fetchTipoCambio = async (fecha) => {
+    try {
+      const response = await axios.get(`${baseURL}/tipo-cambio/?fecha=${fecha}`);
+      const precioVenta = response.data.precioVenta;
+      setTipoCambio(precioVenta); // Guardar en el estado
+      return precioVenta;
+    } catch (error) {
+      console.error("Error al obtener el tipo de cambio:", error);
+      setTipoCambio(1); // Valor por defecto (PEN)
+      return 1;
+    }
+  };
+
+
+  const handleChange = async (e) => {
     const { name, value } = e.target;
-    if (name === "presupuesto") {
+  
+    if (name === "moneda") {
+      if (value === "USD" && formData.fecha_emision) {
+        const cambio = await fetchTipoCambio(formData.fecha_emision);
+        setFormData({
+          ...formData,
+          [name]: value,
+          presupuesto: (parseFloat(formData.presupuesto || 0) * cambio),
+          total: (parseFloat(formData.presupuesto || 0) * cambio),
+          tipo_cambio: cambio
+        });
+      } else if (value === "PEN") {
+        setFormData({
+          ...formData,
+          [name]: value,
+          presupuesto: (parseFloat(formData.presupuesto || 0) / tipoCambio),
+          total: (parseFloat(formData.presupuesto || 0) / tipoCambio),
+          tipo_cambio: 1
+        });
+      }
+    } else if (name === "presupuesto") {
+      const nuevoValor = parseFloat(value || 0);
       setFormData({
         ...formData,
-        presupuesto: value,
-        total: value,
+        presupuesto: nuevoValor,
+        total: formData.moneda === "USD" ? nuevoValor * tipoCambio : nuevoValor,
       });
     } else {
       setFormData({
@@ -214,6 +252,8 @@ const AnticiposViajes = () => {
       });
     }
   };
+
+  
 
   const handleTipoViajeChange = (e) => {
     const tipo = e.target.value;

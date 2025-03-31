@@ -688,6 +688,8 @@ const DatosRecibo = () => {
       numero_rendicion: nombreRendicion,
       id_user: userId,
       id_numero_rendicion: idRendicion,
+      id_empresa: user.id_empresa,
+
     };
 
     console.log("##################requestData##########", requestData);
