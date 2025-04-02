@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import "./RegisterForm.css"; //
+import "./RegisterForm.css";
+import { CircularProgress } from "@mui/material";
 import {
   TextField,
   Button,
@@ -11,7 +12,7 @@ import {
   DialogActions,
   MenuItem,
 } from "@mui/material";
-import api from "../api"; // Importamos la instancia de API configurada
+import api from "../api";
 
 const RegisterForm = ({ open, onClose }) => {
   const [formData, setFormData] = useState({
@@ -56,10 +57,9 @@ const RegisterForm = ({ open, onClose }) => {
       setSuccess("Usuario registrado con éxito.");
       console.log("Respuesta del servidor:", response.data);
 
-      // Create Rendicion
       try {
         const rendicionResponse = await api.post("/api/rendicion/", {
-          id_user: response.data.id, // Use the ID from the user creation response
+          id_user: response.data.id,
         });
         console.log(
           "Respuesta del servidor (rendicion):",
@@ -70,11 +70,10 @@ const RegisterForm = ({ open, onClose }) => {
           "Error al crear rendicion:",
           rendicionError.response || rendicionError.message
         );
-            }
-      // Create Solicitud
+      }
       try {
         const solicitudResponse = await api.post("/solicitud/", {
-          id_user: response.data.id, // Use the ID from the user creation response
+          id_user: response.data.id,
         });
         console.log(
           "Respuesta del servidor (solicitud):",
@@ -84,7 +83,7 @@ const RegisterForm = ({ open, onClose }) => {
         console.error(
           "Error al crear solicitud:",
           solicitudError.response || solicitudError.message
-        );      
+        );
       }
 
       setFormData({
@@ -97,7 +96,7 @@ const RegisterForm = ({ open, onClose }) => {
       console.error("Error al registrar usuario:", err.response || err.message);
       setError(err.response?.data?.detail || "Error al registrar usuario.");
     } finally {
-      setLoading(false); // Set loading to false regardless of success or failure
+      setLoading(false);
     }
   };
 
@@ -163,27 +162,6 @@ const RegisterForm = ({ open, onClose }) => {
             margin="normal"
             required
           />
-          {/* <TextField
-            label="Empresa"
-            name="company_name"
-            value={formData.company_name}
-            onChange={handleChange}
-            fullWidth
-            margin="normal"
-          /> */}
-          {/* <TextField
-            select
-            label="Rol"
-            name="role"
-            value={formData.role}
-            onChange={handleChange}
-            fullWidth
-            margin="normal"
-          >
-            <MenuItem value="COLABORADOR">COLABORADOR</MenuItem>
-            <MenuItem value="APROBADOR">APROBADOR</MenuItem>
-            <MenuItem value="CONTADOR">CONTADOR</MenuItem>
-          </TextField> */}
           <TextField
             label="Contraseña"
             name="password"
@@ -204,7 +182,8 @@ const RegisterForm = ({ open, onClose }) => {
             >
               Cancelar
             </Button>
-            <Button
+
+            {/* <Button
               type="submit"
               variant="contained"
               color="primary"
@@ -223,6 +202,49 @@ const RegisterForm = ({ open, onClose }) => {
                 style={{ width: "24px", height: "24px", marginRight: "8px" }}
               />
               Empezar prueba gratuita
+            </Button> */}
+
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={loading}
+              sx={{
+                background: loading
+                  ? "#ccc"
+                  : "linear-gradient(90deg,#ff8b31, #FF6E40, #FF007B, #191b38)",
+                color: "white",
+                "&:hover": { backgroundColor: loading ? "#ccc" : "#1F237A" },
+                display: "flex",
+                alignItems: "center",
+                position: "relative",
+              }}
+            >
+              {loading && (
+                <CircularProgress
+                  size={24}
+                  sx={{
+                    color: "white",
+                    position: "absolute",
+                    left: "50%",
+                    marginLeft: "-12px",
+                  }}
+                />
+              )}
+              <span
+                style={{
+                  opacity: loading ? 0 : 1,
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <img
+                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/AR32.png?alt=media&token=c65a01dd-a03a-4693-9846-b313645cd8eb"
+                  alt="Icono"
+                  style={{ width: "24px", height: "24px", marginRight: "8px" }}
+                />
+                Empezar prueba gratuita
+              </span>
             </Button>
           </DialogActions>
         </form>

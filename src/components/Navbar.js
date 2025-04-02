@@ -18,16 +18,20 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Badge,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"; // Importar el ícono de flecha
+import WarningIcon from "@mui/icons-material/Warning";
 import api from "../api";
 
 const Navbar = () => {
   const [user, setUser] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [openLogoutDialog, setOpenLogoutDialog] = useState(false);
+  const [openProfileDialog, setOpenProfileDialog] = useState(false);
+  const [missingFields, setMissingFields] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useMediaQuery((theme) => theme.breakpoints.down("sm"));
@@ -39,7 +43,15 @@ const Navbar = () => {
         if (token) {
           const userResponse = await api.get("/api/users/me/");
           setUser(userResponse.data);
+          if (userResponse.data.role !== "ADMIN") {
+          const requiredFields = ['dni', 'cargo', 'banco', 'cuenta_bancaria'];
+          const missing = requiredFields.filter(field => !userResponse.data[field]);
+          if (missing.length > 0) {
+            setMissingFields(missing);
+            setOpenProfileDialog(true);
+          }
         }
+      }
       } catch (error) {
         console.error("Failed to fetch user", error);
         localStorage.removeItem("token");
@@ -65,6 +77,17 @@ const Navbar = () => {
 
   const handleProfileClick = () => {
     navigate("/profile");
+    setOpenProfileDialog(false);
+  };
+
+  const translateFieldName = (field) => {
+    const translations = {
+      'dni': 'DNI',
+      'cargo': 'Cargo',
+      'banco': 'Banco',
+      'cuenta_bancaria': 'Cuenta Bancaria'      
+    };
+    return translations[field] || field;
   };
 
   const handleLogoutClick = () => {
@@ -131,6 +154,45 @@ const Navbar = () => {
           </Box>
         </Toolbar>
       </AppBar>
+
+      <Dialog 
+        open={openProfileDialog} 
+        onClose={() => setOpenProfileDialog(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <WarningIcon color="warning" />
+          <span>Datos requeridos faltantes</span>
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            Para continuar usando la plataforma, por favor complete los siguientes datos en su perfil:
+          </Typography>
+          <ul>
+            {missingFields.map(field => (
+              <li key={field}>
+                <Typography variant="body1">
+                  {translateFieldName(field)}
+                </Typography>
+              </li>
+            ))}
+          </ul>
+          <Typography variant="body2" sx={{ mt: 2, fontStyle: 'italic' }}>
+            Será redirigido automáticamente a la página de perfil.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button 
+            onClick={handleProfileClick} 
+            color="primary"
+            variant="contained"
+            sx={{ width: '100%' }}
+          >
+            Actualizar Perfil
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Diálogo de confirmación para cerrar sesión */}
       <Dialog open={openLogoutDialog} onClose={handleLogoutCancel}>

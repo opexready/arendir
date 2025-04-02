@@ -19,6 +19,7 @@ const Profile = () => {
     jefe_id: "",
     cuenta_bancaria: "",
     banco: "",
+    newPassword: ""
   });
   const navigate = useNavigate();
 
@@ -29,7 +30,10 @@ const Profile = () => {
         if (token) {
           const userResponse = await api.get("/api/users/me/");
           setUser(userResponse.data);
-          setFormData(userResponse.data); // Llenar el formulario con los datos del usuario
+          setFormData({
+            ...userResponse.data,
+            newPassword: ""  // Inicializar el nuevo campo
+          });
         } else {
           navigate("/login");
         }
@@ -53,11 +57,20 @@ const Profile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Enviar los datos actualizados a la API
-      const response = await api.put(`/api/users/${user.id}/`, formData);
+      const dataToSend = {
+        ...formData,
+        password: formData.newPassword || undefined
+      };
+      delete dataToSend.newPassword; // No enviar este campo temporal
+
+      const response = await api.put(`/api/users/${user.id}/`, dataToSend);
       if (response.data) {
         alert("Datos actualizados correctamente");
         setUser(response.data); // Actualizar el estado del usuario con los nuevos datos
+        setFormData({
+          ...response.data,
+          newPassword: ""
+        });
       }
     } catch (error) {
       console.error("Error al actualizar los datos", error);
@@ -216,6 +229,18 @@ const Profile = () => {
                   onChange={handleChange}
                 />
               </div>
+
+              <div className="mb-3">
+                <label className="form-label">Nueva contraseña (dejar en blanco para no cambiar)</label>
+                <input
+                  type="password"
+                  className="form-control"
+                  name="newPassword"
+                  value={formData.newPassword}
+                  onChange={handleChange}
+                />
+              </div>
+              
               <button type="submit" className="btn btn-primary">
                 Guardar cambios
               </button>
