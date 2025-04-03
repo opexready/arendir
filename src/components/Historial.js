@@ -25,7 +25,7 @@ const Historial = () => {
         const userResponse = await api.get('/api/users/me/');
         const userId = userResponse.data.id;
         const [rendicionesResponse, solicitudesResponse] = await Promise.all([
-          axios.get(`${baseURL}/api/rendicion/nombres`, {
+          axios.get(`${baseURL}/api/rendiciones/nombres`, {
             params: { id_user: userId, tipo: "RENDICION" },
           }),
           axios.get(`${baseURL}/api/solicitud/nombres`, {

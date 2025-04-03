@@ -374,6 +374,7 @@ const AnticipoTable = () => {
         // Paso 3: Crear una nueva rendición
         const newRendicionResponse = await axios.post(`${baseURL}/solicitud/`, {
           id_user: userId,
+          id_empresa: user.id_empresa,
         });
 
         // Puedes manejar la respuesta según tus necesidades
