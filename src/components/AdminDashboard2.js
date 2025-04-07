@@ -113,10 +113,10 @@ const AdminDashboard2 = () => {
             gutterBottom
             style={{ color: "rgb(49, 39, 131)", fontWeight: "bold" }}
           >
-            SELECCIONA UN ROL
+            BIENVENIDO ADMINISTRADOR
           </Typography>
           <Grid container spacing={4} justifyContent="center">
-            <Grid item xs={12} sm={6} md={4}>
+            {/* <Grid item xs={12} sm={6} md={4}>
               <Box className={classes.card}>
                 <FormControlLabel
                   control={
@@ -193,7 +193,7 @@ const AdminDashboard2 = () => {
                   style={{ color: "#fff" }}
                 />
               </Box>
-            </Grid>
+            </Grid> */}
             <Grid item xs={12} sm={6} md={4}>
               <Box className={classes.card}>
                 <FormControlLabel

@@ -71,14 +71,14 @@ const ContadorModule = () => {
         const user = userString ? JSON.parse(userString) : null;
         const userId = user ? user.id : null;
         const username = user ? user.email : null;
-        const userCompany = user ? user.company_name : null;
+        const idEmpresa = user ? user.id_empresa : null;
         console.log("user", user);
 
         const colaboradoresResponse = await axios.get(
           `${baseURL}/api/users/by-company-and-role/`,
           {
             params: {
-              company_name: userCompany,
+              id_empresa: idEmpresa,
               role: "COLABORADOR",
             },
             // headers,
@@ -95,16 +95,22 @@ const ContadorModule = () => {
   }, []);
 
   const fetchRendiciones = async () => {
+
+    const userString = localStorage.getItem("user");
+        const user = userString ? JSON.parse(userString) : null;
+        const idEmpresa = user ? user.id_empresa : null;
+
     try {
       const response = await axios.get(
-        `${baseURL}/rendiciones-solicitudes/con-documentos/`,
+        `${baseURL}/api/rendiciones-solicitudes/con-documentos/`,
         {
           params: {
             tipo: filtros.tipo_solicitud || undefined,
             estado: filtros.estado || "POR APROBAR",
-            colaborador: filtros.colaborador || undefined,
+            id_user: filtros.colaborador || undefined,
             fecha_registro_from: filtros.fechaDesde || undefined,
             fecha_registro_to: filtros.fechaHasta || undefined,
+            id_empresa: idEmpresa,
           },
         }
       );
@@ -193,7 +199,7 @@ const ContadorModule = () => {
                   <em>Todos los Colaboradores</em>
                 </MenuItem>
                 {colaboradores.map((colaborador) => (
-                  <MenuItem key={colaborador.id} value={colaborador.email}>
+                  <MenuItem key={colaborador.id} value={colaborador.id}>
                     {colaborador.full_name}
                   </MenuItem>
                 ))}

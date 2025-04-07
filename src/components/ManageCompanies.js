@@ -1,11 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  TextField,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Typography,
+  IconButton
+} from '@mui/material';
+import { Edit, Delete } from '@mui/icons-material';
 
 const ManageCompanies = () => {
     const [companies, setCompanies] = useState([]);
     const [formData, setFormData] = useState({ name: '', description: '' });
     const [editCompany, setEditCompany] = useState(null);
     const [userId, setUserId] = useState(null);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchCompanies = async () => {
@@ -15,6 +33,7 @@ const ManageCompanies = () => {
                     setCompanies(response.data);
                 } catch (error) {
                     console.error('Error fetching companies:', error);
+                    setError('Error al cargar las empresas');
                 }
             }
         };
@@ -23,9 +42,9 @@ const ManageCompanies = () => {
         const user = userString ? JSON.parse(userString) : null;
         if (user && user.id) {
             setUserId(user.id);
-            console.log("UserID obtenido:", user.id); 
         } else {
             console.error("UserID no encontrado en localStorage.");
+            setError('Usuario no autenticado');
         }
     }, [userId]);
 
@@ -53,9 +72,9 @@ const ManageCompanies = () => {
             
             const response = await api.get(`/api/companies/user/${userId}`);
             setCompanies(response.data);
-            window.location.reload();
         } catch (error) {
             console.error('Error saving company:', error);
+            setError('Error al guardar la empresa');
         }
     };
 
@@ -67,61 +86,111 @@ const ManageCompanies = () => {
     const handleDelete = async (companyId) => {
         try {
             await api.delete(`/api/companies/${companyId}`);
-            const response = await api.get('/api/companies/'); 
+            const response = await api.get(`/api/companies/user/${userId}`);
             setCompanies(response.data);
         } catch (error) {
             console.error('Error deleting company:', error);
+            setError('Error al eliminar la empresa');
         }
     };
 
     return (
-        <div>
-            <form onSubmit={handleSubmit} className="mb-4">
-                <div className="form-group">
-                    <input
-                        type="text"
+        <Card variant="outlined">
+            <CardContent>
+                {error && (
+                    <Typography color="error" sx={{ mb: 2 }}>
+                        {error}
+                    </Typography>
+                )}
+
+                <Box component="form" onSubmit={handleSubmit} sx={{ mb: 4 }}>
+                    <Typography variant="h6" gutterBottom>
+                        {editCompany ? 'Editar Empresa' : 'Crear Nueva Empresa'}
+                    </Typography>
+                    
+                    <TextField
+                        fullWidth
+                        label="Nombre"
                         name="name"
-                        placeholder="Nombre"
                         value={formData.name}
                         onChange={handleChange}
-                        className="form-control"
                         required
+                        sx={{ mb: 2 }}
                     />
-                </div>
-                <div className="form-group">
-                    <input
-                        type="text"
+                    
+                    <TextField
+                        fullWidth
+                        label="RUC"
                         name="description"
-                        placeholder="RUC"
                         value={formData.description}
                         onChange={handleChange}
-                        className="form-control"
+                        sx={{ mb: 2 }}
                     />
-                </div>
-                <button type="submit" className="btn btn-primary">{editCompany ? 'Update' : 'Crear Empresa'}</button>
-            </form>
-            <table className="table table-striped table-hover">
-                <thead className="thead-dark">
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Descripción</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {companies.map(company => (
-                        <tr key={company.id}>
-                            <td>{company.name}</td>
-                            <td>{company.description}</td>
-                            <td>
-                                <button className="btn btn-warning" onClick={() => handleEdit(company)}>Modificar</button>
-                                <button className="btn btn-danger" onClick={() => handleDelete(company.id)}>Borrar</button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
+                    
+                    <Button 
+                        type="submit" 
+                        variant="contained"
+                        sx={{
+                            backgroundColor: "#F15A29",
+                            "&:hover": { backgroundColor: "#F15A29" }
+                        }}
+                    >
+                        {editCompany ? 'Actualizar' : 'Crear Empresa'}
+                    </Button>
+                    
+                    {editCompany && (
+                        <Button 
+                            variant="outlined" 
+                            onClick={() => {
+                                setEditCompany(null);
+                                setFormData({ name: '', description: '' });
+                            }}
+                            sx={{ ml: 2 }}
+                        >
+                            Cancelar
+                        </Button>
+                    )}
+                </Box>
+
+                <Typography variant="h6" gutterBottom>
+                    Lista de Empresas
+                </Typography>
+                
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                                <TableCell><strong>Nombre</strong></TableCell>
+                                <TableCell><strong>RUC</strong></TableCell>
+                                <TableCell><strong>Acciones</strong></TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {companies.map(company => (
+                                <TableRow key={company.id}>
+                                    <TableCell>{company.name}</TableCell>
+                                    <TableCell>{company.description}</TableCell>
+                                    <TableCell>
+                                        <IconButton 
+                                            onClick={() => handleEdit(company)}
+                                            sx={{ color: "#F15A29" }}
+                                        >
+                                            <Edit />
+                                        </IconButton>
+                                        <IconButton 
+                                            onClick={() => handleDelete(company.id)}
+                                            sx={{ color: "#F15A29" }}
+                                        >
+                                            <Delete />
+                                        </IconButton>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </CardContent>
+        </Card>
     );
 };
 

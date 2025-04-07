@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
+import {
+  Typography,
+  Container,
+  Card,
+  CardContent,
+  TextField,
+  Button,
+  Box,
+  Alert,
+  Divider
+} from "@mui/material";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -21,6 +32,8 @@ const Profile = () => {
     banco: "",
     newPassword: ""
   });
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,13 +45,14 @@ const Profile = () => {
           setUser(userResponse.data);
           setFormData({
             ...userResponse.data,
-            newPassword: ""  // Inicializar el nuevo campo
+            newPassword: ""
           });
         } else {
           navigate("/login");
         }
       } catch (error) {
         console.error("Failed to fetch user", error);
+        setError("Error al cargar los datos del usuario");
         localStorage.removeItem("token");
         navigate("/login");
       }
@@ -61,12 +75,13 @@ const Profile = () => {
         ...formData,
         password: formData.newPassword || undefined
       };
-      delete dataToSend.newPassword; // No enviar este campo temporal
+      delete dataToSend.newPassword;
 
       const response = await api.put(`/api/users/${user.id}/`, dataToSend);
       if (response.data) {
-        alert("Datos actualizados correctamente");
-        setUser(response.data); // Actualizar el estado del usuario con los nuevos datos
+        setSuccess("Datos actualizados correctamente");
+        setError(null);
+        setUser(response.data);
         setFormData({
           ...response.data,
           newPassword: ""
@@ -74,181 +89,213 @@ const Profile = () => {
       }
     } catch (error) {
       console.error("Error al actualizar los datos", error);
-      alert("Error al actualizar los datos");
+      setError("Error al actualizar los datos");
+      setSuccess(null);
     }
   };
 
   return (
-    <div className="container" style={{ marginTop: "-100px" }}>
-      <h1 className="text-primary">Perfil de Usuario</h1>
-      <div className="row">
-        <div className="col-md-8">
-          <h2 className="text-white bg-success p-2">Información del Usuario</h2>
-          {user && (
-            <form onSubmit={handleSubmit}>
-              <div className="mb-3">
-                <label className="form-label">Nombre de usuario</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  disabled // El nombre de usuario no se puede editar
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Email</label>
-                <input
-                  type="email"
-                  className="form-control"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Nombre completo</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="full_name"
-                  value={formData.full_name}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Rol</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="role"
-                  value={formData.role}
-                  onChange={handleChange}
-                  disabled // El rol no se puede editar
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Empresa</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="company_name"
-                  value={formData.company_name}
-                  onChange={handleChange}
-                  disabled // La empresa no se puede editar
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Cargo</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="cargo"
-                  value={formData.cargo || ""}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">DNI</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="dni"
-                  value={formData.dni || ""}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Zona de venta</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="zona_venta"
-                  value={formData.zona_venta || ""}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Área</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="area"
-                  value={formData.area || ""}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">CECO</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="ceco"
-                  value={formData.ceco || ""}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Gerencia</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="gerencia"
-                  value={formData.gerencia || ""}
-                  onChange={handleChange}
-                />
-              </div>
-              {/* <div className="mb-3">
-                <label className="form-label">Jefe ID</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="jefe_id"
-                  value={formData.jefe_id || ""}
-                  onChange={handleChange}
-                />
-              </div> */}
-              <div className="mb-3">
-                <label className="form-label">Cuenta bancaria</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="cuenta_bancaria"
-                  value={formData.cuenta_bancaria || ""}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Banco</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="banco"
-                  value={formData.banco || ""}
-                  onChange={handleChange}
-                />
-              </div>
+    <Container sx={{ marginTop: -15}}>
+      <Typography
+        variant="h4"
+        align="center"
+        gutterBottom
+        sx={{
+          color: "#F15A29",
+          fontWeight: "bold",
+          mb: 4
+        }}
+      >
+        Perfil de Usuario
+      </Typography>
 
-              <div className="mb-3">
-                <label className="form-label">Nueva contraseña (dejar en blanco para no cambiar)</label>
-                <input
-                  type="password"
-                  className="form-control"
-                  name="newPassword"
-                  value={formData.newPassword}
-                  onChange={handleChange}
-                />
-              </div>
-              
-              <button type="submit" className="btn btn-primary">
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
+      )}
+
+      {success && (
+        <Alert severity="success" sx={{ mb: 3 }}>
+          {success}
+        </Alert>
+      )}
+
+      <Card sx={{ boxShadow: 3 }}>
+        <Box
+          sx={{
+            backgroundColor: "#2E3192",
+            color: "white",
+            p: 2,
+            borderTopLeftRadius: "4px",
+            borderTopRightRadius: "4px"
+          }}
+        >
+          <Typography variant="h6">Información del Usuario</Typography>
+        </Box>
+        
+        <CardContent>
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+            <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+              <TextField
+                fullWidth
+                label="Nombre de usuario"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                disabled
+                variant="outlined"
+              />
+              <TextField
+                fullWidth
+                label="Email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                variant="outlined"
+              />
+            </Box>
+
+            <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+              <TextField
+                fullWidth
+                label="Nombre completo"
+                name="full_name"
+                value={formData.full_name}
+                onChange={handleChange}
+                variant="outlined"
+              />
+              <TextField
+                fullWidth
+                label="Rol"
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                disabled
+                variant="outlined"
+              />
+            </Box>
+
+            <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+              <TextField
+                fullWidth
+                label="Empresa"
+                name="company_name"
+                value={formData.company_name}
+                onChange={handleChange}
+                disabled
+                variant="outlined"
+              />
+              <TextField
+                fullWidth
+                label="Cargo"
+                name="cargo"
+                value={formData.cargo || ""}
+                onChange={handleChange}
+                variant="outlined"
+              />
+            </Box>
+
+            <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+              <TextField
+                fullWidth
+                label="DNI"
+                name="dni"
+                value={formData.dni || ""}
+                onChange={handleChange}
+                variant="outlined"
+              />
+              <TextField
+                fullWidth
+                label="Zona de venta"
+                name="zona_venta"
+                value={formData.zona_venta || ""}
+                onChange={handleChange}
+                variant="outlined"
+              />
+            </Box>
+
+            <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+              <TextField
+                fullWidth
+                label="Área"
+                name="area"
+                value={formData.area || ""}
+                onChange={handleChange}
+                variant="outlined"
+              />
+              <TextField
+                fullWidth
+                label="CECO"
+                name="ceco"
+                value={formData.ceco || ""}
+                onChange={handleChange}
+                variant="outlined"
+              />
+            </Box>
+
+            <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+              <TextField
+                fullWidth
+                label="Gerencia"
+                name="gerencia"
+                value={formData.gerencia || ""}
+                onChange={handleChange}
+                variant="outlined"
+              />
+              <TextField
+                fullWidth
+                label="Cuenta bancaria"
+                name="cuenta_bancaria"
+                value={formData.cuenta_bancaria || ""}
+                onChange={handleChange}
+                variant="outlined"
+              />
+            </Box>
+
+            <Box sx={{ mb: 3 }}>
+              <TextField
+                fullWidth
+                label="Banco"
+                name="banco"
+                value={formData.banco || ""}
+                onChange={handleChange}
+                variant="outlined"
+              />
+            </Box>
+
+            <Divider sx={{ my: 3 }} />
+
+            <Box sx={{ mb: 3 }}>
+              <TextField
+                fullWidth
+                label="Nueva contraseña (dejar en blanco para no cambiar)"
+                name="newPassword"
+                type="password"
+                value={formData.newPassword}
+                onChange={handleChange}
+                variant="outlined"
+              />
+            </Box>
+
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <Button
+                type="submit"
+                variant="contained"
+                sx={{
+                  backgroundColor: "#F15A29",
+                  "&:hover": { backgroundColor: "#D44115" },
+                  px: 4,
+                  py: 1.5
+                }}
+              >
                 Guardar cambios
-              </button>
-            </form>
-          )}
-        </div>
-      </div>
-    </div>
+              </Button>
+            </Box>
+          </Box>
+        </CardContent>
+      </Card>
+    </Container>
   );
 };
 

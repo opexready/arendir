@@ -190,11 +190,22 @@ const DatosReciboTable = () => {
   const [hasFetchedSolicitudes, setHasFetchedSolicitudes] = useState(false);
 
   useEffect(() => {
+    fetchSolicitudOpciones();
+  }, []);
+  
+  // Modificar el efecto existente para evitar cargar duplicados
+  useEffect(() => {
     if (confirmFinalizarDialogOpen && !hasFetchedSolicitudes) {
-      fetchSolicitudOpciones();
-      setHasFetchedSolicitudes(true); // Marcar que los datos se han cargado
+      setHasFetchedSolicitudes(true);
     }
   }, [confirmFinalizarDialogOpen, hasFetchedSolicitudes]);
+
+  // useEffect(() => {
+  //   if (confirmFinalizarDialogOpen && !hasFetchedSolicitudes) {
+  //     fetchSolicitudOpciones();
+  //     setHasFetchedSolicitudes(true); // Marcar que los datos se han cargado
+  //   }
+  // }, [confirmFinalizarDialogOpen, hasFetchedSolicitudes]);
 
   const handleCloseFinalizarDialog = () => {
     setConfirmFinalizarDialogOpen(false);
@@ -284,6 +295,7 @@ const DatosReciboTable = () => {
 
         await axios.post(`${baseURL}/api/rendicion/`, {
           id_user: userId,
+          id_empresa: user.id_empresa,
         });
       } else {
       }
@@ -1453,6 +1465,7 @@ const DatosReciboTable = () => {
                       `${baseURL}/api/rendicion/`,
                       {
                         id_user: userId,
+                        id_empresa: user.id_empresa,
                       }
                     );
                     isRendicionCreated = true;
@@ -1520,6 +1533,7 @@ const DatosReciboTable = () => {
                   `${baseURL}/api/rendicion/`,
                   {
                     id_user: userId,
+                    id_empresa: user.id_empresa,
                   }
                 );
 

@@ -705,7 +705,12 @@ const DatosRecibo = () => {
 
       setDialogOpen(true);
     } catch (error) {
-      setError("Error al enviar los datos. Por favor, intente nuevamente.");
+      if (error.response && error.response.status === 400) {
+        // Mostrar el mensaje de error específico del backend
+        setError(error.response.data.message || "Este documento ya se encuentra registrado");
+      } else {
+        setError("Error al enviar los datos. Por favor, intente nuevamente.");
+      }
     }
   };
 

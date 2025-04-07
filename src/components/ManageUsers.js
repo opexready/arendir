@@ -1,6 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
-import { CircularProgress, Snackbar, Alert } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  TextField,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Typography,
+  CircularProgress,
+  Snackbar,
+  Alert,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  FormHelperText
+} from '@mui/material';
 
 const ManageUsers = () => {
     const [users, setUsers] = useState([]);
@@ -46,7 +68,6 @@ const ManageUsers = () => {
             try {
                 const response = await api.get(`/api/companies/user/${userId}`);
                 setCompanies(response.data);
-                // Eliminamos la selección automática de la primera empresa
             } catch (error) {
                 console.error('Error fetching companies:', error);
             }
@@ -120,13 +141,6 @@ const ManageUsers = () => {
             errors.company_name = 'Empresa es requerida';
             isValid = false;
         }
-        // if (!formData.password) {
-        //     errors.password = 'Contraseña es requerida';
-        //     isValid = false;
-        // } else if (formData.password.length < 6) {
-        //     errors.password = 'La contraseña debe tener al menos 6 caracteres';
-        //     isValid = false;
-        // }
 
         setFormErrors(errors);
         return isValid;
@@ -218,134 +232,145 @@ const ManageUsers = () => {
     };
 
     return (
-        <div className="container mt-4">         
-            <form onSubmit={handleSubmit} className="mb-4">
-                <div className="form-group mb-3">
-                    <input
-                        type="text"
+        <Card variant="outlined">
+            <CardContent>
+                <Box component="form" onSubmit={handleSubmit} sx={{ mb: 4 }}>
+                    <Typography variant="h6" gutterBottom>
+                        Crear Nuevo Usuario
+                    </Typography>
+                    
+                    <TextField
+                        fullWidth
+                        label="Username"
                         name="username"
-                        placeholder="Username"
                         value={formData.username}
                         onChange={handleChange}
-                        className={`form-control ${formErrors.username ? 'is-invalid' : ''}`}
+                        required
+                        error={!!formErrors.username}
+                        helperText={formErrors.username}
+                        sx={{ mb: 2 }}
                     />
-                    {formErrors.username && <div className="invalid-feedback">{formErrors.username}</div>}
-                </div>             
-                <div className="form-group mb-3">
-                    <input
-                        type="email"
+                    
+                    <TextField
+                        fullWidth
+                        label="Email"
                         name="email"
-                        placeholder="Email"
+                        type="email"
                         value={formData.email}
                         onChange={handleChange}
-                        className={`form-control ${formErrors.email ? 'is-invalid' : ''}`}
+                        required
+                        error={!!formErrors.email}
+                        helperText={formErrors.email}
+                        sx={{ mb: 2 }}
                     />
-                    {formErrors.email && <div className="invalid-feedback">{formErrors.email}</div>}
-                </div>              
-                <div className="form-group mb-3">
-                    <input
-                        type="text"
+                    
+                    <TextField
+                        fullWidth
+                        label="Nombre Completo"
                         name="full_name"
-                        placeholder="Nombre Completo"
                         value={formData.full_name}
                         onChange={handleChange}
-                        className={`form-control ${formErrors.full_name ? 'is-invalid' : ''}`}
+                        required
+                        error={!!formErrors.full_name}
+                        helperText={formErrors.full_name}
+                        sx={{ mb: 2 }}
                     />
-                    {formErrors.full_name && <div className="invalid-feedback">{formErrors.full_name}</div>}
-                </div>               
-                <div className="form-group mb-3">
-                    <select 
-                        name="role" 
-                        onChange={handleChange} 
-                        value={formData.role}
-                        className={`form-control ${formErrors.role ? 'is-invalid' : ''}`}
-                    >
-                        <option value="" disabled>Seleccione el rol</option>
-                        {roles.map(role => (
-                            <option key={role} value={role}>{role}</option>
-                        ))}
-                    </select>
-                    {formErrors.role && <div className="invalid-feedback">{formErrors.role}</div>}
-                </div>             
-                <div className="form-group mb-3">
-                    {companies.length === 0 ? (
-                        <div className="alert alert-warning">
-                            Debe registrar primero una empresa
-                        </div>
-                    ) : (
-                        <select 
-                            name="company_name" 
-                            onChange={handleChange} 
-                            value={formData.company_name}
-                            className={`form-control ${formErrors.company_name ? 'is-invalid' : ''}`}
+                    
+                    <FormControl fullWidth sx={{ mb: 2 }} error={!!formErrors.role}>
+                        <InputLabel>Rol</InputLabel>
+                        <Select
+                            name="role"
+                            value={formData.role}
+                            onChange={handleChange}
+                            label="Rol"
+                            required
                         >
-                            <option value="" disabled selected>Seleccione la empresa</option>
-                            {companies.map(company => (
-                                <option key={company.id} value={company.name}>{company.name}</option>
+                            {roles.map(role => (
+                                <MenuItem key={role} value={role}>{role}</MenuItem>
                             ))}
-                        </select>
+                        </Select>
+                        {formErrors.role && <FormHelperText>{formErrors.role}</FormHelperText>}
+                    </FormControl>
+                    
+                    {companies.length === 0 ? (
+                        <Typography color="error" sx={{ mb: 2 }}>
+                            Debe registrar primero una empresa
+                        </Typography>
+                    ) : (
+                        <FormControl fullWidth sx={{ mb: 2 }} error={!!formErrors.company_name}>
+                            <InputLabel>Empresa</InputLabel>
+                            <Select
+                                name="company_name"
+                                value={formData.company_name}
+                                onChange={handleChange}
+                                label="Empresa"
+                                required
+                            >
+                                {companies.map(company => (
+                                    <MenuItem key={company.id} value={company.name}>{company.name}</MenuItem>
+                                ))}
+                            </Select>
+                            {formErrors.company_name && <FormHelperText>{formErrors.company_name}</FormHelperText>}
+                        </FormControl>
                     )}
-                    {formErrors.company_name && <div className="invalid-feedback">{formErrors.company_name}</div>}
-                </div>               
-                {/* <div className="form-group mb-3">
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        className={`form-control ${formErrors.password ? 'is-invalid' : ''}`}
-                    />
-                    {formErrors.password && <div className="invalid-feedback">{formErrors.password}</div>}
-                </div> */}
-                
-                <button 
-                    type="submit" 
-                    className="btn btn-primary"
-                    disabled={loading || companies.length === 0}
-                >
-                    {loading ? (
-                        <>
-                            <CircularProgress size={20} style={{ color: 'white', marginRight: '10px' }} />
-                            Procesando...
-                        </>
-                    ) : 'Crear usuario'}
-                </button>
-            </form>
-            
-            <h3>Lista de Usuarios</h3>
-            <table className="table table-striped table-hover">
-                <thead className="thead-dark">
-                    <tr>
-                        <th>Nombre Completo</th>
-                        <th>Email</th>
-                        <th>Rol</th>
-                        <th>Empresa</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {users.map(user => (
-                        <tr key={user.id}>
-                            <td>{user.full_name}</td>
-                            <td>{user.email}</td>
-                            <td>{user.role}</td>
-                            <td>{user.company_name}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+                    
+                    <Button 
+                        type="submit" 
+                        variant="contained"
+                        disabled={loading || companies.length === 0}
+                        sx={{
+                            backgroundColor: "#F15A29",
+                            "&:hover": { backgroundColor: "#F15A29" }
+                        }}
+                    >
+                        {loading ? (
+                            <>
+                                <CircularProgress size={20} sx={{ color: 'white', mr: 1 }} />
+                                Procesando...
+                            </>
+                        ) : 'Crear usuario'}
+                    </Button>
+                </Box>
 
-            <Snackbar
-                open={snackbar.open}
-                autoHideDuration={6000}
-                onClose={handleCloseSnackbar}
-                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            >
-                <Alert onClose={handleCloseSnackbar} severity={snackbar.severity}>
-                    {snackbar.message}
-                </Alert>
-            </Snackbar>
-        </div>
+                <Typography variant="h6" gutterBottom>
+                    Lista de Usuarios
+                </Typography>
+                
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                                <TableCell><strong>Nombre Completo</strong></TableCell>
+                                <TableCell><strong>Email</strong></TableCell>
+                                <TableCell><strong>Rol</strong></TableCell>
+                                <TableCell><strong>Empresa</strong></TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {users.map(user => (
+                                <TableRow key={user.id}>
+                                    <TableCell>{user.full_name}</TableCell>
+                                    <TableCell>{user.email}</TableCell>
+                                    <TableCell>{user.role}</TableCell>
+                                    <TableCell>{user.company_name}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+
+                <Snackbar
+                    open={snackbar.open}
+                    autoHideDuration={6000}
+                    onClose={handleCloseSnackbar}
+                    anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                >
+                    <Alert onClose={handleCloseSnackbar} severity={snackbar.severity}>
+                        {snackbar.message}
+                    </Alert>
+                </Snackbar>
+            </CardContent>
+        </Card>
     );
 };
 

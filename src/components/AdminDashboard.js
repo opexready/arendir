@@ -1,25 +1,73 @@
-// src/components/AdminDashboard.js
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import ManageUsers from './ManageUsers';
 import ManageCompanies from './ManageCompanies';
+import {
+  Container,
+  Typography,
+  Box,
+  Grid,
+  Paper,
+  Card,
+  CardContent
+} from '@mui/material';
 
 const AdminDashboard = ({ user }) => {
-    return (
-        <div className="container mt-5">
-            <h1 className="text-primary">Panel Administrador</h1>
-            <div className="row">
-                <div className="col-md-6">
-                    <h2 className="text-white bg-primary p-2">Gestión de usuarios</h2>
-                    <ManageUsers />
-                </div>
-                <div className="col-md-6">
-                    <h2 className="text-white bg-primary p-2">Gestión de empresas</h2>
-                    <ManageCompanies />
-                </div>
-            </div>
-        </div>
-    );
+  return (
+    <Container maxWidth="lg" sx={{ mt: 4 }}>
+      <Typography
+        variant="h4"
+        gutterBottom
+        sx={{
+          color: "#F15A29",
+          fontWeight: "bold",
+          mb: 4
+        }}
+      >
+        Panel Administrador
+      </Typography>
+
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6}>
+          <Card sx={{ boxShadow: 3 }}>
+            <Box
+              sx={{
+                backgroundColor: "#2E3192",
+                color: "white",
+                p: 2,
+                borderTopLeftRadius: "4px",
+                borderTopRightRadius: "4px"
+              }}
+            >
+              <Typography variant="h6">Gestión de usuarios</Typography>
+            </Box>
+            <CardContent>
+              <ManageUsers />
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <Card sx={{ boxShadow: 3 }}>
+            <Box
+              sx={{
+                backgroundColor: "#2E3192",
+                color: "white",
+                p: 2,
+                borderTopLeftRadius: "4px",
+                borderTopRightRadius: "4px"
+              }}
+            >
+              <Typography variant="h6">Gestión de empresas</Typography>
+            </Box>
+            <CardContent>
+              <ManageCompanies />
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+    </Container>
+  );
 };
 
 export default AdminDashboard;

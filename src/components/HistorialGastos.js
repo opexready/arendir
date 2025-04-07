@@ -33,6 +33,9 @@ const HistorialGastos = () => {
   const fetchRendiciones = async () => {
     try {
       const token = localStorage.getItem("token");
+      const userString = localStorage.getItem("user");
+      const user = userString ? JSON.parse(userString) : null;
+      const userId = user?.id;
       const response = await axios.get(`${baseURL}/api/rendiciones/con-documentos/`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -42,6 +45,7 @@ const HistorialGastos = () => {
           estado: estado || undefined,
           fecha_registro_from: fechaRegistroFrom || undefined,
           fecha_registro_to: fechaRegistroTo || undefined,
+          id_user: userId,
         },
       });
       console.log("Respuesta de la API:", response.data); // Depuración
