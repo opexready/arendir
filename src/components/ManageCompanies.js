@@ -33,7 +33,7 @@ const ManageCompanies = () => {
                     setCompanies(response.data);
                 } catch (error) {
                     console.error('Error fetching companies:', error);
-                    setError('Error al cargar las empresas');
+                    setError('Aún no hay empresas registradas');
                 }
             }
         };

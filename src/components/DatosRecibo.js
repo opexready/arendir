@@ -181,7 +181,6 @@ const DatosRecibo = () => {
       if (processedData.ruc) {
         handleSearch(processedData.ruc);
       }
-	  
     } catch (error) {
       setError("Error al procesar el QR. Por favor, inténtalo nuevamente.");
       console.error("Error al llamar a /api/process-qr/:", error);
@@ -195,7 +194,6 @@ const DatosRecibo = () => {
   };
 
   useEffect(() => {
-									
     navigator.mediaDevices
       .enumerateDevices()
       .then((devices) => {
@@ -209,9 +207,10 @@ const DatosRecibo = () => {
       })
       .catch((error) => {
         console.error("Error al enumerar dispositivos:", error);
-				   
-        setQrError("No se pudieron enumerar las cámaras. Verifica los permisos.");
-		  
+
+        setQrError(
+          "No se pudieron enumerar las cámaras. Verifica los permisos."
+        );
       });
   }, []);
 
@@ -256,9 +255,9 @@ const DatosRecibo = () => {
       setShowForm(false);
       fetchRecords();
     } catch (error) {
-			   
-      setError("Error al actualizar el documento. Por favor, intente nuevamente.");
-		
+      setError(
+        "Error al actualizar el documento. Por favor, intente nuevamente."
+      );
     }
   };
 
@@ -273,36 +272,37 @@ const DatosRecibo = () => {
         return;
       }
 
-											  
-      const lastRendicionResponse = await axios.get(`${baseURL}/api/rendicion/last`, {
-									
-		 
-        params: {
-          id_user: userId,
-          tipo: "RENDICION",
-        },
-      });
-		
+      const lastRendicionResponse = await axios.get(
+        `${baseURL}/api/rendicion/last`,
+        {
+          params: {
+            id_user: userId,
+            tipo: "RENDICION",
+          },
+        }
+      );
 
       if (lastRendicionResponse.data && lastRendicionResponse.data.id) {
         const rendicionId = lastRendicionResponse.data.id;
 
-																	  
         await axios.put(`${baseURL}/api/rendicion/${rendicionId}`, {
           estado: "POR APROBAR",
         });
 
-											 
-        const newRendicionResponse = await axios.post(`${baseURL}/api/rendicion/`, {
-          id_user: userId,
-        });
+        const newRendicionResponse = await axios.post(
+          `${baseURL}/api/rendicion/`,
+          {
+            id_user: userId,
+          }
+        );
       } else {
       }
     } catch (error) {
       console.error("Error al finalizar la rendición:", error);
-			   
-      setError("Error al finalizar la rendición. Por favor, intente nuevamente.");
-		
+
+      setError(
+        "Error al finalizar la rendición. Por favor, intente nuevamente."
+      );
     }
   };
 
@@ -342,7 +342,6 @@ const DatosRecibo = () => {
     setSelectedFile(null);
   };
 
-
   const handleCloseConfirmDeleteDialog = () => {
     setDocumentoIdToDelete(null);
     setConfirmDeleteDialogOpen(false);
@@ -352,15 +351,19 @@ const DatosRecibo = () => {
     if (documentoIdToDelete) {
       try {
         await axios.delete(`${baseURL}/documentos/${documentoIdToDelete}`);
-				   
-        setRecords(records.filter((record) => record.id !== documentoIdToDelete));
-		  
+
+        setRecords(
+          records.filter((record) => record.id !== documentoIdToDelete)
+        );
+
         handleCloseConfirmDeleteDialog();
       } catch (error) {
         console.error("Error al eliminar el documento:", error);
-				 
-        setError("Error al eliminar el documento. Por favor, intente nuevamente.");
-		  
+
+        setError(
+          "Error al eliminar el documento. Por favor, intente nuevamente."
+        );
+
         handleCloseConfirmDeleteDialog();
       }
     }
@@ -422,51 +425,118 @@ const DatosRecibo = () => {
     }
   }, [formData.igv]);
 
+  // const fetchTipoCambio = async (fecha) => {
+  //   try {
+  //     const response = await axios.get(`${baseURL}/tipo-cambio/?fecha=${fecha}`);
+  //     const precioVenta = response.data.precioVenta;
+  //     setTipoCambio(precioVenta);
+  //     console.log("Tipo de cambio obtenido:", precioVenta);
+
+  //     // Actualizar los valores de Afecto, Igv, inafecto y Total multiplicados por el tipo de cambio
+  //     setFormData((prevFormData) => ({
+  //       ...prevFormData,
+  //       afecto: (parseFloat(prevFormData.afecto) * precioVenta),
+  //       igv: (parseFloat(prevFormData.igv) * precioVenta),
+  //       inafecto: prevFormData.inafecto ? (parseFloat(prevFormData.inafecto) * precioVenta) : 0,
+  //       total: (parseFloat(prevFormData.total) * precioVenta),
+  //     }));
+  //   } catch (error) {
+  //     setError("Error al obtener el tipo de cambio. Por favor, intente nuevamente.");
+  //   }
+  // };
+
   const fetchTipoCambio = async (fecha) => {
     try {
-      const response = await axios.get(`${baseURL}/tipo-cambio/?fecha=${fecha}`);
+      const response = await axios.get(
+        `${baseURL}/tipo-cambio/?fecha=${fecha}`
+      );
       const precioVenta = response.data.precioVenta;
       setTipoCambio(precioVenta);
-      console.log("Tipo de cambio obtenido:", precioVenta);
-											   
-												 
-										   
-																
 
-      // Actualizar los valores de Afecto, Igv, inafecto y Total multiplicados por el tipo de cambio
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        afecto: (parseFloat(prevFormData.afecto) * precioVenta),
-        igv: (parseFloat(prevFormData.igv) * precioVenta),
-        inafecto: prevFormData.inafecto ? (parseFloat(prevFormData.inafecto) * precioVenta) : 0,
-        total: (parseFloat(prevFormData.total) * precioVenta),
+      // Convertir de PEN a USD multiplicando por el nuevo tipoCambio
+      setFormData((prev) => ({
+        ...prev,
+        afecto: (parseFloat(prev.afecto) * precioVenta).toFixed(2),
+        igv: (parseFloat(prev.igv) * precioVenta).toFixed(2),
+        inafecto: prev.inafecto
+          ? (parseFloat(prev.inafecto) * precioVenta).toFixed(2)
+          : "0.00",
+        total: (parseFloat(prev.total) * precioVenta).toFixed(2),
       }));
     } catch (error) {
-      setError("Error al obtener el tipo de cambio. Por favor, intente nuevamente.");
+      setError(
+        "Error al obtener el tipo de cambio. Por favor, intente nuevamente."
+      );
     }
   };
 
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormData({
+  //     ...formData,
+  //     [name]: value,
+  //   });
+
+  //   if (name === "moneda") {
+  //     if (value === "PEN") {
+
+  //       setTipoCambio(1);
+  //       // Restaurar los valores originales si se selecciona PEN
+  //       setFormData((prevFormData) => ({
+  //         ...prevFormData,
+  //         afecto: (parseFloat(prevFormData.afecto) / tipoCambio),
+  //         igv: (parseFloat(prevFormData.igv) / tipoCambio),
+  //         inafecto: prevFormData.inafecto ? (parseFloat(prevFormData.inafecto)) / tipoCambio : 0,
+  //         total: (parseFloat(prevFormData.total) / tipoCambio),
+  //       }));
+  //     } else if (value === "USD" && formData.fecha) {
+  //       fetchTipoCambio(formData.fecha);
+  //     }
+  //   }
+  // };
+
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormData({
+  //     ...formData,
+  //     [name]: value,
+  //   });
+
+  //   if (name === "moneda") {
+  //     if (value === "PEN") {
+  //       setTipoCambio(1);
+  //       // Restaurar los valores originales si se selecciona PEN
+  //       setFormData((prevFormData) => ({
+  //         ...prevFormData,
+  //         afecto: (parseFloat(prevFormData.afecto) / tipoCambio),
+  //         igv: (parseFloat(prevFormData.igv) / tipoCambio),
+  //         inafecto: prevFormData.inafecto ? (parseFloat(prevFormData.inafecto) / tipoCambio) : 0,
+  //         total: (parseFloat(prevFormData.total) / tipoCambio),
+  //       }));
+  //     } else if (value === "USD" && formData.fecha) {
+  //       fetchTipoCambio(formData.fecha);
+  //     }
+  //   }
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+
+    // Actualizar primero el valor en el formData
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
-    });
-	
+    }));
 
     if (name === "moneda") {
       if (value === "PEN") {
-									   
-												
-		
         setTipoCambio(1);
-        // Restaurar los valores originales si se selecciona PEN
-        setFormData((prevFormData) => ({
-          ...prevFormData,
-          afecto: (parseFloat(prevFormData.afecto) / tipoCambio),
-          igv: (parseFloat(prevFormData.igv) / tipoCambio),
-          inafecto: prevFormData.inafecto ? (parseFloat(prevFormData.inafecto)) / tipoCambio : 0,
-          total: (parseFloat(prevFormData.total) / tipoCambio),
+        // Convertir de USD a PEN dividiendo por el tipoCambio anterior
+        setFormData((prev) => ({
+          ...prev,
+          afecto: parseFloat(prev.afecto) / tipoCambio,
+          igv: parseFloat(prev.igv) / tipoCambio,
+          inafecto: prev.inafecto ? parseFloat(prev.inafecto) / tipoCambio : 0,
+          total: parseFloat(prev.total) / tipoCambio,
         }));
       } else if (value === "USD" && formData.fecha) {
         fetchTipoCambio(formData.fecha);
@@ -478,19 +548,17 @@ const DatosRecibo = () => {
     setSearchRuc(e.target.value);
   };
 
-
   const handleSearch = async (ruc) => {
     try {
-									   
-      const response = await axios.get(`${baseURL}/consulta-ruc?ruc=${ruc || searchRuc}`);
-		
+      const response = await axios.get(
+        `${baseURL}/consulta-ruc?ruc=${ruc || searchRuc}`
+      );
+
       setSearchResult(response.data);
 
-															
       setFormData((prevFormData) => ({
         ...prevFormData,
         ruc: ruc || searchRuc,
-											   
       }));
 
       setError("");
@@ -511,15 +579,16 @@ const DatosRecibo = () => {
       console.log(file);
       console.log(formData);
       try {
-        const decodeResponse = await axios.post(`${baseURL}/decode-qr/`, formData, {
-								  
-				   
-		   
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-		  
+        const decodeResponse = await axios.post(
+          `${baseURL}/decode-qr/`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
         console.log("############decodeResponse############");
         console.log(decodeResponse);
 
@@ -533,15 +602,16 @@ const DatosRecibo = () => {
 
           let razonSocial = "Proveedor Desconocido";
           try {
-												
-            const rucResponse = await axios.get(`${baseURL}/consulta-ruc?ruc=${decodedRuc}`);
-			  
+            const rucResponse = await axios.get(
+              `${baseURL}/consulta-ruc?ruc=${decodedRuc}`
+            );
+
             razonSocial = rucResponse.data.razonSocial || razonSocial;
           } catch (error) {
             if (error.response && error.response.status === 404) {
-						   
-              console.warn("RUC no encontrado, utilizando valor por defecto para Razón Social.");
-				
+              console.warn(
+                "RUC no encontrado, utilizando valor por defecto para Razón Social."
+              );
             } else {
               throw error;
             }
@@ -566,21 +636,19 @@ const DatosRecibo = () => {
         }
       } catch (error) {
         if (error.response) {
-																					  
-						
-          console.error("Error de respuesta del servidor:", error.response.data);
-							   
-			
-				   
-										 
-          setError("Error al procesar el QR: " + (error.response.data.message || "Por favor, intente nuevamente."));
-			
+          console.error(
+            "Error de respuesta del servidor:",
+            error.response.data
+          );
+
+          setError(
+            "Error al procesar el QR: " +
+              (error.response.data.message || "Por favor, intente nuevamente.")
+          );
         } else if (error.request) {
-															   
           console.error("No se recibió respuesta:", error.request);
           setError("No se recibió respuesta del servidor. Intente nuevamente.");
         } else {
-													   
           console.error("Error al configurar la solicitud:", error.message);
           setError("Ocurrió un error. Intente nuevamente.");
         }
@@ -599,15 +667,16 @@ const DatosRecibo = () => {
       setIsLoading(true);
 
       try {
-        const uploadResponse = await axios.post(`${baseURL}/upload-file-firebase/`, formData, {
-											 
-				   
-		   
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-		  
+        const uploadResponse = await axios.post(
+          `${baseURL}/upload-file-firebase/`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
         const fileLocation = uploadResponse.data.file_url;
 
         setFormData((prevFormData) => ({
@@ -622,6 +691,21 @@ const DatosRecibo = () => {
       }
     }
   };
+
+  useEffect(() => {
+    if (formData.afecto && formData.igv && formData.total) {
+      const afecto = parseFloat(formData.afecto) || 0;
+      const igv = parseFloat(formData.igv) || 0;
+      const total = parseFloat(formData.total) || 0;
+
+      const inafectoValue = Math.max(0, afecto + igv - total).toFixed(2);
+
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        inafecto: inafectoValue,
+      }));
+    }
+  }, [formData.afecto, formData.igv, formData.total]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -689,12 +773,9 @@ const DatosRecibo = () => {
       id_user: userId,
       id_numero_rendicion: idRendicion,
       id_empresa: user.id_empresa,
-
     };
 
     console.log("##################requestData##########", requestData);
-
-	
 
     try {
       await axios.post(`${baseURL}/documentos/`, requestData, {
@@ -707,7 +788,10 @@ const DatosRecibo = () => {
     } catch (error) {
       if (error.response && error.response.status === 400) {
         // Mostrar el mensaje de error específico del backend
-        setError(error.response.data.message || "Este documento ya se encuentra registrado");
+        setError(
+          error.response.data.message ||
+            "Este documento ya se encuentra registrado"
+        );
       } else {
         setError("Error al enviar los datos. Por favor, intente nuevamente.");
       }
@@ -762,7 +846,6 @@ const DatosRecibo = () => {
         alert("Error al obtener la última rendición. Intente nuevamente.");
       }
     } else {
-													 
       navigate("/datos-recibo-table");
     }
   };
@@ -866,7 +949,6 @@ const DatosRecibo = () => {
                 Escanear QR
               </Button>
 
-													 
               <Box
                 sx={{
                   display: "flex",
@@ -907,7 +989,6 @@ const DatosRecibo = () => {
                 </Button>
               </Box>
 
-									   
               {isScanning && (
                 <Typography
                   variant="body1"
@@ -918,7 +999,6 @@ const DatosRecibo = () => {
                 </Typography>
               )}
 
-							   
               {showQrReader && (
                 <Box sx={{ marginTop: 2, position: "relative" }}>
                   <QrReader
@@ -938,14 +1018,15 @@ const DatosRecibo = () => {
                       }
                       if (error && error.name !== "NotFoundError") {
                         console.error("Error al leer el QR:", error);
-								 
-                        setError("No se pudo leer el QR. Por favor, intenta nuevamente.");
-						  
+
+                        setError(
+                          "No se pudo leer el QR. Por favor, intenta nuevamente."
+                        );
                       }
                     }}
                     style={{ width: "100%" }}
                   />
-									  
+
                   <div
                     style={{
                       position: "absolute",
@@ -962,7 +1043,6 @@ const DatosRecibo = () => {
                 </Box>
               )}
 
-													
               {error && (
                 <Typography variant="body1" color="error" sx={{ marginTop: 2 }}>
                   {error}
@@ -1096,8 +1176,20 @@ const DatosRecibo = () => {
               name="afecto"
               value={formData.afecto}
             />
+            <TextField
+              label="Inafecto"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              id="inafecto"
+              name="inafecto"
+              value={formData.inafecto}
+              InputProps={{
+                readOnly: true,
+              }}
+            />
 
-            {["igv", "inafecto", "total"].map((field) => (
+            {["igv", "total"].map((field) => (
               <TextField
                 key={field}
                 label={field.charAt(0).toUpperCase() + field.slice(1)}
@@ -1111,8 +1203,7 @@ const DatosRecibo = () => {
               />
             ))}
 
-
-						   
+            
 
             <div className="form-group">
               <label htmlFor="detalle">Detalle:</label>
@@ -1155,7 +1246,6 @@ const DatosRecibo = () => {
           </Button>
           <Button
             onClick={async () => {
-												  
               handleDialogClose(false);
             }}
             color="secondary"
