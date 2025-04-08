@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 
-const ManageCompanies = () => {
+const ManageCompanies = ({ onCompanyCreated }) => { 
     const [companies, setCompanies] = useState([]);
     const [formData, setFormData] = useState({ name: '', description: '' });
     const [editCompany, setEditCompany] = useState(null);
@@ -66,6 +66,9 @@ const ManageCompanies = () => {
                 await api.put(`/api/companies/${editCompany.id}`, formData);
             } else {
                 await api.post('/api/companies/', dataToSend);
+                if (onCompanyCreated) {  // Notificar que se creó una empresa
+                    onCompanyCreated();
+                }
             }
             setFormData({ name: '', description: '' });
             setEditCompany(null);

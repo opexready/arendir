@@ -1,7 +1,7 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
-import ManageUsers from './ManageUsers';
-import ManageCompanies from './ManageCompanies';
+import React, { useState } from 'react'; 
+import { Navigate } from "react-router-dom";
+import ManageUsers from "./ManageUsers";
+import ManageCompanies from "./ManageCompanies";
 import {
   Container,
   Typography,
@@ -9,10 +9,16 @@ import {
   Grid,
   Paper,
   Card,
-  CardContent
-} from '@mui/material';
+  CardContent,
+} from "@mui/material";
 
 const AdminDashboard = ({ user }) => {
+  const [refreshCompanies, setRefreshCompanies] = useState(false);
+
+  const handleCompanyCreated = () => {
+    setRefreshCompanies((prev) => !prev); // Cambiar el estado para forzar actualización
+  };
+
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
       <Typography
@@ -21,7 +27,7 @@ const AdminDashboard = ({ user }) => {
         sx={{
           color: "#F15A29",
           fontWeight: "bold",
-          mb: 4
+          mb: 4,
         }}
       >
         Panel Administrador
@@ -36,13 +42,13 @@ const AdminDashboard = ({ user }) => {
                 color: "white",
                 p: 2,
                 borderTopLeftRadius: "4px",
-                borderTopRightRadius: "4px"
+                borderTopRightRadius: "4px",
               }}
             >
               <Typography variant="h6">Gestión de usuarios</Typography>
             </Box>
             <CardContent>
-              <ManageUsers />
+              <ManageUsers refreshCompanies={refreshCompanies} />
             </CardContent>
           </Card>
         </Grid>
@@ -55,13 +61,13 @@ const AdminDashboard = ({ user }) => {
                 color: "white",
                 p: 2,
                 borderTopLeftRadius: "4px",
-                borderTopRightRadius: "4px"
+                borderTopRightRadius: "4px",
               }}
             >
               <Typography variant="h6">Gestión de empresas</Typography>
             </Box>
             <CardContent>
-              <ManageCompanies />
+              <ManageCompanies onCompanyCreated={handleCompanyCreated} />
             </CardContent>
           </Card>
         </Grid>

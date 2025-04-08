@@ -24,7 +24,7 @@ import {
   FormHelperText
 } from '@mui/material';
 
-const ManageUsers = () => {
+const ManageUsers = ({ refreshCompanies }) => {  
     const [users, setUsers] = useState([]);
     const [formData, setFormData] = useState({
         id_user: '',
@@ -83,7 +83,7 @@ const ManageUsers = () => {
         }
         fetchUsers(); 
         fetchCompanies();
-    }, [userId]);
+    }, [userId, refreshCompanies]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
