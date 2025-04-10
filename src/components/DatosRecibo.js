@@ -142,6 +142,32 @@ const DatosRecibo = () => {
   const [selectedCamera, setSelectedCamera] = useState(null);
   const [cameraFacingMode, setCameraFacingMode] = useState("environment");
 
+  const limpiarFormulario = () => {
+    setFormData({
+      fecha: "",
+      ruc: "",
+      tipoDoc: "",
+      cuentaContable: selectedCuentaContable || "",
+      serie: "",
+      numero: "",
+      rubro: selectedRubro || "",
+      moneda: "PEN",
+      afecto: "",
+      igv: "",
+      inafecto: "",
+      total: "",
+      archivo: "",
+    });
+    setCategory("");
+    setSearchRuc("");
+    setSearchResult(null);
+    setError("");
+    setQrError(null);
+    setDetalle("");
+    setQrFile(null);
+    setQrResult(null);
+  };
+
   useEffect(() => {
     if (qrResult) {
       handleProcessQrResult();
@@ -571,6 +597,8 @@ const DatosRecibo = () => {
   const handleQrFileChange = async (event) => {
     const file = event.target.files[0];
     setQrFile(file);
+    limpiarFormulario();
+    setQrError(null);
 
     if (file) {
       const formData = new FormData();
@@ -593,8 +621,20 @@ const DatosRecibo = () => {
         console.log(decodeResponse);
 
         if (decodeResponse.data.detail === "No QR code found in the image") {
-          setError(
-            "No se pudo leer el código QR. Esto puede deberse a: mala iluminación, reflejos, un código QR dañado o fuera de foco, o problemas de permisos para acceder a la cámara. Por favor, asegúrese de que el código QR esté claramente visible, en un lugar bien iluminado, y que su dispositivo tenga permisos para usar la cámara."
+          setQrError(
+            <span>
+              No se pudo leer el código QR. Esto puede deberse a: mala iluminación, reflejos, un código QR dañado o fuera de foco, o problemas de permisos para acceder a la cámara. Por favor, asegúrese de que el código QR esté claramente visible, en un lugar bien iluminado, y que su dispositivo tenga permisos para usar la cámara.{" "}
+              <Typography 
+                component="span" 
+                sx={{ 
+                  fontWeight: 'bold', 
+                  fontStyle: 'italic',
+                  display: 'inline' // Esto asegura que se muestre en línea con el texto normal
+                }}
+              >
+                ES PREFERIBLE UTILIZAR LA OPCIÓN ESCANEAR QR
+              </Typography>
+            </span>
           );
         } else {
           const decodedRuc = decodeResponse.data.ruc;
@@ -698,8 +738,8 @@ const DatosRecibo = () => {
       const igv = parseFloat(formData.igv) || 0;
       const total = parseFloat(formData.total) || 0;
 
-      const inafectoValue = Math.max(0, afecto + igv - total).toFixed(2);
-
+      //const inafectoValue = Math.max(0, total - (afecto + igv)).toFixed(2);
+      const inafectoValue = (total - (afecto + igv)).toFixed(2);
       setFormData((prevFormData) => ({
         ...prevFormData,
         inafecto: inafectoValue,
@@ -811,7 +851,7 @@ const DatosRecibo = () => {
         cuentaContable: selectedCuentaContable || "",
         serie: "",
         numero: "",
-        rubro: "",
+        rubro: selectedRubro || "",
         moneda: "PEN",
         afecto: "",
         igv: "",
@@ -819,10 +859,17 @@ const DatosRecibo = () => {
         total: "",
         archivo: "",
       });
+      setCategory(""); // ← Esto es lo que faltaba
+
+      // Limpiar otros estados
       setSearchRuc("");
       setSearchResult(null);
       setError("");
       setDetalle("");
+      setQrFile(null);
+      setQrResult(null);
+      setShowQrReader(false);
+      setIsScanning(false);
 
       try {
         const userString = localStorage.getItem("user");
@@ -940,6 +987,7 @@ const DatosRecibo = () => {
                   },
                 }}
                 onClick={() => {
+                  limpiarFormulario();
                   setShowQrReader(true);
                   setIsScanning(true);
                   setError("");
@@ -1010,16 +1058,17 @@ const DatosRecibo = () => {
                     scanDelay={500}
                     onResult={(result, error) => {
                       if (result) {
+                        limpiarFormulario();
                         console.log("Resultado del QR:", result.text);
-                        setShowQrReader(false);
-                        setIsScanning(false);
-                        setError("");
+                        // setShowQrReader(false);
+                        // setIsScanning(false);
+                        setError(null);
                         setQrResult(result.text);
                       }
                       if (error && error.name !== "NotFoundError") {
                         console.error("Error al leer el QR:", error);
 
-                        setError(
+                        setQrError(
                           "No se pudo leer el QR. Por favor, intenta nuevamente."
                         );
                       }
@@ -1043,10 +1092,10 @@ const DatosRecibo = () => {
                 </Box>
               )}
 
-              {error && (
-                <Typography variant="body1" color="error" sx={{ marginTop: 2 }}>
-                  {error}
-                </Typography>
+              {qrError && (
+                <Alert severity="error" sx={{ marginTop: 2 }}>
+                  {qrError}
+                </Alert>
               )}
             </div>
           </div>
@@ -1062,7 +1111,8 @@ const DatosRecibo = () => {
             </div>
           ) : (
             <>
-              {error && <Alert severity="error">{error}</Alert>}
+              {/* {error && <Alert severity="error">{error}</Alert>} */}
+              {error && !qrError && <Alert severity="error">{error}</Alert>}
               {searchResult && (
                 <Alert severity="success">
                   <p>
@@ -1202,8 +1252,6 @@ const DatosRecibo = () => {
                 onChange={handleChange}
               />
             ))}
-
-            
 
             <div className="form-group">
               <label htmlFor="detalle">Detalle:</label>

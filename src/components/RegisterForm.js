@@ -21,7 +21,7 @@ const RegisterForm = ({ open, onClose }) => {
     email: "",
     company_name: "ARENDIR",
     role: "ADMIN",
-    password: "",
+    password: "Xrosdh223i",
   });
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
@@ -162,7 +162,7 @@ const RegisterForm = ({ open, onClose }) => {
             margin="normal"
             required
           />
-          <TextField
+          {/* <TextField
             label="Contraseña"
             name="password"
             type="password"
@@ -171,7 +171,7 @@ const RegisterForm = ({ open, onClose }) => {
             fullWidth
             margin="normal"
             required
-          />
+          /> */}
           <DialogActions>
             <Button
               onClick={onClose}
