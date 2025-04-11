@@ -102,6 +102,7 @@ const DatosRecibo = () => {
     useState(false);
   const navigate = useNavigate();
   const { selectedCuentaContable, selectedRubro } = location.state || {};
+  const [scanTimeout, setScanTimeout] = useState(null);
   const [formData, setFormData] = useState({
     fecha: "",
     ruc: "",
@@ -442,6 +443,15 @@ const DatosRecibo = () => {
   }, [idRendicion]);
 
   useEffect(() => {
+    return () => {
+      // Limpiar timeout al desmontar el componente
+      if (scanTimeout) {
+        clearTimeout(scanTimeout);
+      }
+    };
+  }, [scanTimeout]);
+
+  useEffect(() => {
     if (formData.igv) {
       const afectoValue = (parseFloat(formData.igv) / 0.18).toFixed(2);
       setFormData((prevFormData) => ({
@@ -450,26 +460,6 @@ const DatosRecibo = () => {
       }));
     }
   }, [formData.igv]);
-
-  // const fetchTipoCambio = async (fecha) => {
-  //   try {
-  //     const response = await axios.get(`${baseURL}/tipo-cambio/?fecha=${fecha}`);
-  //     const precioVenta = response.data.precioVenta;
-  //     setTipoCambio(precioVenta);
-  //     console.log("Tipo de cambio obtenido:", precioVenta);
-
-  //     // Actualizar los valores de Afecto, Igv, inafecto y Total multiplicados por el tipo de cambio
-  //     setFormData((prevFormData) => ({
-  //       ...prevFormData,
-  //       afecto: (parseFloat(prevFormData.afecto) * precioVenta),
-  //       igv: (parseFloat(prevFormData.igv) * precioVenta),
-  //       inafecto: prevFormData.inafecto ? (parseFloat(prevFormData.inafecto) * precioVenta) : 0,
-  //       total: (parseFloat(prevFormData.total) * precioVenta),
-  //     }));
-  //   } catch (error) {
-  //     setError("Error al obtener el tipo de cambio. Por favor, intente nuevamente.");
-  //   }
-  // };
 
   const fetchTipoCambio = async (fecha) => {
     try {
@@ -495,54 +485,6 @@ const DatosRecibo = () => {
       );
     }
   };
-
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setFormData({
-  //     ...formData,
-  //     [name]: value,
-  //   });
-
-  //   if (name === "moneda") {
-  //     if (value === "PEN") {
-
-  //       setTipoCambio(1);
-  //       // Restaurar los valores originales si se selecciona PEN
-  //       setFormData((prevFormData) => ({
-  //         ...prevFormData,
-  //         afecto: (parseFloat(prevFormData.afecto) / tipoCambio),
-  //         igv: (parseFloat(prevFormData.igv) / tipoCambio),
-  //         inafecto: prevFormData.inafecto ? (parseFloat(prevFormData.inafecto)) / tipoCambio : 0,
-  //         total: (parseFloat(prevFormData.total) / tipoCambio),
-  //       }));
-  //     } else if (value === "USD" && formData.fecha) {
-  //       fetchTipoCambio(formData.fecha);
-  //     }
-  //   }
-  // };
-
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setFormData({
-  //     ...formData,
-  //     [name]: value,
-  //   });
-
-  //   if (name === "moneda") {
-  //     if (value === "PEN") {
-  //       setTipoCambio(1);
-  //       // Restaurar los valores originales si se selecciona PEN
-  //       setFormData((prevFormData) => ({
-  //         ...prevFormData,
-  //         afecto: (parseFloat(prevFormData.afecto) / tipoCambio),
-  //         igv: (parseFloat(prevFormData.igv) / tipoCambio),
-  //         inafecto: prevFormData.inafecto ? (parseFloat(prevFormData.inafecto) / tipoCambio) : 0,
-  //         total: (parseFloat(prevFormData.total) / tipoCambio),
-  //       }));
-  //     } else if (value === "USD" && formData.fecha) {
-  //       fetchTipoCambio(formData.fecha);
-  //     }
-  //   }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -623,13 +565,18 @@ const DatosRecibo = () => {
         if (decodeResponse.data.detail === "No QR code found in the image") {
           setQrError(
             <span>
-              No se pudo leer el código QR. Esto puede deberse a: mala iluminación, reflejos, un código QR dañado o fuera de foco, o problemas de permisos para acceder a la cámara. Por favor, asegúrese de que el código QR esté claramente visible, en un lugar bien iluminado, y que su dispositivo tenga permisos para usar la cámara.{" "}
-              <Typography 
-                component="span" 
-                sx={{ 
-                  fontWeight: 'bold', 
-                  fontStyle: 'italic',
-                  display: 'inline' // Esto asegura que se muestre en línea con el texto normal
+              No se pudo leer el código QR. Esto puede deberse a: mala
+              iluminación, reflejos, un código QR dañado o fuera de foco, o
+              problemas de permisos para acceder a la cámara. Por favor,
+              asegúrese de que el código QR esté claramente visible, en un lugar
+              bien iluminado, y que su dispositivo tenga permisos para usar la
+              cámara.{" "}
+              <Typography
+                component="span"
+                sx={{
+                  fontWeight: "bold",
+                  fontStyle: "italic",
+                  display: "inline", // Esto asegura que se muestre en línea con el texto normal
                 }}
               >
                 ES PREFERIBLE UTILIZAR LA OPCIÓN ESCANEAR QR
@@ -740,7 +687,9 @@ const DatosRecibo = () => {
 
       //const inafectoValue = Math.max(0, total - (afecto + igv)).toFixed(2);
       let rawValue = total - (afecto + igv);
-const inafectoValue = (Math.abs(rawValue) < 0.005 ? 0 : rawValue).toFixed(2);
+      const inafectoValue = (Math.abs(rawValue) < 0.005 ? 0 : rawValue).toFixed(
+        2
+      );
       setFormData((prevFormData) => ({
         ...prevFormData,
         inafecto: inafectoValue,
@@ -993,6 +942,23 @@ const inafectoValue = (Math.abs(rawValue) < 0.005 ? 0 : rawValue).toFixed(2);
                   setIsScanning(true);
                   setError("");
                   setQrResult(null);
+                  setQrError(null); // Limpiar errores anteriores
+
+                  if (scanTimeout) {
+                    clearTimeout(scanTimeout);
+                  }
+
+                  const timeout = setTimeout(() => {
+                    if (!qrResult) {
+                      setQrError(
+                        "No se pudo leer el QR después de 30 segundos. Por favor, intenta nuevamente."
+                      );
+                      setShowQrReader(false);
+                      setIsScanning(false);
+                    }
+                  }, 30000);
+
+                  setScanTimeout(timeout);
                 }}
               >
                 Escanear QR
@@ -1061,17 +1027,19 @@ const inafectoValue = (Math.abs(rawValue) < 0.005 ? 0 : rawValue).toFixed(2);
                       if (result) {
                         limpiarFormulario();
                         console.log("Resultado del QR:", result.text);
-                        // setShowQrReader(false);
-                        // setIsScanning(false);
+                        if (scanTimeout) {
+                          clearTimeout(scanTimeout);
+                          setScanTimeout(null);
+                        }
                         setError(null);
+                        setQrError(null);
                         setQrResult(result.text);
+                        setShowQrReader(false);
+                        setIsScanning(false);
                       }
-                      if (error && error.name !== "NotFoundError") {
+                      if (error) {
                         console.error("Error al leer el QR:", error);
-
-                        setQrError(
-                          "No se pudo leer el QR. Por favor, intenta nuevamente."
-                        );
+                        // No establecer qrError aquí, solo registrar en consola
                       }
                     }}
                     style={{ width: "100%" }}
