@@ -739,7 +739,8 @@ const DatosRecibo = () => {
       const total = parseFloat(formData.total) || 0;
 
       //const inafectoValue = Math.max(0, total - (afecto + igv)).toFixed(2);
-      const inafectoValue = (total - (afecto + igv)).toFixed(2);
+      let rawValue = total - (afecto + igv);
+const inafectoValue = (Math.abs(rawValue) < 0.005 ? 0 : rawValue).toFixed(2);
       setFormData((prevFormData) => ({
         ...prevFormData,
         inafecto: inafectoValue,
