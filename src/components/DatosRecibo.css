@@ -1,3 +1,49 @@
 .css-15mhkbs {
     background-color: transparent !important;
   }
+
+  /* Añade estas clases al final del archivo */
+.qr-reader-container {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.qr-reader-video {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.qr-reader-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qr-reader-frame {
+  width: 70%;
+  height: 70%;
+  border: 4px solid rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.5);
+}
+
+.qr-reader-focus-animation {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { border-color: rgba(255, 255, 255, 0.7); }
+  50% { border-color: rgba(0, 255, 0, 0.7); }
+  100% { border-color: rgba(255, 255, 255, 0.7); }
+}

@@ -34,6 +34,7 @@ const AnticiposGastosLocales = () => {
     gerencia: "",
     tipo_anticipo: "GASTOS LOCALES",
     tipo_solicitud: "ANTICIPO",
+    tipo_documento: "ANT",
     empresa: "",
     estado: "POR APROBAR",
     area: "",

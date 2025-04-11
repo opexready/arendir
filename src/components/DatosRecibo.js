@@ -141,6 +141,9 @@ const DatosRecibo = () => {
   const [availableCameras, setAvailableCameras] = useState([]);
   const [selectedCamera, setSelectedCamera] = useState(null);
   const [cameraFacingMode, setCameraFacingMode] = useState("environment");
+  // Busca la sección de estados y añade:
+const [cameraReady, setCameraReady] = useState(false);
+
 
   const limpiarFormulario = () => {
     setFormData({
@@ -623,13 +626,18 @@ const DatosRecibo = () => {
         if (decodeResponse.data.detail === "No QR code found in the image") {
           setQrError(
             <span>
-              No se pudo leer el código QR. Esto puede deberse a: mala iluminación, reflejos, un código QR dañado o fuera de foco, o problemas de permisos para acceder a la cámara. Por favor, asegúrese de que el código QR esté claramente visible, en un lugar bien iluminado, y que su dispositivo tenga permisos para usar la cámara.{" "}
-              <Typography 
-                component="span" 
-                sx={{ 
-                  fontWeight: 'bold', 
-                  fontStyle: 'italic',
-                  display: 'inline' // Esto asegura que se muestre en línea con el texto normal
+              No se pudo leer el código QR. Esto puede deberse a: mala
+              iluminación, reflejos, un código QR dañado o fuera de foco, o
+              problemas de permisos para acceder a la cámara. Por favor,
+              asegúrese de que el código QR esté claramente visible, en un lugar
+              bien iluminado, y que su dispositivo tenga permisos para usar la
+              cámara.{" "}
+              <Typography
+                component="span"
+                sx={{
+                  fontWeight: "bold",
+                  fontStyle: "italic",
+                  display: "inline", // Esto asegura que se muestre en línea con el texto normal
                 }}
               >
                 ES PREFERIBLE UTILIZAR LA OPCIÓN ESCANEAR QR
@@ -740,7 +748,9 @@ const DatosRecibo = () => {
 
       //const inafectoValue = Math.max(0, total - (afecto + igv)).toFixed(2);
       let rawValue = total - (afecto + igv);
-const inafectoValue = (Math.abs(rawValue) < 0.005 ? 0 : rawValue).toFixed(2);
+      const inafectoValue = (Math.abs(rawValue) < 0.005 ? 0 : rawValue).toFixed(
+        2
+      );
       setFormData((prevFormData) => ({
         ...prevFormData,
         inafecto: inafectoValue,
@@ -1037,6 +1047,90 @@ const inafectoValue = (Math.abs(rawValue) < 0.005 ? 0 : rawValue).toFixed(2);
                   Cámara Frontal
                 </Button>
               </Box>
+              {/* Selector de cámara - NUEVO CÓDIGO */}
+              {availableCameras.length > 1 && (
+                <FormControl fullWidth sx={{ marginTop: 2 }}>
+                  <InputLabel>Seleccionar Cámara</InputLabel>
+                  <Select
+                    value={selectedCamera || ""}
+                    onChange={(e) => {
+                      setSelectedCamera(e.target.value);
+                      setShowQrReader(false);
+                      setTimeout(() => setShowQrReader(true), 100);
+                    }}
+                    label="Seleccionar Cámara"
+                  >
+                    {availableCameras.map((camera) => (
+                      <MenuItem key={camera.deviceId} value={camera.deviceId}>
+                        {camera.label ||
+                          `Cámara ${camera.deviceId.slice(0, 5)}`}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: 2,
+                  marginTop: 2,
+                }}
+              >
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "#4CAF50",
+                    "&:hover": { backgroundColor: "#388E3C" },
+                  }}
+                  onClick={() => {
+                    const stream = document.querySelector("video")?.srcObject;
+                    if (stream) {
+                      const track = stream.getVideoTracks()[0];
+                      if (track.getCapabilities().torch) {
+                        track.applyConstraints({
+                          advanced: [
+                            {
+                              torch:
+                                !track.getConstraints().advanced?.[0]?.torch,
+                            },
+                          ],
+                        });
+                      }
+                    }
+                  }}
+                >
+                  Flash
+                </Button>
+
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "#2196F3",
+                    "&:hover": { backgroundColor: "#1976D2" },
+                  }}
+                  onClick={() => {
+                    const stream = document.querySelector("video")?.srcObject;
+                    if (stream) {
+                      const track = stream.getVideoTracks()[0];
+                      const capabilities = track.getCapabilities();
+                      if (capabilities.zoom) {
+                        const settings = track.getSettings();
+                        const newZoom = settings.zoom
+                          ? settings.zoom + 0.5
+                          : 1.5;
+                        track.applyConstraints({
+                          advanced: [
+                            { zoom: Math.min(newZoom, capabilities.zoom.max) },
+                          ],
+                        });
+                      }
+                    }
+                  }}
+                >
+                  Zoom +
+                </Button>
+              </Box>
 
               {isScanning && (
                 <Typography
@@ -1055,41 +1149,89 @@ const inafectoValue = (Math.abs(rawValue) < 0.005 ? 0 : rawValue).toFixed(2);
                       facingMode: cameraFacingMode,
                       width: { ideal: 1920 },
                       height: { ideal: 1080 },
+                      advanced: [
+                        {
+                          torch: true,
+                          focusMode: "continuous",
+                          exposureMode: "continuous",
+                          whiteBalanceMode: "continuous",
+                        },
+                      ],
+                      video: {
+                        width: { ideal: 1920 },
+                        height: { ideal: 1080 },
+                        frameRate: { ideal: 60 },
+                      },
                     }}
-                    scanDelay={500}
+                    scanDelay={300}
                     onResult={(result, error) => {
                       if (result) {
                         limpiarFormulario();
                         console.log("Resultado del QR:", result.text);
-                        // setShowQrReader(false);
-                        // setIsScanning(false);
                         setError(null);
                         setQrResult(result.text);
+                        setShowQrReader(false);
+                        setIsScanning(false);
                       }
                       if (error && error.name !== "NotFoundError") {
                         console.error("Error al leer el QR:", error);
-
                         setQrError(
                           "No se pudo leer el QR. Por favor, intenta nuevamente."
                         );
                       }
                     }}
                     style={{ width: "100%" }}
+                    videoContainerStyle={{
+                      paddingTop: "100%",
+                      position: "relative",
+                      overflow: "hidden",
+                    }}
+                    videoStyle={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
                   />
-
                   <div
                     style={{
                       position: "absolute",
                       top: "50%",
                       left: "50%",
                       transform: "translate(-50%, -50%)",
-                      width: "200px",
-                      height: "200px",
-                      border: "2px solid red",
+                      width: "60%",
+                      height: "60%",
+                      border: "4px solid rgba(255, 0, 0, 0.5)",
                       boxSizing: "border-box",
-                      borderRadius: "5px",
+                      borderRadius: "10px",
+                      boxShadow: "0 0 20px rgba(255, 0, 0, 0.7)",
+                      zIndex: 1,
                     }}
                   ></div>
+              
+                  {!cameraReady && (
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor: "rgba(0,0,0,0.7)",
+                        zIndex: 2,
+                      }}
+                    >
+                      <CircularProgress />
+                      <Typography variant="h6" color="white" sx={{ ml: 2 }}>
+                        Inicializando cámara...
+                      </Typography>
+                    </Box>
+                  )}
                 </Box>
               )}
 

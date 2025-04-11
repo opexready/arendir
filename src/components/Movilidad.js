@@ -38,6 +38,7 @@ const Movilidad = () => {
     empresa: "",
     moneda: "PEN",
     total: "",
+    proveedor: "MOVILIDAD",
     cuenta_contable: 63112,
     rubro: "Movilidad",
     fecha_emision: null,

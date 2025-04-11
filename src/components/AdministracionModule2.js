@@ -177,6 +177,7 @@ const AdministracionModule2 = () => {
   const userId = user ? user.id : null;
   const username = user ? user.email : null;
   const userCompany = user ? user.company_name : null;
+  const userIdEmpresa = user ? user.id_empresa : null;
   console.log("user", user);
 
   const handleExportPDF = async (rendicionId) => {
@@ -205,6 +206,7 @@ const AdministracionModule2 = () => {
     const params = {
       company_name: empresa,
       estado: filtros.estado,
+      id_empresa: userIdEmpresa,
       username: filtros.colaborador,
       fecha_desde: filtros.fechaDesde || undefined, // Agregando filtro de fecha desde
       fecha_hasta: filtros.fechaHasta || undefined, // Agregando filtro de fecha hasta
