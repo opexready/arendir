@@ -565,22 +565,13 @@ const DatosRecibo = () => {
         if (decodeResponse.data.detail === "No QR code found in the image") {
           setQrError(
             <span>
-              No se pudo leer el código QR. Esto puede deberse a: mala
-              iluminación, reflejos, un código QR dañado o fuera de foco, o
-              problemas de permisos para acceder a la cámara. Por favor,
-              asegúrese de que el código QR esté claramente visible, en un lugar
-              bien iluminado, y que su dispositivo tenga permisos para usar la
-              cámara.{" "}
-              <Typography
-                component="span"
-                sx={{
-                  fontWeight: "bold",
-                  fontStyle: "italic",
-                  display: "inline", // Esto asegura que se muestre en línea con el texto normal
-                }}
-              >
-                ES PREFERIBLE UTILIZAR LA OPCIÓN ESCANEAR QR
-              </Typography>
+              No se pudo leer el código QR. Recomendaciones:
+              <ul>
+                <li>Asegúrate de que el código esté bien iluminado</li>
+                <li>Acerca más la cámara al código</li>
+                <li>Evita reflejos y sombras</li>
+                <li>Si el código es de color, prueba con fondo blanco</li>
+              </ul>
             </span>
           );
         } else {
@@ -1015,14 +1006,25 @@ const DatosRecibo = () => {
               )}
 
               {showQrReader && (
-                <Box sx={{ marginTop: 2, position: "relative" }}>
+                <Box
+                  sx={{
+                    marginTop: 2,
+                    position: "relative",
+                    width: "100%",
+                    maxWidth: "500px",
+                    margin: "0 auto",
+                  }}
+                >
                   <QrReader
                     constraints={{
                       facingMode: cameraFacingMode,
-                      width: { ideal: 1920 },
-                      height: { ideal: 1080 },
+                      width: { min: 1280, ideal: 1920, max: 2560 },
+                      height: { min: 720, ideal: 1080, max: 1440 },
+                      aspectRatio: 16 / 9,
+                      focusMode: "continuous",
+                      resizeMode: "crop-and-scale",
                     }}
-                    scanDelay={500}
+                    scanDelay={300} // Reducir el delay para mayor fluidez
                     onResult={(result, error) => {
                       if (result) {
                         limpiarFormulario();
@@ -1039,25 +1041,40 @@ const DatosRecibo = () => {
                       }
                       if (error) {
                         console.error("Error al leer el QR:", error);
-                        // No establecer qrError aquí, solo registrar en consola
                       }
                     }}
-                    style={{ width: "100%" }}
-                  />
-
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      width: "200px",
-                      height: "200px",
-                      border: "2px solid red",
-                      boxSizing: "border-box",
-                      borderRadius: "5px",
+                    videoContainerStyle={{
+                      paddingTop: "100%", // Mantener relación de aspecto cuadrada
+                      position: "relative",
+                      width: "100%",
                     }}
-                  ></div>
+                    videoStyle={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      filter: "contrast(1.2) brightness(1.1) saturate(1.1)",
+                    }}
+                    ViewFinder={({ width, height }) => (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "50%",
+                          left: "50%",
+                          transform: "translate(-50%, -50%)",
+                          width: "70%",
+                          height: "70%",
+                          border: "4px solid rgba(255, 0, 0, 0.7)",
+                          boxSizing: "border-box",
+                          borderRadius: "10px",
+                          pointerEvents: "none",
+                          boxShadow: "0 0 0 100vmax rgba(0, 0, 0, 0.5)",
+                        }}
+                      ></div>
+                    )}
+                  />
                 </Box>
               )}
 
