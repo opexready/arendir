@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { QrReader } from "react-qr-reader";
+import FlipCameraIosIcon from "@mui/icons-material/FlipCameraIos";
+import CloseIcon from "@mui/icons-material/Close";
+import IconButton from '@mui/material/IconButton';
 import {
   Container,
   Card,
@@ -954,7 +957,6 @@ const DatosRecibo = () => {
               >
                 Escanear QR
               </Button>
-
               <Box
                 sx={{
                   display: "flex",
@@ -994,7 +996,6 @@ const DatosRecibo = () => {
                   Cámara Frontal
                 </Button>
               </Box>
-
               {isScanning && (
                 <Typography
                   variant="body1"
@@ -1004,7 +1005,7 @@ const DatosRecibo = () => {
                   Escaneando... Por favor, apunta al código QR.
                 </Typography>
               )}
-
+             
               {showQrReader && (
                 <Box
                   sx={{
@@ -1013,18 +1014,24 @@ const DatosRecibo = () => {
                     width: "100%",
                     maxWidth: "500px",
                     margin: "0 auto",
+                    borderRadius: "12px",
+                    overflow: "hidden",
+                    boxShadow: 3,
                   }}
                 >
                   <QrReader
                     constraints={{
                       facingMode: cameraFacingMode,
-                      width: { min: 1280, ideal: 1920, max: 2560 },
-                      height: { min: 720, ideal: 1080, max: 1440 },
+                      width: { ideal: 1280 },
+                      height: { ideal: 720 },
                       aspectRatio: 16 / 9,
-                      focusMode: "continuous",
+                      focusMode: "continuous", // Enfoque continuo
                       resizeMode: "crop-and-scale",
+                      advanced: [
+                        { torch: true }, // Permitir uso de flash
+                      ],
                     }}
-                    scanDelay={300} // Reducir el delay para mayor fluidez
+                    scanDelay={100} // Escaneo más rápido
                     onResult={(result, error) => {
                       if (result) {
                         limpiarFormulario();
@@ -1038,14 +1045,22 @@ const DatosRecibo = () => {
                         setQrResult(result.text);
                         setShowQrReader(false);
                         setIsScanning(false);
+
+                        // Feedback de éxito
+                        setQrError(
+                          <Alert severity="success" sx={{ mt: 2 }}>
+                            QR detectado correctamente!
+                          </Alert>
+                        );
                       }
                       if (error) {
                         console.error("Error al leer el QR:", error);
+                        // No mostramos el error directamente para no molestar al usuario
                       }
                     }}
                     videoContainerStyle={{
-                      paddingTop: "100%", // Mantener relación de aspecto cuadrada
                       position: "relative",
+                      paddingTop: "100%",
                       width: "100%",
                     }}
                     videoStyle={{
@@ -1055,29 +1070,102 @@ const DatosRecibo = () => {
                       width: "100%",
                       height: "100%",
                       objectFit: "cover",
-                      filter: "contrast(1.2) brightness(1.1) saturate(1.1)",
+                      filter: "contrast(1.3) brightness(1.2) saturate(1.3)",
                     }}
                     ViewFinder={({ width, height }) => (
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: "50%",
-                          left: "50%",
-                          transform: "translate(-50%, -50%)",
-                          width: "70%",
-                          height: "70%",
-                          border: "4px solid rgba(255, 0, 0, 0.7)",
-                          boxSizing: "border-box",
-                          borderRadius: "10px",
-                          pointerEvents: "none",
-                          boxShadow: "0 0 0 100vmax rgba(0, 0, 0, 0.5)",
-                        }}
-                      ></div>
+                      <>
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                            width: "70%",
+                            height: "70%",
+                            border: "4px solid rgba(46, 49, 146, 0.8)",
+                            boxSizing: "border-box",
+                            borderRadius: "12px",
+                            pointerEvents: "none",
+                            boxShadow: "0 0 0 100vmax rgba(0, 0, 0, 0.7)",
+                            animation: "pulse 2s infinite",
+                          }}
+                        />
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                            width: "72%",
+                            height: "72%",
+                            border: "2px dashed rgba(241, 90, 41, 0.6)",
+                            boxSizing: "border-box",
+                            borderRadius: "12px",
+                            pointerEvents: "none",
+                            animation: "rotate 4s linear infinite",
+                          }}
+                        />
+                      </>
                     )}
                   />
+                  <style>
+                    {`
+        @keyframes pulse {
+          0% { border-color: rgba(46, 49, 146, 0.8); }
+          50% { border-color: rgba(241, 90, 41, 0.8); }
+          100% { border-color: rgba(46, 49, 146, 0.8); }
+        }
+        @keyframes rotate {
+          0% { transform: translate(-50%, -50%) rotate(0deg); }
+          100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+      `}
+                  </style>
+
+                  {/* Controles de cámara */}
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      bottom: 16,
+                      left: 0,
+                      right: 0,
+                      display: "flex",
+                      justifyContent: "center",
+                      gap: 2,
+                      zIndex: 10,
+                    }}
+                  >
+                    <IconButton
+                      onClick={() => {
+                        setCameraFacingMode((prev) =>
+                          prev === "environment" ? "user" : "environment"
+                        );
+                      }}
+                      sx={{
+                        backgroundColor: "rgba(0,0,0,0.5)",
+                        color: "white",
+                        "&:hover": {
+                          backgroundColor: "rgba(46, 49, 146, 0.8)",
+                        },
+                      }}
+                    >
+                      <FlipCameraIosIcon />
+                    </IconButton>
+                    <IconButton
+                      onClick={() => setShowQrReader(false)}
+                      sx={{
+                        backgroundColor: "rgba(0,0,0,0.5)",
+                        color: "white",
+                        "&:hover": {
+                          backgroundColor: "rgba(241, 90, 41, 0.8)",
+                        },
+                      }}
+                    >
+                      <CloseIcon />
+                    </IconButton>
+                  </Box>
                 </Box>
               )}
-
               {qrError && (
                 <Alert severity="error" sx={{ marginTop: 2 }}>
                   {qrError}
