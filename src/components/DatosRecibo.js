@@ -145,6 +145,9 @@ const DatosRecibo = () => {
   const [availableCameras, setAvailableCameras] = useState([]);
   const [selectedCamera, setSelectedCamera] = useState(null);
   const [cameraFacingMode, setCameraFacingMode] = useState("environment");
+  // Busca donde están los otros estados y añade:
+  const [mainCameraId, setMainCameraId] = useState(null);
+  const [cameraInitialized, setCameraInitialized] = useState(false);
 
   const limpiarFormulario = () => {
     setFormData({
@@ -170,6 +173,8 @@ const DatosRecibo = () => {
     setDetalle("");
     setQrFile(null);
     setQrResult(null);
+    setShowQrReader(false); // Asegura que el visor de QR se cierre
+    setIsScanning(false);
   };
 
   useEffect(() => {
@@ -223,37 +228,61 @@ const DatosRecibo = () => {
     setTimeout(() => setShowQrReader(true), 100);
   };
 
+  // Reemplaza el useEffect existente que tiene navigator.mediaDevices.enumerateDevices()
   useEffect(() => {
-    navigator.mediaDevices.getUserMedia({ video: true }).then(() => {
-      navigator.mediaDevices
-        .enumerateDevices()
-        .then((devices) => {
-          const videoDevices = devices.filter(
-            (device) => device.kind === "videoinput"
-          );
-          setAvailableCameras(videoDevices);
+    const findMainCamera = async () => {
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(
+          (device) => device.kind === "videoinput"
+        );
 
-          // Intentar detectar lente principal (por nombre)
-          const mainCamera = videoDevices.find((d) =>
-            d.label.toLowerCase().includes("wide")
-          );
+        // Estrategia para identificar cámara principal
+        let mainCamera = videoDevices.find(
+          (device) =>
+            device.label.toLowerCase().includes("back") ||
+            device.label.toLowerCase().includes("rear") ||
+            device.label.toLowerCase().includes("principal") ||
+            device.label.toLowerCase().includes("wide") ||
+            device.label.toLowerCase().includes("0") // Muchos dispositivos marcan la principal como "0"
+        );
 
-          if (mainCamera) {
-            setSelectedCamera(mainCamera.deviceId);
-          } else {
-            // Si no hay etiqueta "wide", usar la segunda cámara como posible main
-            setSelectedCamera(
-              videoDevices[1]?.deviceId || videoDevices[0].deviceId
+        // Fallback: si no encontramos por etiqueta, usamos facingMode
+        if (!mainCamera && videoDevices.length > 0) {
+          // Intentamos obtener la cámara trasera por facingMode
+          try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+              video: { facingMode: "environment" },
+            });
+            const tracks = stream.getVideoTracks();
+            if (tracks.length > 0) {
+              mainCamera = videoDevices.find(
+                (device) => device.deviceId === tracks[0].getSettings().deviceId
+              );
+            }
+            tracks.forEach((track) => track.stop());
+          } catch (error) {
+            console.warn(
+              "No se pudo detectar cámara trasera por facingMode:",
+              error
             );
+            mainCamera = videoDevices[0]; // Último recurso: primera cámara
           }
-        })
-        .catch((error) => {
-          console.error("Error al enumerar dispositivos:", error);
-          setQrError(
-            "No se pudieron enumerar las cámaras. Verifica los permisos."
-          );
-        });
-    });
+        }
+
+        if (mainCamera) {
+          setMainCameraId(mainCamera.deviceId);
+          setCameraInitialized(true);
+        } else {
+          setQrError("No se pudo encontrar la cámara principal");
+        }
+      } catch (error) {
+        console.error("Error detectando cámara principal:", error);
+        setQrError("Error al acceder a la cámara. Verifica los permisos.");
+      }
+    };
+
+    findMainCamera();
   }, []);
 
   const normalizeDate = (dateString) => {
@@ -1017,8 +1046,8 @@ const DatosRecibo = () => {
                   Escaneando... Por favor, apunta al código QR.
                 </Typography>
               )}
-
-              {showQrReader && (
+              
+              {showQrReader && cameraInitialized && mainCameraId ? (
                 <Box
                   sx={{
                     marginTop: 2,
@@ -1026,22 +1055,17 @@ const DatosRecibo = () => {
                     width: "100%",
                     maxWidth: "500px",
                     margin: "0 auto",
-                    borderRadius: "12px",
-                    overflow: "hidden",
-                    boxShadow: 3,
                   }}
                 >
                   <QrReader
                     constraints={{
-                      deviceId: selectedCamera
-                        ? { exact: selectedCamera }
-                        : undefined,
-                      width: { ideal: 1280 },
-                      height: { ideal: 720 },
+                      deviceId: { exact: mainCameraId },
+                      width: { ideal: 1920 },
+                      height: { ideal: 1080 },
+                      aspectRatio: 16 / 9,
                       focusMode: "continuous",
-                      resizeMode: "crop-and-scale",
                     }}
-                    scanDelay={100} // Escaneo más rápido
+                    scanDelay={100}
                     onResult={(result, error) => {
                       if (result) {
                         limpiarFormulario();
@@ -1055,22 +1079,14 @@ const DatosRecibo = () => {
                         setQrResult(result.text);
                         setShowQrReader(false);
                         setIsScanning(false);
-
-                        // Feedback de éxito
-                        setQrError(
-                          <Alert severity="success" sx={{ mt: 2 }}>
-                            QR detectado correctamente!
-                          </Alert>
-                        );
                       }
                       if (error) {
                         console.error("Error al leer el QR:", error);
-                        // No mostramos el error directamente para no molestar al usuario
                       }
                     }}
                     videoContainerStyle={{
-                      position: "relative",
                       paddingTop: "100%",
+                      position: "relative",
                       width: "100%",
                     }}
                     videoStyle={{
@@ -1080,102 +1096,30 @@ const DatosRecibo = () => {
                       width: "100%",
                       height: "100%",
                       objectFit: "cover",
-                      filter: "contrast(1.3) brightness(1.2) saturate(1.3)",
                     }}
-                    ViewFinder={({ width, height }) => (
-                      <>
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: "50%",
-                            left: "50%",
-                            transform: "translate(-50%, -50%)",
-                            width: "70%",
-                            height: "70%",
-                            border: "4px solid rgba(46, 49, 146, 0.8)",
-                            boxSizing: "border-box",
-                            borderRadius: "12px",
-                            pointerEvents: "none",
-                            boxShadow: "0 0 0 100vmax rgba(0, 0, 0, 0.7)",
-                            animation: "pulse 2s infinite",
-                          }}
-                        />
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: "50%",
-                            left: "50%",
-                            transform: "translate(-50%, -50%)",
-                            width: "72%",
-                            height: "72%",
-                            border: "2px dashed rgba(241, 90, 41, 0.6)",
-                            boxSizing: "border-box",
-                            borderRadius: "12px",
-                            pointerEvents: "none",
-                            animation: "rotate 4s linear infinite",
-                          }}
-                        />
-                      </>
-                    )}
                   />
-                  <style>
-                    {`
-        @keyframes pulse {
-          0% { border-color: rgba(46, 49, 146, 0.8); }
-          50% { border-color: rgba(241, 90, 41, 0.8); }
-          100% { border-color: rgba(46, 49, 146, 0.8); }
-        }
-        @keyframes rotate {
-          0% { transform: translate(-50%, -50%) rotate(0deg); }
-          100% { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-      `}
-                  </style>
-
-                  {/* Controles de cámara */}
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      bottom: 16,
-                      left: 0,
-                      right: 0,
-                      display: "flex",
-                      justifyContent: "center",
-                      gap: 2,
-                      zIndex: 10,
-                    }}
+                  <Typography
+                    variant="body2"
+                    sx={{ mt: 1, textAlign: "center", color: "#2E3192" }}
                   >
-                    <IconButton
-                      onClick={() => {
-                        setCameraFacingMode((prev) =>
-                          prev === "environment" ? "user" : "environment"
-                        );
-                      }}
-                      sx={{
-                        backgroundColor: "rgba(0,0,0,0.5)",
-                        color: "white",
-                        "&:hover": {
-                          backgroundColor: "rgba(46, 49, 146, 0.8)",
-                        },
-                      }}
-                    >
-                      <FlipCameraIosIcon />
-                    </IconButton>
-                    <IconButton
-                      onClick={() => setShowQrReader(false)}
-                      sx={{
-                        backgroundColor: "rgba(0,0,0,0.5)",
-                        color: "white",
-                        "&:hover": {
-                          backgroundColor: "rgba(241, 90, 41, 0.8)",
-                        },
-                      }}
-                    >
-                      <CloseIcon />
-                    </IconButton>
-                  </Box>
+                    Usando cámara principal para mejor calidad de escaneo
+                  </Typography>
                 </Box>
-              )}
+              ) : showQrReader && !cameraInitialized ? (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "300px",
+                  }}
+                >
+                  <CircularProgress />
+                  <Typography variant="body1" sx={{ ml: 2 }}>
+                    Inicializando cámara principal...
+                  </Typography>
+                </Box>
+              ) : null}
               {qrError && (
                 <Alert severity="error" sx={{ marginTop: 2 }}>
                   {qrError}
