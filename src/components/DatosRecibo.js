@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { QrReader } from "react-qr-reader";
 import FlipCameraIosIcon from "@mui/icons-material/FlipCameraIos";
 import CloseIcon from "@mui/icons-material/Close";
-import IconButton from '@mui/material/IconButton';
+import IconButton from "@mui/material/IconButton";
 import {
   Container,
   Card,
@@ -171,6 +171,20 @@ const DatosRecibo = () => {
     setQrFile(null);
     setQrResult(null);
   };
+
+  navigator.mediaDevices.enumerateDevices().then((devices) => {
+    const videoDevices = devices.filter(
+      (device) => device.kind === "videoinput"
+    );
+    setAvailableCameras(videoDevices);
+    if (videoDevices.length > 0) {
+      // 👉 Usa la cámara que incluya "wide" o "principal"
+      const wideCam = videoDevices.find((d) =>
+        d.label.toLowerCase().includes("wide")
+      );
+      setSelectedCamera(wideCam?.deviceId || videoDevices[0].deviceId);
+    }
+  });
 
   useEffect(() => {
     if (qrResult) {
@@ -1005,7 +1019,7 @@ const DatosRecibo = () => {
                   Escaneando... Por favor, apunta al código QR.
                 </Typography>
               )}
-             
+
               {showQrReader && (
                 <Box
                   sx={{
@@ -1021,15 +1035,11 @@ const DatosRecibo = () => {
                 >
                   <QrReader
                     constraints={{
-                      facingMode: cameraFacingMode,
+                      deviceId: selectedCamera
+                        ? { exact: selectedCamera }
+                        : undefined,
                       width: { ideal: 1280 },
                       height: { ideal: 720 },
-                      aspectRatio: 16 / 9,
-                      focusMode: "continuous", // Enfoque continuo
-                      resizeMode: "crop-and-scale",
-                      advanced: [
-                        { torch: true }, // Permitir uso de flash
-                      ],
                     }}
                     scanDelay={100} // Escaneo más rápido
                     onResult={(result, error) => {
