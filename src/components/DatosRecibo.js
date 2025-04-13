@@ -148,7 +148,6 @@ const DatosRecibo = () => {
   // Busca donde están los otros estados y añade:
   const [mainCameraId, setMainCameraId] = useState(null);
   const [cameraInitialized, setCameraInitialized] = useState(false);
-  const [scanAttempts, setScanAttempts] = useState(0);
 
   const limpiarFormulario = () => {
     setFormData({
@@ -178,6 +177,7 @@ const DatosRecibo = () => {
     setIsScanning(false);
   };
 
+  
   useEffect(() => {
     if (qrResult) {
       handleProcessQrResult();
@@ -991,11 +991,13 @@ const DatosRecibo = () => {
 
                   const timeout = setTimeout(() => {
                     if (!qrResult) {
-                      setQrError("Acerca el código QR al centro del marco");
+                      setQrError(
+                        "No se pudo leer el QR después de 30 segundos. Por favor, intenta nuevamente."
+                      );
                       setShowQrReader(false);
                       setIsScanning(false);
                     }
-                  }, 20000); // Reduce a 20 segundos
+                  }, 30000);
 
                   setScanTimeout(timeout);
                 }}
@@ -1041,18 +1043,6 @@ const DatosRecibo = () => {
                   Cámara Frontal
                 </Button>
               </Box>
-
-              <Button
-                variant="outlined"
-                sx={{ mt: 2 }}
-                onClick={() => {
-                  setScanAttempts(3); // Fuerza modo alto contraste
-                  setQrError("Modo alto contraste activado para QR difíciles");
-                }}
-              >
-                QR Difíciles
-              </Button>
-
               {isScanning && (
                 <Typography
                   variant="body1"
@@ -1063,7 +1053,7 @@ const DatosRecibo = () => {
                 </Typography>
               )}
 
-              {showQrReader && (
+              {showQrReader && cameraInitialized && mainCameraId ? (
                 <Box
                   sx={{
                     marginTop: 2,
@@ -1075,41 +1065,35 @@ const DatosRecibo = () => {
                 >
                   <QrReader
                     constraints={{
-                      facingMode: "environment", // Fuerza lente principal
-                      width: { ideal: 1920 }, // Máxima resolución
+                      deviceId: { exact: mainCameraId },
+                      width: { ideal: 1920 },
                       height: { ideal: 1080 },
-                      aspectRatio: 1, // Relación cuadrada
-                      focusMode: "continuous", // Enfoque continuo
+                      aspectRatio: 16 / 9,
+                      focusMode: "continuous",
                     }}
-                    scanDelay={200} // Balance entre velocidad y precisión
+                    scanDelay={100}
                     onResult={(result, error) => {
-                      if (result?.text) {
-                        const qrText = result.text.trim();
-                        if (qrText.length > 0) {
-                          limpiarFormulario();
-                          if (scanTimeout) clearTimeout(scanTimeout);
-                          setQrResult(qrText);
-                          setShowQrReader(false);
-                          setIsScanning(false);
-                          setScanAttempts(0);
+                      if (result) {
+                        limpiarFormulario();
+                        console.log("Resultado del QR:", result.text);
+                        if (scanTimeout) {
+                          clearTimeout(scanTimeout);
+                          setScanTimeout(null);
                         }
+                        setError(null);
+                        setQrError(null);
+                        setQrResult(result.text);
+                        setShowQrReader(false);
+                        setIsScanning(false);
                       }
-
                       if (error) {
-                        setScanAttempts((prev) => prev + 1);
-                        if (scanAttempts > 2) {
-                          setQrError(
-                            "Ajustando configuración para leer QR complejos..."
-                          );
-                          // Reintento con diferentes parámetros
-                          setShowQrReader(false);
-                          setTimeout(() => setShowQrReader(true), 300);
-                        }
+                        console.error("Error al leer el QR:", error);
                       }
                     }}
                     videoContainerStyle={{
                       paddingTop: "100%",
                       position: "relative",
+                      width: "100%",
                     }}
                     videoStyle={{
                       position: "absolute",
@@ -1118,55 +1102,30 @@ const DatosRecibo = () => {
                       width: "100%",
                       height: "100%",
                       objectFit: "cover",
-                      // Filtros mejorados para QR difíciles
-                      filter: `
-          contrast(${1.8 + scanAttempts * 0.2}) 
-          brightness(${1.2 - scanAttempts * 0.05})
-          saturate(1.5)
-          grayscale(${scanAttempts > 3 ? 0.7 : 0})
-        `,
                     }}
-                    ViewFinder={({ width, height }) => (
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: "50%",
-                          left: "50%",
-                          transform: "translate(-50%, -50%)",
-                          width: "65%",
-                          height: "65%",
-                          border: "3px solid #2E3192",
-                          borderRadius: "8px",
-                          boxShadow: "0 0 0 100vmax rgba(0,0,0,0.8)",
-                          pointerEvents: "none",
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          "&::before": {
-                            content: '""',
-                            position: "absolute",
-                            width: "90%",
-                            height: "90%",
-                            border: "2px dashed rgba(241, 90, 41, 0.6)",
-                            borderRadius: "4px",
-                          },
-                        }}
-                      />
-                    )}
                   />
-
-                  {scanAttempts > 0 && (
-                    <Typography
-                      variant="caption"
-                      color="textSecondary"
-                      sx={{ mt: 1 }}
-                    >
-                      Intento {scanAttempts}: Ajustando parámetros para QR
-                      complejos...
-                    </Typography>
-                  )}
+                  <Typography
+                    variant="body2"
+                    sx={{ mt: 1, textAlign: "center", color: "#2E3192" }}
+                  >
+                    Usando cámara de mayor resolución disponible
+                  </Typography>
                 </Box>
-              )}
+              ) : showQrReader && !cameraInitialized ? (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "300px",
+                  }}
+                >
+                  <CircularProgress />
+                  <Typography variant="body1" sx={{ ml: 2 }}>
+                    Configurando cámara óptima...
+                  </Typography>
+                </Box>
+              ) : null}
 
               {qrError && (
                 <Alert severity="error" sx={{ marginTop: 2 }}>
