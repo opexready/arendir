@@ -4,6 +4,7 @@ import { QrReader } from "react-qr-reader";
 import FlipCameraIosIcon from "@mui/icons-material/FlipCameraIos";
 import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
+import { LinearProgress } from "@mui/material";
 import {
   Container,
   Card,
@@ -148,6 +149,7 @@ const DatosRecibo = () => {
   // Busca donde están los otros estados y añade:
   const [mainCameraId, setMainCameraId] = useState(null);
   const [cameraInitialized, setCameraInitialized] = useState(false);
+  const [cameraFocused, setCameraFocused] = useState(false);
 
   const limpiarFormulario = () => {
     setFormData({
@@ -177,7 +179,6 @@ const DatosRecibo = () => {
     setIsScanning(false);
   };
 
-  
   useEffect(() => {
     if (qrResult) {
       handleProcessQrResult();
@@ -1043,14 +1044,17 @@ const DatosRecibo = () => {
                   Cámara Frontal
                 </Button>
               </Box>
+
               {isScanning && (
-                <Typography
-                  variant="body1"
-                  color="primary"
-                  sx={{ marginTop: 2 }}
-                >
-                  Escaneando... Por favor, apunta al código QR.
-                </Typography>
+                <Box sx={{ textAlign: "center", mt: 2 }}>
+                  <Typography variant="body2" color="textSecondary">
+                    {cameraFocused ? "Enfocado" : "Enfocando..."}
+                  </Typography>
+                  <LinearProgress
+                    color={cameraFocused ? "success" : "primary"}
+                    sx={{ mt: 1 }}
+                  />
+                </Box>
               )}
 
               {showQrReader && cameraInitialized && mainCameraId ? (
@@ -1065,29 +1069,31 @@ const DatosRecibo = () => {
                 >
                   <QrReader
                     constraints={{
-                      deviceId: { exact: mainCameraId },
-                      width: { ideal: 1920 },
+                      facingMode: cameraFacingMode,
+                      width: { ideal: 1920 }, // Priorizar resolución alta
                       height: { ideal: 1080 },
-                      aspectRatio: 16 / 9,
+                      aspectRatio: 1, // Cuadrado para mejor captura de QR
                       focusMode: "continuous",
+                      resizeMode: "crop-and-scale",
                     }}
-                    scanDelay={100}
+                    scanDelay={100} // Reducir delay para mayor velocidad
                     onResult={(result, error) => {
                       if (result) {
-                        limpiarFormulario();
-                        console.log("Resultado del QR:", result.text);
-                        if (scanTimeout) {
-                          clearTimeout(scanTimeout);
-                          setScanTimeout(null);
+                        const text = result.getText();
+                        if (text && text.trim().length > 0) {
+                          if (scanTimeout) {
+                            clearTimeout(scanTimeout);
+                            setScanTimeout(null);
+                          }
+                          setError(null);
+                          setQrError(null);
+                          setQrResult(text);
+                          setShowQrReader(false);
+                          setIsScanning(false);
                         }
-                        setError(null);
-                        setQrError(null);
-                        setQrResult(result.text);
-                        setShowQrReader(false);
-                        setIsScanning(false);
                       }
                       if (error) {
-                        console.error("Error al leer el QR:", error);
+                        console.info("Error al leer QR:", error);
                       }
                     }}
                     videoContainerStyle={{
@@ -1102,8 +1108,40 @@ const DatosRecibo = () => {
                       width: "100%",
                       height: "100%",
                       objectFit: "cover",
+                      filter:
+                        "contrast(1.5) brightness(1.3) saturate(1.3) grayscale(0.3)",
                     }}
+                    ViewFinder={({ width, height }) => (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "50%",
+                          left: "50%",
+                          transform: "translate(-50%, -50%)",
+                          width: "60%",
+                          height: "60%",
+                          border: "4px solid rgba(46, 49, 146, 0.8)",
+                          boxSizing: "border-box",
+                          borderRadius: "10px",
+                          pointerEvents: "none",
+                          boxShadow: "0 0 0 100vmax rgba(0, 0, 0, 0.7)",
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: "90%",
+                            height: "90%",
+                            border: "2px dashed rgba(241, 90, 41, 0.6)",
+                            borderRadius: "5px",
+                          }}
+                        />
+                      </div>
+                    )}
                   />
+
                   <Typography
                     variant="body2"
                     sx={{ mt: 1, textAlign: "center", color: "#2E3192" }}
