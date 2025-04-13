@@ -172,20 +172,6 @@ const DatosRecibo = () => {
     setQrResult(null);
   };
 
-  navigator.mediaDevices.enumerateDevices().then((devices) => {
-    const videoDevices = devices.filter(
-      (device) => device.kind === "videoinput"
-    );
-    setAvailableCameras(videoDevices);
-    if (videoDevices.length > 0) {
-      // 👉 Usa la cámara que incluya "wide" o "principal"
-      const wideCam = videoDevices.find((d) =>
-        d.label.toLowerCase().includes("wide")
-      );
-      setSelectedCamera(wideCam?.deviceId || videoDevices[0].deviceId);
-    }
-  });
-
   useEffect(() => {
     if (qrResult) {
       handleProcessQrResult();
@@ -238,24 +224,36 @@ const DatosRecibo = () => {
   };
 
   useEffect(() => {
-    navigator.mediaDevices
-      .enumerateDevices()
-      .then((devices) => {
-        const videoDevices = devices.filter(
-          (device) => device.kind === "videoinput"
-        );
-        setAvailableCameras(videoDevices);
-        if (videoDevices.length > 0) {
-          setSelectedCamera(videoDevices[0].deviceId);
-        }
-      })
-      .catch((error) => {
-        console.error("Error al enumerar dispositivos:", error);
+    navigator.mediaDevices.getUserMedia({ video: true }).then(() => {
+      navigator.mediaDevices
+        .enumerateDevices()
+        .then((devices) => {
+          const videoDevices = devices.filter(
+            (device) => device.kind === "videoinput"
+          );
+          setAvailableCameras(videoDevices);
 
-        setQrError(
-          "No se pudieron enumerar las cámaras. Verifica los permisos."
-        );
-      });
+          // Intentar detectar lente principal (por nombre)
+          const mainCamera = videoDevices.find((d) =>
+            d.label.toLowerCase().includes("wide")
+          );
+
+          if (mainCamera) {
+            setSelectedCamera(mainCamera.deviceId);
+          } else {
+            // Si no hay etiqueta "wide", usar la segunda cámara como posible main
+            setSelectedCamera(
+              videoDevices[1]?.deviceId || videoDevices[0].deviceId
+            );
+          }
+        })
+        .catch((error) => {
+          console.error("Error al enumerar dispositivos:", error);
+          setQrError(
+            "No se pudieron enumerar las cámaras. Verifica los permisos."
+          );
+        });
+    });
   }, []);
 
   const normalizeDate = (dateString) => {
@@ -1040,6 +1038,8 @@ const DatosRecibo = () => {
                         : undefined,
                       width: { ideal: 1280 },
                       height: { ideal: 720 },
+                      focusMode: "continuous",
+                      resizeMode: "crop-and-scale",
                     }}
                     scanDelay={100} // Escaneo más rápido
                     onResult={(result, error) => {
