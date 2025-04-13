@@ -173,10 +173,11 @@ const DatosRecibo = () => {
     setDetalle("");
     setQrFile(null);
     setQrResult(null);
-    setShowQrReader(false); // Asegura que el visor de QR se cierre
+    setShowQrReader(false);
     setIsScanning(false);
   };
 
+  
   useEffect(() => {
     if (qrResult) {
       handleProcessQrResult();
@@ -228,61 +229,66 @@ const DatosRecibo = () => {
     setTimeout(() => setShowQrReader(true), 100);
   };
 
-  // Reemplaza el useEffect existente que tiene navigator.mediaDevices.enumerateDevices()
   useEffect(() => {
-    const findMainCamera = async () => {
+    const findHighestResolutionCamera = async () => {
       try {
         const devices = await navigator.mediaDevices.enumerateDevices();
         const videoDevices = devices.filter(
           (device) => device.kind === "videoinput"
         );
 
-        // Estrategia para identificar cámara principal
-        let mainCamera = videoDevices.find(
-          (device) =>
-            device.label.toLowerCase().includes("back") ||
-            device.label.toLowerCase().includes("rear") ||
-            device.label.toLowerCase().includes("principal") ||
-            device.label.toLowerCase().includes("wide") ||
-            device.label.toLowerCase().includes("0") // Muchos dispositivos marcan la principal como "0"
-        );
+        if (videoDevices.length === 0) {
+          setQrError("No se encontraron cámaras disponibles");
+          return;
+        }
 
-        // Fallback: si no encontramos por etiqueta, usamos facingMode
-        if (!mainCamera && videoDevices.length > 0) {
-          // Intentamos obtener la cámara trasera por facingMode
+        // Probaremos cada cámara para encontrar la de mayor resolución
+        let bestCamera = null;
+        let maxResolution = 0;
+
+        for (const device of videoDevices) {
           try {
             const stream = await navigator.mediaDevices.getUserMedia({
-              video: { facingMode: "environment" },
+              video: {
+                deviceId: { exact: device.deviceId },
+                width: { ideal: 4096 }, // Probamos con resolución muy alta
+                height: { ideal: 2160 },
+              },
             });
-            const tracks = stream.getVideoTracks();
-            if (tracks.length > 0) {
-              mainCamera = videoDevices.find(
-                (device) => device.deviceId === tracks[0].getSettings().deviceId
-              );
+
+            const track = stream.getVideoTracks()[0];
+            const settings = track.getSettings();
+            const resolution = settings.width * settings.height;
+
+            if (resolution > maxResolution) {
+              maxResolution = resolution;
+              bestCamera = device;
             }
-            tracks.forEach((track) => track.stop());
+
+            track.stop();
           } catch (error) {
             console.warn(
-              "No se pudo detectar cámara trasera por facingMode:",
+              `No se pudo acceder a la cámara ${device.label}:`,
               error
             );
-            mainCamera = videoDevices[0]; // Último recurso: primera cámara
           }
         }
 
-        if (mainCamera) {
-          setMainCameraId(mainCamera.deviceId);
+        if (bestCamera) {
+          setMainCameraId(bestCamera.deviceId);
           setCameraInitialized(true);
         } else {
-          setQrError("No se pudo encontrar la cámara principal");
+          setQrError(
+            "No se pudo acceder a ninguna cámara con buena resolución"
+          );
         }
       } catch (error) {
-        console.error("Error detectando cámara principal:", error);
-        setQrError("Error al acceder a la cámara. Verifica los permisos.");
+        console.error("Error detectando cámaras:", error);
+        setQrError("Error al acceder a las cámaras. Verifica los permisos.");
       }
     };
 
-    findMainCamera();
+    findHighestResolutionCamera();
   }, []);
 
   const normalizeDate = (dateString) => {
@@ -1046,7 +1052,7 @@ const DatosRecibo = () => {
                   Escaneando... Por favor, apunta al código QR.
                 </Typography>
               )}
-              
+
               {showQrReader && cameraInitialized && mainCameraId ? (
                 <Box
                   sx={{
@@ -1102,7 +1108,7 @@ const DatosRecibo = () => {
                     variant="body2"
                     sx={{ mt: 1, textAlign: "center", color: "#2E3192" }}
                   >
-                    Usando cámara principal para mejor calidad de escaneo
+                    Usando cámara de mayor resolución disponible
                   </Typography>
                 </Box>
               ) : showQrReader && !cameraInitialized ? (
@@ -1116,10 +1122,11 @@ const DatosRecibo = () => {
                 >
                   <CircularProgress />
                   <Typography variant="body1" sx={{ ml: 2 }}>
-                    Inicializando cámara principal...
+                    Configurando cámara óptima...
                   </Typography>
                 </Box>
               ) : null}
+
               {qrError && (
                 <Alert severity="error" sx={{ marginTop: 2 }}>
                   {qrError}
