@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { QrReader } from "react-qr-reader";
+import { Html5QrcodeScanner, Html5QrcodeScanType } from "html5-qrcode";
 import FlipCameraIosIcon from "@mui/icons-material/FlipCameraIos";
 import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
@@ -106,6 +106,7 @@ const DatosRecibo = () => {
   const navigate = useNavigate();
   const { selectedCuentaContable, selectedRubro } = location.state || {};
   const [scanTimeout, setScanTimeout] = useState(null);
+  const [html5QrCode, setHtml5QrCode] = useState(null);
   const [formData, setFormData] = useState({
     fecha: "",
     ruc: "",
@@ -142,9 +143,6 @@ const DatosRecibo = () => {
   const [qrResult, setQrResult] = useState(null);
   const [qrError, setQrError] = useState(null);
   const [isScanning, setIsScanning] = useState(false);
-  const [availableCameras, setAvailableCameras] = useState([]);
-  const [selectedCamera, setSelectedCamera] = useState(null);
-  const [cameraFacingMode, setCameraFacingMode] = useState("environment");
   // Busca donde están los otros estados y añade:
   const [mainCameraId, setMainCameraId] = useState(null);
   const [cameraInitialized, setCameraInitialized] = useState(false);
@@ -177,11 +175,15 @@ const DatosRecibo = () => {
     setIsScanning(false);
   };
 
-  
   useEffect(() => {
     if (qrResult) {
       handleProcessQrResult();
     }
+    return () => {
+      if (html5QrScanner.current) {
+        html5QrScanner.current.clear();
+      }
+    };
   }, [qrResult]);
 
   const handleProcessQrResult = async () => {
@@ -223,10 +225,61 @@ const DatosRecibo = () => {
     }
   };
 
-  const handleCameraSwitch = (mode) => {
-    setCameraFacingMode(mode);
-    setShowQrReader(false);
-    setTimeout(() => setShowQrReader(true), 100);
+  const handleCameraSwitch = () => {
+    if (html5QrScanner) {
+      html5QrScanner.clear();
+      setShowQrReader(false);
+      setTimeout(() => {
+        initScanner();
+      }, 100);
+    }
+  };
+
+  const html5QrScanner = useRef(null);
+
+  const initScanner = () => {
+    if (html5QrScanner.current) {
+      html5QrScanner.current.clear();
+    }
+
+    const config = {
+      fps: 10,
+      qrbox: { width: 250, height: 250 },
+      rememberLastUsedCamera: true,
+      supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
+      facingMode: "environment", // Siempre usa la cámara trasera
+    };
+
+    html5QrScanner.current = new Html5QrcodeScanner(
+      "qr-reader-container",
+      config,
+      false
+    );
+
+    html5QrScanner.current.render(
+      (decodedText) => {
+        limpiarFormulario();
+        console.log("Resultado del QR:", decodedText);
+        if (scanTimeout) {
+          clearTimeout(scanTimeout);
+          setScanTimeout(null);
+        }
+        setError(null);
+        setQrError(null);
+        setQrResult(decodedText);
+        setShowQrReader(false);
+        setIsScanning(false);
+
+        if (html5QrScanner.current) {
+          html5QrScanner.current.clear();
+        }
+      },
+      (error) => {
+        console.error("Error al leer el QR:", error);
+      }
+    );
+
+    setShowQrReader(true);
   };
 
   useEffect(() => {
@@ -686,6 +739,34 @@ const DatosRecibo = () => {
     }
   };
 
+  const handleStartScanner = () => {
+    limpiarFormulario();
+    setShowQrReader(true);
+    setIsScanning(true);
+    setError("");
+    setQrResult(null);
+    setQrError(null);
+
+    if (scanTimeout) {
+      clearTimeout(scanTimeout);
+    }
+
+    const timeout = setTimeout(() => {
+      if (!qrResult) {
+        setQrError(
+          "No se pudo leer el QR después de 30 segundos. Por favor, intenta nuevamente."
+        );
+        setShowQrReader(false);
+        setIsScanning(false);
+        if (html5QrScanner.current) {
+          html5QrScanner.current.clear();
+        }
+      }
+    }, 30000);
+
+    setScanTimeout(timeout);
+  };
+
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
 
@@ -737,6 +818,14 @@ const DatosRecibo = () => {
       }));
     }
   }, [formData.afecto, formData.igv, formData.total]);
+
+  useEffect(() => {
+    if (showQrReader) {
+      setTimeout(() => {
+        initScanner();
+      }, 100); // Espera 100ms para asegurar que el DOM ya renderizó el contenedor
+    }
+  }, [showQrReader]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -977,33 +1066,11 @@ const DatosRecibo = () => {
                     color: "white",
                   },
                 }}
-                onClick={() => {
-                  limpiarFormulario();
-                  setShowQrReader(true);
-                  setIsScanning(true);
-                  setError("");
-                  setQrResult(null);
-                  setQrError(null); // Limpiar errores anteriores
-
-                  if (scanTimeout) {
-                    clearTimeout(scanTimeout);
-                  }
-
-                  const timeout = setTimeout(() => {
-                    if (!qrResult) {
-                      setQrError(
-                        "No se pudo leer el QR después de 30 segundos. Por favor, intenta nuevamente."
-                      );
-                      setShowQrReader(false);
-                      setIsScanning(false);
-                    }
-                  }, 30000);
-
-                  setScanTimeout(timeout);
-                }}
+                onClick={handleStartScanner}
               >
                 Escanear QR
               </Button>
+
               <Box
                 sx={{
                   display: "flex",
@@ -1019,30 +1086,12 @@ const DatosRecibo = () => {
                     backgroundColor: "#2E3192",
                     "&:hover": { backgroundColor: "#1F237A" },
                   }}
-                  onClick={() => {
-                    setCameraFacingMode("environment");
-                    setShowQrReader(false);
-                    setTimeout(() => setShowQrReader(true), 100);
-                  }}
+                  onClick={handleCameraSwitch}
                 >
-                  Cámara Trasera
-                </Button>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  sx={{
-                    backgroundColor: "#F15A29",
-                    "&:hover": { backgroundColor: "#D44115" },
-                  }}
-                  onClick={() => {
-                    setCameraFacingMode("user");
-                    setShowQrReader(false);
-                    setTimeout(() => setShowQrReader(true), 100);
-                  }}
-                >
-                  Cámara Frontal
+                  Reiniciar Escáner
                 </Button>
               </Box>
+
               {isScanning && (
                 <Typography
                   variant="body1"
@@ -1053,7 +1102,7 @@ const DatosRecibo = () => {
                 </Typography>
               )}
 
-              {showQrReader && cameraInitialized && mainCameraId ? (
+              {showQrReader && (
                 <Box
                   sx={{
                     marginTop: 2,
@@ -1062,70 +1111,11 @@ const DatosRecibo = () => {
                     maxWidth: "500px",
                     margin: "0 auto",
                   }}
+                  id="qr-reader-container"
                 >
-                  <QrReader
-                    constraints={{
-                      deviceId: { exact: mainCameraId },
-                      width: { ideal: 1920 },
-                      height: { ideal: 1080 },
-                      aspectRatio: 16 / 9,
-                      focusMode: "continuous",
-                    }}
-                    scanDelay={100}
-                    onResult={(result, error) => {
-                      if (result) {
-                        limpiarFormulario();
-                        console.log("Resultado del QR:", result.text);
-                        if (scanTimeout) {
-                          clearTimeout(scanTimeout);
-                          setScanTimeout(null);
-                        }
-                        setError(null);
-                        setQrError(null);
-                        setQrResult(result.text);
-                        setShowQrReader(false);
-                        setIsScanning(false);
-                      }
-                      if (error) {
-                        console.error("Error al leer el QR:", error);
-                      }
-                    }}
-                    videoContainerStyle={{
-                      paddingTop: "100%",
-                      position: "relative",
-                      width: "100%",
-                    }}
-                    videoStyle={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
-                  />
-                  <Typography
-                    variant="body2"
-                    sx={{ mt: 1, textAlign: "center", color: "#2E3192" }}
-                  >
-                    Usando cámara de mayor resolución disponible
-                  </Typography>
+                  {/* Html5QrcodeScanner se auto-inyectará aquí */}
                 </Box>
-              ) : showQrReader && !cameraInitialized ? (
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: "300px",
-                  }}
-                >
-                  <CircularProgress />
-                  <Typography variant="body1" sx={{ ml: 2 }}>
-                    Configurando cámara óptima...
-                  </Typography>
-                </Box>
-              ) : null}
+              )}
 
               {qrError && (
                 <Alert severity="error" sx={{ marginTop: 2 }}>
