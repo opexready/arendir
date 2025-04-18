@@ -340,6 +340,7 @@ const ManageUsers = ({ refreshCompanies }) => {
                     <Table>
                         <TableHead>
                             <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                                <TableCell><strong>Usuario</strong></TableCell>
                                 <TableCell><strong>Nombre Completo</strong></TableCell>
                                 <TableCell><strong>Email</strong></TableCell>
                                 <TableCell><strong>Rol</strong></TableCell>
@@ -349,6 +350,7 @@ const ManageUsers = ({ refreshCompanies }) => {
                         <TableBody>
                             {users.map(user => (
                                 <TableRow key={user.id}>
+                                    <TableCell>{user.username}</TableCell>
                                     <TableCell>{user.full_name}</TableCell>
                                     <TableCell>{user.email}</TableCell>
                                     <TableCell>{user.role}</TableCell>

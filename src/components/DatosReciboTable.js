@@ -200,13 +200,6 @@ const DatosReciboTable = () => {
     }
   }, [confirmFinalizarDialogOpen, hasFetchedSolicitudes]);
 
-  // useEffect(() => {
-  //   if (confirmFinalizarDialogOpen && !hasFetchedSolicitudes) {
-  //     fetchSolicitudOpciones();
-  //     setHasFetchedSolicitudes(true); // Marcar que los datos se han cargado
-  //   }
-  // }, [confirmFinalizarDialogOpen, hasFetchedSolicitudes]);
-
   const handleCloseFinalizarDialog = () => {
     setConfirmFinalizarDialogOpen(false);
     setHasFetchedSolicitudes(false); // Reiniciar el estado
@@ -376,7 +369,7 @@ const DatosReciboTable = () => {
       const userString = localStorage.getItem("user");
       const user = userString ? JSON.parse(userString) : null;
       const userId = user ? user.id : null;
-      const username = user ? user.email : null;
+      const username = user ? user.username : null;
 
       if (userId && username) {
         const response = await api.get("/documentos/", {

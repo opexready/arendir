@@ -621,17 +621,19 @@ const DatosRecibo = () => {
 
   const handleSearch = async (ruc) => {
     try {
+      const rucToSearch = typeof ruc === 'string' ? ruc : searchRuc;
       const response = await axios.get(
-        `${baseURL}/consulta-ruc?ruc=${ruc || searchRuc}`
+        `${baseURL}/consulta-ruc/?ruc=${encodeURIComponent(rucToSearch)}`
       );
-
+  
       setSearchResult(response.data);
-
+  
+      // Actualizar formData.ruc con el valor correcto (rucToSearch)
       setFormData((prevFormData) => ({
         ...prevFormData,
-        ruc: ruc || searchRuc,
+        ruc: rucToSearch, // Usar directamente rucToSearch en lugar de ruc || searchRuc
       }));
-
+  
       setError("");
     } catch (error) {
       setError("Error al buscar el RUC. Asegúrese de que el número es válido.");

@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ const Login = () => {
     e.preventDefault();
     setError("");
     try {
-      const response = await api.post("/token", { email, password });
+      const response = await api.post("/token", { username, password });
       localStorage.setItem("token", response.data.access_token);
 
       const userResponse = await api.get("/api/users/me/", {
@@ -45,7 +45,7 @@ const Login = () => {
       } else if (user.role === "SOPORTE") {
         navigate("/soportePanel");
       } else if (user.role === "ADMIN") {
-        navigate("/admin-dashboard"); // Nueva ruta para el rol ADMIN
+        navigate("/admin"); // Nueva ruta para el rol ADMIN
       }
     } catch (error) {
       console.error("Login failed", error);
@@ -126,12 +126,12 @@ const Login = () => {
             margin="normal"
             required
             fullWidth
-            id="email"
-            label="Email"
-            name="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            autoComplete="email"
+            id="username"
+            label="Usuario"
+            name="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            autoComplete="usuario"
             autoFocus
             InputLabelProps={{ shrink: true }}
           />

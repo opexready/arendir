@@ -134,17 +134,8 @@ const RegisterForm = ({ open, onClose }) => {
         )}
 
         <form onSubmit={handleSubmit}>
-          <TextField
-            label="Nombre"
-            name="full_name"
-            value={formData.full_name}
-            onChange={handleChange}
-            fullWidth
-            margin="normal"
-            required
-          />
-          <TextField
-            label="Apellido"
+        <TextField
+            label="Nombre de usuario"
             name="username"
             value={formData.username}
             onChange={handleChange}
@@ -152,6 +143,15 @@ const RegisterForm = ({ open, onClose }) => {
             margin="normal"
             required
           />
+          <TextField
+            label="Nombre Completo"
+            name="full_name"
+            value={formData.full_name}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+            required
+          />       
           <TextField
             label="Email"
             name="email"
