@@ -63,7 +63,7 @@ const AnticiposViajes = () => {
     total: "",
     banco: "",
     numero_cuenta: "",
-    tipo_viaje: "NACIONAL",
+    tipo_viaje: "Viaje nacional",
     numero_rendicion: "",
     fecha_solicitud: getCurrentDate(),
     id_user: "",
@@ -174,6 +174,7 @@ const AnticiposViajes = () => {
         });
         const rendicionData = rendicionResponse.data;
         console.log("Nombre de rendición:", rendicionData.nombre);
+        const currentTipoAnticipo = formData.tipo_anticipo;
         setFormData({
           ...formData,
           empresa: company_name,
@@ -188,6 +189,7 @@ const AnticiposViajes = () => {
           fecha_emision: getCurrentDate(),
           tipo_solicitud: "ANTICIPO",
           tipo_documento: "ANT",
+          tipo_anticipo: currentTipoAnticipo,
           tipo_anticipo: "VIAJES",
           numero_rendicion: rendicionData.nombre,
           correlativo: "0001",
@@ -257,10 +259,18 @@ const AnticiposViajes = () => {
 
   const handleTipoViajeChange = (e) => {
     const tipo = e.target.value;
+    const nuevoTipoAnticipo = tipo === "NACIONAL" ? "Viaje nacional" : "Viaje internacional";
+    
+    console.log("Cambiando tipo de viaje:", tipo);
+    console.log("Nuevo tipo_anticipo:", nuevoTipoAnticipo);
     setFormData({
       ...formData,
-      tipo_viaje: tipo, // Actualizar formData directamente
+      tipo_viaje: tipo,    
+      tipo_anticipo: nuevoTipoAnticipo
     });
+    setTimeout(() => {
+      console.log("Estado actualizado de formData:", formData);
+    }, 0);
   };
 
   const handleSubmit = async (e) => {

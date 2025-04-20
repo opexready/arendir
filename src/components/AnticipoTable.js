@@ -648,7 +648,18 @@ const AnticipoTable = () => {
                               {documentDetail.tipo_documento || "-"}
                             </TableCell>
                           </TableRow>
-                    
+                          <TableRow>
+                            <TableCell sx={{ fontWeight: "bold" }}>Tipo de Anticipo</TableCell>
+                            <TableCell>{documentDetail.tipo_anticipo || "-"}</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell sx={{ fontWeight: "bold" }}>Destino</TableCell>
+                            <TableCell>{documentDetail.destino || "-"}</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell sx={{ fontWeight: "bold" }}>Motivo</TableCell>
+                            <TableCell>{documentDetail.motivo || "-"}</TableCell>
+                          </TableRow>
                           
         
                           {/* Información financiera */}
