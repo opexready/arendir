@@ -1104,7 +1104,7 @@ const DatosRecibo = () => {
                 }}
                 onClick={handleStartScanner}
               >
-                Escanear QR
+                Escanear QR 1
               </Button>
 
               <Button
