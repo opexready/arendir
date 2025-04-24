@@ -4,6 +4,7 @@ import { Html5QrcodeScanner, Html5QrcodeScanType } from "html5-qrcode";
 import FlipCameraIosIcon from "@mui/icons-material/FlipCameraIos";
 import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
+import { QrReader } from "react-qr-reader";
 import {
   Container,
   Card,
@@ -107,6 +108,8 @@ const DatosRecibo = () => {
   const { selectedCuentaContable, selectedRubro } = location.state || {};
   const [scanTimeout, setScanTimeout] = useState(null);
   const [html5QrCode, setHtml5QrCode] = useState(null);
+  const [showQrReader2, setShowQrReader2] = useState(false);
+  const [isScanning2, setIsScanning2] = useState(false);
   const [formData, setFormData] = useState({
     fecha: "",
     ruc: "",
@@ -175,6 +178,12 @@ const DatosRecibo = () => {
     setIsScanning(false);
   };
 
+  const formatNumber = (value) => {
+    if (value === "" || value === null || value === undefined) return "";
+    const num = typeof value === "string" ? parseFloat(value) : value;
+    return isNaN(num) ? "" : num.toFixed(2);
+  };
+
   useEffect(() => {
     if (qrResult) {
       handleProcessQrResult();
@@ -185,6 +194,31 @@ const DatosRecibo = () => {
       }
     };
   }, [qrResult]);
+
+  const handleStartScanner2 = () => {
+    limpiarFormulario();
+    setShowQrReader2(true);
+    setIsScanning2(true);
+    setError("");
+    setQrResult(null);
+    setQrError(null);
+
+    if (scanTimeout) {
+      clearTimeout(scanTimeout);
+    }
+
+    const timeout = setTimeout(() => {
+      if (!qrResult) {
+        setQrError(
+          "No se pudo leer el QR después de 30 segundos. Por favor, intenta nuevamente."
+        );
+        setShowQrReader2(false);
+        setIsScanning2(false);
+      }
+    }, 30000);
+
+    setScanTimeout(timeout);
+  };
 
   const handleProcessQrResult = async () => {
     try {
@@ -621,19 +655,19 @@ const DatosRecibo = () => {
 
   const handleSearch = async (ruc) => {
     try {
-      const rucToSearch = typeof ruc === 'string' ? ruc : searchRuc;
+      const rucToSearch = typeof ruc === "string" ? ruc : searchRuc;
       const response = await axios.get(
         `${baseURL}/consulta-ruc/?ruc=${encodeURIComponent(rucToSearch)}`
       );
-  
+
       setSearchResult(response.data);
-  
+
       // Actualizar formData.ruc con el valor correcto (rucToSearch)
       setFormData((prevFormData) => ({
         ...prevFormData,
         ruc: rucToSearch, // Usar directamente rucToSearch en lugar de ruc || searchRuc
       }));
-  
+
       setError("");
     } catch (error) {
       setError("Error al buscar el RUC. Asegúrese de que el número es válido.");
@@ -1073,6 +1107,24 @@ const DatosRecibo = () => {
                 Escanear QR
               </Button>
 
+              <Button
+                variant="outlined"
+                fullWidth
+                sx={{
+                  marginTop: 2,
+                  borderColor: "#2E3192",
+                  color: "#2E3192",
+                  "&:hover": {
+                    backgroundColor: "#F15A29",
+                    borderColor: "#F15A29",
+                    color: "white",
+                  },
+                }}
+                onClick={handleStartScanner2}
+              >
+                Escanear QR2 (React-QrReader)
+              </Button>
+
               <Box
                 sx={{
                   display: "flex",
@@ -1123,6 +1175,60 @@ const DatosRecibo = () => {
                 <Alert severity="error" sx={{ marginTop: 2 }}>
                   {qrError}
                 </Alert>
+              )}
+
+              {showQrReader2 && (
+                <Box
+                  sx={{
+                    marginTop: 2,
+                    position: "relative",
+                    width: "100%",
+                    maxWidth: "500px",
+                    margin: "0 auto",
+                  }}
+                >
+                  <QrReader
+                    constraints={{
+                      facingMode: "environment",
+                      width: { ideal: 1920 },
+                      height: { ideal: 1080 },
+                      aspectRatio: 16 / 9,
+                      focusMode: "continuous",
+                    }}
+                    scanDelay={100}
+                    onResult={(result, error) => {
+                      if (result) {
+                        limpiarFormulario();
+                        console.log("Resultado del QR:", result.text);
+                        if (scanTimeout) {
+                          clearTimeout(scanTimeout);
+                          setScanTimeout(null);
+                        }
+                        setError(null);
+                        setQrError(null);
+                        setQrResult(result.text);
+                        setShowQrReader2(false);
+                        setIsScanning2(false);
+                      }
+                      if (error) {
+                        console.error("Error al leer el QR:", error);
+                      }
+                    }}
+                    videoContainerStyle={{
+                      paddingTop: "100%",
+                      position: "relative",
+                      width: "100%",
+                    }}
+                    videoStyle={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                </Box>
               )}
             </div>
           </div>
@@ -1251,7 +1357,7 @@ const DatosRecibo = () => {
               margin="normal"
               id="afecto"
               name="afecto"
-              value={formData.afecto}
+              value={formatNumber(formData.afecto)}
             />
             <TextField
               label="Inafecto"
@@ -1260,7 +1366,7 @@ const DatosRecibo = () => {
               margin="normal"
               id="inafecto"
               name="inafecto"
-              value={formData.inafecto}
+              value={formatNumber(formData.inafecto)}
               InputProps={{
                 readOnly: true,
               }}
@@ -1275,7 +1381,7 @@ const DatosRecibo = () => {
                 margin="normal"
                 id={field}
                 name={field}
-                value={formData[field]}
+                value={formatNumber(formData[field])}
                 onChange={handleChange}
               />
             ))}
