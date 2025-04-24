@@ -227,16 +227,16 @@ const AnticiposViajes = () => {
         setFormData({
           ...formData,
           [name]: value,
-          presupuesto: (presupuesto * cambio).toFixed(2), // Solo aquí aplicamos formato
-          total: (presupuesto * cambio).toFixed(2),
+          presupuesto: (formData.presupuesto * cambio).toFixed(2), // Corregido: usar formData.presupuesto
+        total: (formData.presupuesto * cambio).toFixed(2),
           tipo_cambio: cambio
         });
       } else if (value === "PEN") {
         setFormData({
           ...formData,
           [name]: value,
-          presupuesto: (presupuesto / tipoCambio).toFixed(2), // Solo aquí aplicamos formato
-          total: (presupuesto / tipoCambio).toFixed(2), 
+          presupuesto: (formData.presupuesto / tipoCambio).toFixed(2), // Corregido: usar formData.presupuesto
+          total: (formData.presupuesto / tipoCambio).toFixed(2),
           tipo_cambio: 1
         });
       }
