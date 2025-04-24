@@ -178,6 +178,16 @@ const DatosRecibo = () => {
     setIsScanning(false);
   };
 
+  const checkCameraPermissions = async () => {
+    try {
+      await navigator.mediaDevices.getUserMedia({ video: true });
+      return true;
+    } catch (error) {
+      setQrError("Se necesitan permisos de cámara para escanear QR");
+      return false;
+    }
+  };
+
   const formatNumber = (value) => {
     if (value === "" || value === null || value === undefined) return "";
     const num = typeof value === "string" ? parseFloat(value) : value;
@@ -195,7 +205,10 @@ const DatosRecibo = () => {
     };
   }, [qrResult]);
 
-  const handleStartScanner2 = () => {
+  const handleStartScanner2 = async () => {
+    const hasPermission = await checkCameraPermissions();
+    if (!hasPermission) return;
+
     limpiarFormulario();
     setShowQrReader2(true);
     setIsScanning2(true);
@@ -1187,15 +1200,29 @@ const DatosRecibo = () => {
                     margin: "0 auto",
                   }}
                 >
+                  <IconButton
+                    onClick={() => {
+                      setShowQrReader2(false);
+                      setIsScanning2(false);
+                    }}
+                    sx={{
+                      position: "absolute",
+                      top: 10,
+                      right: 10,
+                      zIndex: 1000,
+                      color: "white",
+                      backgroundColor: "rgba(0,0,0,0.5)",
+                    }}
+                  >
+                    <CloseIcon />
+                  </IconButton>
                   <QrReader
                     constraints={{
                       facingMode: "environment",
-                      width: { ideal: 1920 },
-                      height: { ideal: 1080 },
-                      aspectRatio: 16 / 9,
-                      focusMode: "continuous",
+                      width: { ideal: 1280 },
+                      height: { ideal: 720 },
                     }}
-                    scanDelay={100}
+                    scanDelay={300}
                     onResult={(result, error) => {
                       if (result) {
                         limpiarFormulario();
@@ -1215,8 +1242,8 @@ const DatosRecibo = () => {
                       }
                     }}
                     videoContainerStyle={{
-                      paddingTop: "100%",
                       position: "relative",
+                      paddingTop: "100%",
                       width: "100%",
                     }}
                     videoStyle={{
