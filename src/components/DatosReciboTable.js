@@ -1,9 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Html5QrcodeScanner, Html5QrcodeScanType } from "html5-qrcode";
-import FlipCameraIosIcon from "@mui/icons-material/FlipCameraIos";
-import CloseIcon from "@mui/icons-material/Close";
-import IconButton from "@mui/material/IconButton";
 import {
   Container,
   Card,
@@ -23,19 +19,23 @@ import {
   TableContainer,
   Paper,
   Table,
+  TableHead,
   TableRow,
   TableCell,
   TableBody,
   FormControl,
   InputLabel,
   Select,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import "./DatosRecibo.css";
 import api, { baseURL } from "../api";
 
-const DatosRecibo = () => {
+const DatosReciboTable = () => {
   const categoryOptions = [
     { value: "63111", label: "Servicio transporte De carga" },
     { value: "6312", label: "Correos" },
@@ -87,6 +87,7 @@ const DatosRecibo = () => {
     { value: "6592", label: "Sanciones administrativas" },
   ];
   const [category, setCategory] = useState("");
+
   const handleCategoryChange = (event) => {
     const selectedValue = event.target.value;
     setCategory(selectedValue);
@@ -104,9 +105,26 @@ const DatosRecibo = () => {
   const [confirmFinalizarDialogOpen, setConfirmFinalizarDialogOpen] =
     useState(false);
   const navigate = useNavigate();
-  const { selectedCuentaContable, selectedRubro } = location.state || {};
-  const [scanTimeout, setScanTimeout] = useState(null);
-  const [html5QrCode, setHtml5QrCode] = useState(null);
+  const [tipoCambio, setTipoCambio] = useState("");
+  const [searchRuc, setSearchRuc] = useState("");
+  const [searchResult, setSearchResult] = useState(null);
+  const [error, setError] = useState("");
+  const [qrFile, setQrFile] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [nombreRendicion, setNombreRendicion] = useState("");
+  const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false);
+  const [documentoIdToDelete, setDocumentoIdToDelete] = useState(null);
+  const [formErrors, setFormErrors] = useState({});
+  const [documentDetail, setDocumentDetail] = useState(null);
+  const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+  const [solicitudOpciones, setSolicitudOpciones] = useState([]);
+  const [checkedOpciones, setCheckedOpciones] = useState([]);
+  const { selectedCuentaContable, selectedRubro, numeroRendicion } =
+    location.state || {};
   const [formData, setFormData] = useState({
     fecha: "",
     ruc: "",
@@ -122,242 +140,80 @@ const DatosRecibo = () => {
     total: "",
     archivo: "",
   });
-  const [tipoCambio, setTipoCambio] = useState(1); // Inicialmente 1 para PEN
-  const [searchRuc, setSearchRuc] = useState("");
-  const [searchResult, setSearchResult] = useState(null);
-  const [error, setError] = useState("");
-  const [qrFile, setQrFile] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [showForm, setShowForm] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [nombreRendicion, setNombreRendicion] = useState("");
-  const [idRendicion, setIdRendicion] = useState("");
-  const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false);
-  const [documentoIdToDelete, setDocumentoIdToDelete] = useState(null);
-  const [formErrors, setFormErrors] = useState({});
-  const [documentDetail, setDocumentDetail] = useState(null);
-  const [detailDialogOpen, setDetailDialogOpen] = useState(false);
-  const [showQrReader, setShowQrReader] = useState(false);
-  const [qrResult, setQrResult] = useState(null);
-  const [qrError, setQrError] = useState(null);
-  const [isScanning, setIsScanning] = useState(false);
-  // Busca donde están los otros estados y añade:
-  const [mainCameraId, setMainCameraId] = useState(null);
-  const [cameraInitialized, setCameraInitialized] = useState(false);
 
-  const limpiarFormulario = () => {
-    setFormData({
-      fecha: "",
-      ruc: "",
-      tipoDoc: "",
-      cuentaContable: selectedCuentaContable || "",
-      serie: "",
-      numero: "",
-      rubro: selectedRubro || "",
-      moneda: "PEN",
-      afecto: "",
-      igv: "",
-      inafecto: "",
-      total: "",
-      archivo: "",
-    });
-    setCategory("");
-    setSearchRuc("");
-    setSearchResult(null);
-    setError("");
-    setQrError(null);
-    setDetalle("");
-    setQrFile(null);
-    setQrResult(null);
-    setShowQrReader(false);
-    setIsScanning(false);
-  };
+  // Estado para controlar la visibilidad del modal de "No hay anticipos"
+  const [noAnticiposModalOpen, setNoAnticiposModalOpen] = useState(false);
 
-  const formatNumber = (value) => {
-    if (value === "" || value === null || value === undefined) return "";
-    const num = typeof value === 'string' ? parseFloat(value) : value;
-    return isNaN(num) ? "" : num.toFixed(2);
-  };
-
+  // Efecto para mostrar el modal si no hay anticipos
   useEffect(() => {
-    if (qrResult) {
-      handleProcessQrResult();
+    if (confirmFinalizarDialogOpen && solicitudOpciones.length === 0) {
+      setNoAnticiposModalOpen(true); // Mostrar modal si no hay datos
+      setConfirmFinalizarDialogOpen(false); // Cerrar el diálogo de selección de anticipos
     }
-    return () => {
-      if (html5QrScanner.current) {
-        html5QrScanner.current.clear();
-      }
-    };
-  }, [qrResult]);
+  }, [confirmFinalizarDialogOpen, solicitudOpciones]);
 
-  const handleProcessQrResult = async () => {
+  // Cerrar el modal de "No hay anticipos"
+  const handleCloseNoAnticiposModal = () => {
+    setNoAnticiposModalOpen(false);
+  };
+
+  const [isLoadingSolicitudes, setIsLoadingSolicitudes] = useState(false);
+
+  const fetchSolicitudOpciones = async () => {
+    setIsLoadingSolicitudes(true); // Activar el estado de carga
     try {
-      if (!qrResult) {
-        console.error("No se ha detectado un resultado del escaneo.");
+      const userString = localStorage.getItem("user");
+      const user = userString ? JSON.parse(userString) : null;
+      const userId = user ? user.id : null;
+
+      if (!userId) {
+        alert("Error: Usuario no autenticado");
         return;
       }
 
-      console.log("Llamando a la API con el resultado:", qrResult);
-
-      const response = await axios.post(`${baseURL}/api/process-qr/`, {
-        data: qrResult,
+      const response = await axios.get(`${baseURL}/api/solicitud/nombres`, {
+        params: { id_user: userId, estado: "ABONADO" },
       });
 
-      console.log("Respuesta del backend:", response.data);
-
-      const processedData = response.data;
-
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        fecha: processedData.fecha || "",
-        ruc: processedData.ruc || "",
-        tipoDoc: processedData.tipo || "",
-        serie: processedData.serie || "",
-        numero: processedData.numero || "",
-        igv: processedData.igv || "",
-        total: processedData.total || "",
-      }));
-      setSearchRuc(processedData.ruc || "");
+      setSolicitudOpciones(response.data);
       setError("");
-
-      if (processedData.ruc) {
-        handleSearch(processedData.ruc);
-      }
     } catch (error) {
-      setError("Error al procesar el QR. Por favor, inténtalo nuevamente.");
-      console.error("Error al llamar a /api/process-qr/:", error);
+      console.error("Error al obtener las solicitudes:", error);
+      setError(
+        "Error al obtener las solicitudes. Por favor, intente nuevamente."
+      );
+    } finally {
+      setIsLoadingSolicitudes(false); // Desactivar el estado de carga
     }
   };
 
-
-
-  const handleCameraSwitch = () => {
-    if (html5QrScanner) {
-      html5QrScanner.clear();
-      setShowQrReader(false);
-      setTimeout(() => {
-        initScanner();
-      }, 100);
-    }
-  };
-
-  const html5QrScanner = useRef(null);
-
-  const initScanner = () => {
-    if (html5QrScanner.current) {
-      html5QrScanner.current.clear();
-    }
-
-    const config = {
-      fps: 10,
-      qrbox: { width: 250, height: 250 },
-      rememberLastUsedCamera: true,
-      supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
-      facingMode: "environment", // Siempre usa la cámara trasera
-    };
-
-    html5QrScanner.current = new Html5QrcodeScanner(
-      "qr-reader-container",
-      config,
-      false
-    );
-
-    html5QrScanner.current.render(
-      (decodedText) => {
-        limpiarFormulario();
-        console.log("Resultado del QR:", decodedText);
-        if (scanTimeout) {
-          clearTimeout(scanTimeout);
-          setScanTimeout(null);
-        }
-        setError(null);
-        setQrError(null);
-        setQrResult(decodedText);
-        setShowQrReader(false);
-        setIsScanning(false);
-
-        if (html5QrScanner.current) {
-          html5QrScanner.current.clear();
-        }
-      },
-      (error) => {
-        console.error("Error al leer el QR:", error);
-      }
-    );
-
-    setShowQrReader(true);
-  };
+  const [hasFetchedSolicitudes, setHasFetchedSolicitudes] = useState(false);
 
   useEffect(() => {
-    const findHighestResolutionCamera = async () => {
-      try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const videoDevices = devices.filter(
-          (device) => device.kind === "videoinput"
-        );
-
-        if (videoDevices.length === 0) {
-          setQrError("No se encontraron cámaras disponibles");
-          return;
-        }
-
-        // Probaremos cada cámara para encontrar la de mayor resolución
-        let bestCamera = null;
-        let maxResolution = 0;
-
-        for (const device of videoDevices) {
-          try {
-            const stream = await navigator.mediaDevices.getUserMedia({
-              video: {
-                deviceId: { exact: device.deviceId },
-                width: { ideal: 4096 }, // Probamos con resolución muy alta
-                height: { ideal: 2160 },
-              },
-            });
-
-            const track = stream.getVideoTracks()[0];
-            const settings = track.getSettings();
-            const resolution = settings.width * settings.height;
-
-            if (resolution > maxResolution) {
-              maxResolution = resolution;
-              bestCamera = device;
-            }
-
-            track.stop();
-          } catch (error) {
-            console.warn(
-              `No se pudo acceder a la cámara ${device.label}:`,
-              error
-            );
-          }
-        }
-
-        if (bestCamera) {
-          setMainCameraId(bestCamera.deviceId);
-          setCameraInitialized(true);
-        } else {
-          setQrError(
-            "No se pudo acceder a ninguna cámara con buena resolución"
-          );
-        }
-      } catch (error) {
-        console.error("Error detectando cámaras:", error);
-        setQrError("Error al acceder a las cámaras. Verifica los permisos.");
-      }
-    };
-
-    findHighestResolutionCamera();
+    fetchSolicitudOpciones();
   }, []);
-
-  const normalizeDate = (dateString) => {
-    if (dateString.includes("/")) {
-      const [day, month, year] = dateString.split("/");
-      return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  
+  // Modificar el efecto existente para evitar cargar duplicados
+  useEffect(() => {
+    if (confirmFinalizarDialogOpen && !hasFetchedSolicitudes) {
+      setHasFetchedSolicitudes(true);
     }
-    return dateString;
+  }, [confirmFinalizarDialogOpen, hasFetchedSolicitudes]);
+
+  const handleCloseFinalizarDialog = () => {
+    setConfirmFinalizarDialogOpen(false);
+    setHasFetchedSolicitudes(false); // Reiniciar el estado
+  };
+
+  const handleViewDetail = async (documentId) => {
+    try {
+      const response = await axios.get(`${baseURL}/documentos/${documentId}`);
+      setDocumentDetail(response.data);
+      setDetailDialogOpen(true);
+    } catch (error) {
+      console.error("Error al obtener los detalles del documento:", error);
+      setError("Error al obtener los detalles. Por favor, intente nuevamente.");
+    }
   };
 
   const handleCloseDetailDialog = () => {
@@ -366,6 +222,9 @@ const DatosRecibo = () => {
   };
 
   const [editRecord, setEditRecord] = useState(null);
+  const handleEditRecord = (record) => {
+    navigate(`/editar-documento/${record.id}`); // Redirigir a la nueva página con el ID del documento
+  };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -427,17 +286,14 @@ const DatosRecibo = () => {
           estado: "POR APROBAR",
         });
 
-        const newRendicionResponse = await axios.post(
-          `${baseURL}/api/rendicion/`,
-          {
-            id_user: userId,
-          }
-        );
+        await axios.post(`${baseURL}/api/rendicion/`, {
+          id_user: userId,
+          id_empresa: user.id_empresa,
+        });
       } else {
       }
     } catch (error) {
       console.error("Error al finalizar la rendición:", error);
-
       setError(
         "Error al finalizar la rendición. Por favor, intente nuevamente."
       );
@@ -458,7 +314,6 @@ const DatosRecibo = () => {
             },
           });
           setNombreRendicion(response.data.nombre);
-          setIdRendicion(response.data.id);
         } else {
           alert("Error: Usuario no autenticado");
         }
@@ -480,6 +335,11 @@ const DatosRecibo = () => {
     setSelectedFile(null);
   };
 
+  const handleOpenConfirmDeleteDialog = (documentoId) => {
+    setDocumentoIdToDelete(documentoId);
+    setConfirmDeleteDialogOpen(true);
+  };
+
   const handleCloseConfirmDeleteDialog = () => {
     setDocumentoIdToDelete(null);
     setConfirmDeleteDialogOpen(false);
@@ -489,19 +349,15 @@ const DatosRecibo = () => {
     if (documentoIdToDelete) {
       try {
         await axios.delete(`${baseURL}/documentos/${documentoIdToDelete}`);
-
         setRecords(
           records.filter((record) => record.id !== documentoIdToDelete)
         );
-
         handleCloseConfirmDeleteDialog();
       } catch (error) {
         console.error("Error al eliminar el documento:", error);
-
         setError(
           "Error al eliminar el documento. Por favor, intente nuevamente."
         );
-
         handleCloseConfirmDeleteDialog();
       }
     }
@@ -513,7 +369,7 @@ const DatosRecibo = () => {
       const userString = localStorage.getItem("user");
       const user = userString ? JSON.parse(userString) : null;
       const userId = user ? user.id : null;
-      const username = user ? user.email : null;
+      const username = user ? user.username : null;
 
       if (userId && username) {
         const response = await api.get("/documentos/", {
@@ -548,21 +404,6 @@ const DatosRecibo = () => {
   }, [nombreRendicion]);
 
   useEffect(() => {
-    if (idRendicion) {
-      fetchRecords();
-    }
-  }, [idRendicion]);
-
-  useEffect(() => {
-    return () => {
-      // Limpiar timeout al desmontar el componente
-      if (scanTimeout) {
-        clearTimeout(scanTimeout);
-      }
-    };
-  }, [scanTimeout]);
-
-  useEffect(() => {
     if (formData.igv) {
       const afectoValue = (parseFloat(formData.igv) / 0.18).toFixed(2);
       setFormData((prevFormData) => ({
@@ -571,25 +412,40 @@ const DatosRecibo = () => {
       }));
     }
   }, [formData.igv]);
+  useEffect(() => {
+    if (formData.moneda === "USD" && formData.fecha) {
+      fetchTipoCambio(formData.fecha);
+    }
+  }, [formData.moneda, formData.fecha]);
+  useEffect(() => {
+    if (formData.total && formData.afecto && formData.igv) {
+      const total = parseFloat(formData.total);
+      const afecto = parseFloat(formData.afecto);
+      const igv = parseFloat(formData.igv);
+      const inafectoValue = (total - (afecto + igv)).toFixed(2);
+
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        inafecto: inafectoValue,
+      }));
+    }
+  }, [formData.total, formData.afecto, formData.igv]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
 
   const fetchTipoCambio = async (fecha) => {
     try {
       const response = await axios.get(
         `${baseURL}/tipo-cambio/?fecha=${fecha}`
       );
-      const precioVenta = response.data.precioVenta;
-      setTipoCambio(precioVenta);
-
-      // Convertir de PEN a USD multiplicando por el nuevo tipoCambio
-      setFormData((prev) => ({
-        ...prev,
-        afecto: (parseFloat(prev.afecto) * precioVenta).toFixed(2),
-        igv: (parseFloat(prev.igv) * precioVenta).toFixed(2),
-        inafecto: prev.inafecto
-          ? (parseFloat(prev.inafecto) * precioVenta).toFixed(2)
-          : "0.00",
-        total: (parseFloat(prev.total) * precioVenta).toFixed(2),
-      }));
+      setTipoCambio(response.data.precioVenta);
+      console.log("Tipo de cambio obtenido:", response.data.precioVenta);
     } catch (error) {
       setError(
         "Error al obtener el tipo de cambio. Por favor, intente nuevamente."
@@ -597,51 +453,21 @@ const DatosRecibo = () => {
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    // Actualizar primero el valor en el formData
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    if (name === "moneda") {
-      if (value === "PEN") {
-        setTipoCambio(1);
-        // Convertir de USD a PEN dividiendo por el tipoCambio anterior
-        setFormData((prev) => ({
-          ...prev,
-          afecto: parseFloat(prev.afecto) / tipoCambio,
-          igv: parseFloat(prev.igv) / tipoCambio,
-          inafecto: prev.inafecto ? parseFloat(prev.inafecto) / tipoCambio : 0,
-          total: parseFloat(prev.total) / tipoCambio,
-        }));
-      } else if (value === "USD" && formData.fecha) {
-        fetchTipoCambio(formData.fecha);
-      }
-    }
-  };
-
   const handleSearchRucChange = (e) => {
     setSearchRuc(e.target.value);
   };
 
-  const handleSearch = async (ruc) => {
+  const handleSearch = async () => {
     try {
-      const rucToSearch = typeof ruc === 'string' ? ruc : searchRuc;
       const response = await axios.get(
-        `${baseURL}/consulta-ruc/?ruc=${encodeURIComponent(rucToSearch)}`
+        `${baseURL}/consulta-ruc?ruc=${searchRuc}`
       );
-  
       setSearchResult(response.data);
-  
-      // Actualizar formData.ruc con el valor correcto (rucToSearch)
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        ruc: rucToSearch, // Usar directamente rucToSearch en lugar de ruc || searchRuc
-      }));
-  
+      setFormData({
+        ...formData,
+        ruc: searchRuc,
+        tipoDoc: response.data.tipoDocumento,
+      });
       setError("");
     } catch (error) {
       setError("Error al buscar el RUC. Asegúrese de que el número es válido.");
@@ -652,8 +478,6 @@ const DatosRecibo = () => {
   const handleQrFileChange = async (event) => {
     const file = event.target.files[0];
     setQrFile(file);
-    limpiarFormulario();
-    setQrError(null);
 
     if (file) {
       const formData = new FormData();
@@ -672,31 +496,21 @@ const DatosRecibo = () => {
           }
         );
 
-        console.log("############decodeResponse############");
         console.log(decodeResponse);
 
         if (decodeResponse.data.detail === "No QR code found in the image") {
-          setQrError(
-            <span>
-              No se pudo leer el código QR. Recomendaciones:
-              <ul>
-                <li>Asegúrate de que el código esté bien iluminado</li>
-                <li>Acerca más la cámara al código</li>
-                <li>Evita reflejos y sombras</li>
-                <li>Si el código es de color, prueba con fondo blanco</li>
-              </ul>
-            </span>
+          setError(
+            "No se encontró un código QR en la imagen. Por favor, intente con otra imagen."
           );
         } else {
           const decodedRuc = decodeResponse.data.ruc;
           console.log(decodedRuc);
 
-          let razonSocial = "Proveedor Desconocido";
+          let razonSocial = "Proveedor Desconocido"; // Valor por defecto
           try {
             const rucResponse = await axios.get(
               `${baseURL}/consulta-ruc?ruc=${decodedRuc}`
             );
-
             razonSocial = rucResponse.data.razonSocial || razonSocial;
           } catch (error) {
             if (error.response && error.response.status === 404) {
@@ -704,13 +518,13 @@ const DatosRecibo = () => {
                 "RUC no encontrado, utilizando valor por defecto para Razón Social."
               );
             } else {
-              throw error;
+              throw error; // Si no es 404, lanzamos el error para manejarlo fuera
             }
           }
 
           setFormData((prevFormData) => ({
             ...prevFormData,
-            fecha: normalizeDate(decodeResponse.data.fecha || ""),
+            fecha: decodeResponse.data.fecha || "",
             ruc: decodeResponse.data.ruc || "",
             tipoDoc: decodeResponse.data.tipo || "",
             serie: decodeResponse.data.serie || "",
@@ -719,27 +533,25 @@ const DatosRecibo = () => {
             total: decodeResponse.data.total || "",
             proveedor: razonSocial,
           }));
-          setSearchRuc(decodeResponse.data.ruc || "");
           setError("");
-          if (decodedRuc) {
-            handleSearch(decodedRuc);
-          }
         }
       } catch (error) {
         if (error.response) {
+          // El servidor respondió con un código de error (código de estado no 2xx)
           console.error(
             "Error de respuesta del servidor:",
             error.response.data
           );
-
           setError(
             "Error al procesar el QR: " +
               (error.response.data.message || "Por favor, intente nuevamente.")
           );
         } else if (error.request) {
+          // La solicitud se hizo pero no se recibió respuesta
           console.error("No se recibió respuesta:", error.request);
           setError("No se recibió respuesta del servidor. Intente nuevamente.");
         } else {
+          // Algo salió mal al configurar la solicitud
           console.error("Error al configurar la solicitud:", error.message);
           setError("Ocurrió un error. Intente nuevamente.");
         }
@@ -747,34 +559,6 @@ const DatosRecibo = () => {
         setIsLoading(false);
       }
     }
-  };
-
-  const handleStartScanner = () => {
-    limpiarFormulario();
-    setShowQrReader(true);
-    setIsScanning(true);
-    setError("");
-    setQrResult(null);
-    setQrError(null);
-
-    if (scanTimeout) {
-      clearTimeout(scanTimeout);
-    }
-
-    const timeout = setTimeout(() => {
-      if (!qrResult) {
-        setQrError(
-          "No se pudo leer el QR después de 30 segundos. Por favor, intenta nuevamente."
-        );
-        setShowQrReader(false);
-        setIsScanning(false);
-        if (html5QrScanner.current) {
-          html5QrScanner.current.clear();
-        }
-      }
-    }, 30000);
-
-    setScanTimeout(timeout);
   };
 
   const handleFileUpload = async (event) => {
@@ -795,7 +579,6 @@ const DatosRecibo = () => {
             },
           }
         );
-
         const fileLocation = uploadResponse.data.file_url;
 
         setFormData((prevFormData) => ({
@@ -810,32 +593,6 @@ const DatosRecibo = () => {
       }
     }
   };
-
-  useEffect(() => {
-    if (formData.afecto && formData.igv && formData.total) {
-      const afecto = parseFloat(formData.afecto) || 0;
-      const igv = parseFloat(formData.igv) || 0;
-      const total = parseFloat(formData.total) || 0;
-
-      //const inafectoValue = Math.max(0, total - (afecto + igv)).toFixed(2);
-      let rawValue = total - (afecto + igv);
-      const inafectoValue = (Math.abs(rawValue) < 0.005 ? 0 : rawValue).toFixed(
-        2
-      );
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        inafecto: inafectoValue,
-      }));
-    }
-  }, [formData.afecto, formData.igv, formData.total]);
-
-  useEffect(() => {
-    if (showQrReader) {
-      setTimeout(() => {
-        initScanner();
-      }, 100); // Espera 100ms para asegurar que el DOM ya renderizó el contenedor
-    }
-  }, [showQrReader]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -862,17 +619,15 @@ const DatosRecibo = () => {
       console.error("Token not found in localStorage.");
     }
 
+    const todayDate = new Date().toISOString().split("T")[0];
     const userString = localStorage.getItem("user");
     const user = userString ? JSON.parse(userString) : null;
-    const userId = user ? user.id : null;
-    const gerencia = user ? user.gerencia : null;
-    const todayDate = new Date().toISOString().split("T")[0];
 
     const requestData = {
       fecha_solicitud: todayDate,
-      dni: user.dni,
+      dni: formData.dni || "11111111",
       usuario: loggedInUser,
-      gerencia: gerencia,
+      gerencia: "",
       ruc: formData.ruc,
       proveedor: formData.proveedor || "Proveedor Desconocido",
       fecha_emision: formData.fecha,
@@ -889,7 +644,7 @@ const DatosRecibo = () => {
       anticipo: 0.0,
       total: parseFloat(formData.total),
       pago: parseFloat(formData.total),
-      detalle: detalle,
+      detalle: "",
       estado: "POR APROBAR",
       tipo_solicitud: "RENDICION",
       empresa: user.company_name,
@@ -900,12 +655,7 @@ const DatosRecibo = () => {
       rubro: formData.rubro,
       cuenta_contable: parseInt(formData.cuentaContable, 10),
       numero_rendicion: nombreRendicion,
-      id_user: userId,
-      id_numero_rendicion: idRendicion,
-      id_empresa: user.id_empresa,
     };
-
-    console.log("##################requestData##########", requestData);
 
     try {
       await axios.post(`${baseURL}/documentos/`, requestData, {
@@ -916,19 +666,17 @@ const DatosRecibo = () => {
 
       setDialogOpen(true);
     } catch (error) {
-      if (error.response && error.response.status === 400) {
-        // Mostrar el mensaje de error específico del backend
-        setError(
-          error.response.data.message ||
-            "Este documento ya se encuentra registrado"
-        );
-      } else {
-        setError("Error al enviar los datos. Por favor, intente nuevamente.");
-      }
+      setError("Error al enviar los datos. Por favor, intente nuevamente.");
     }
   };
 
-  const [detalle, setDetalle] = useState("");
+  const handleNewExpense2 = () => {
+    setShowForm(true);
+  };
+
+  const handleContinueExpense2 = () => {
+    setShowForm(true);
+  };
 
   const handleDialogClose = async (registerAnother) => {
     setDialogOpen(false);
@@ -949,17 +697,9 @@ const DatosRecibo = () => {
         total: "",
         archivo: "",
       });
-      setCategory(""); // ← Esto es lo que faltaba
-
-      // Limpiar otros estados
       setSearchRuc("");
       setSearchResult(null);
       setError("");
-      setDetalle("");
-      setQrFile(null);
-      setQrResult(null);
-      setShowQrReader(false);
-      setIsScanning(false);
 
       try {
         const userString = localStorage.getItem("user");
@@ -970,7 +710,7 @@ const DatosRecibo = () => {
           const response = await api.get(`/api/rendicion/last`, {
             params: {
               id_user: userId,
-              tipo: "RENDICION",
+              tipo: "RENDICION", // Puedes reemplazarlo con el valor que necesites
             },
           });
           const { nombre } = response.data;
@@ -983,190 +723,281 @@ const DatosRecibo = () => {
         alert("Error al obtener la última rendición. Intente nuevamente.");
       }
     } else {
-      navigate("/datos-recibo-table");
+      localStorage.removeItem("numero_rendicion");
+      navigate("/colaborador");
     }
   };
 
   return (
-    <Container sx={{ marginTop: -20 }}>
-      <Typography variant="h6" gutterBottom>
-        RENDICIÓN: {nombreRendicion}
-      </Typography>
-      <Card sx={{ boxShadow: 10 }}>
-        <CardContent>
-          <div className="form-group row">
-            <div className="col-md-4">
-              <TextField
-                label="Buscar por RUC"
-                variant="outlined"
-                fullWidth
-                value={searchRuc}
-                onChange={handleSearchRucChange}
-                sx={{ marginBottom: 2 }}
-              />
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSearch}
-                sx={{
-                  backgroundColor: "#2E3192",
-                  "&:hover": { backgroundColor: "#1F237A" },
-                }}
-              >
-                Buscar
-              </Button>
-            </div>
+    <Container sx={{ marginTop: 0 }}>
+      <Container sx={{ marginBottom: 2, marginTop: -20 }} disableGutters>
+        <Box
+          display="flex"
+          justifyContent="flex-end" // Alinea a la derecha
+          sx={{
+            width: "101%", // Asegura que ocupe todo el ancho disponible
+            marginRight: "-20px", // Ajusta el margen derecho si hay espacio extra
+          }}
+        >
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{
+              marginRight: 2,
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
+            onClick={() => navigate("/datos-recibo")}
+          >
+            <img
+              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa12.png?alt=media&token=605b5260-250c-4fb0-ade2-ff241845be1c"
+              alt="Ícono de Anticipo Viajes"
+              style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+            />
+            Nuevo Registro
+          </Button>
 
-            <div className="col-md-4">
-              <Button
-                variant="outlined"
-                component="label"
-                fullWidth
-                sx={{
-                  marginTop: 2,
-                  borderColor: "#2E3192",
-                  color: "#2E3192",
-                  "&:hover": {
-                    backgroundColor: "#F15A29",
-                    borderColor: "#F15A29",
-                    color: "white",
-                  },
-                }}
-              >
-                Subir Recibo
-                <input type="file" hidden onChange={handleFileUpload} />
-              </Button>
-              {formErrors.archivo && (
-                <p style={{ color: "red", marginTop: "5px" }}>
-                  {formErrors.archivo}
-                </p>
-              )}
-            </div>
-            <div className="col-md-4">
-              <Button
-                variant="outlined"
-                component="label"
-                fullWidth
-                sx={{
-                  marginTop: 2,
-                  borderColor: "#2E3192",
-                  color: "#2E3192",
-                  "&:hover": {
-                    backgroundColor: "#F15A29",
-                    borderColor: "#F15A29",
-                    color: "white",
-                  },
-                }}
-              >
-                Escanear imagen adjunta
-                <input type="file" hidden onChange={handleQrFileChange} />
-              </Button>
-            </div>
-            <div className="col-md-4">
-              <Button
-                variant="outlined"
-                fullWidth
-                sx={{
-                  marginTop: 2,
-                  borderColor: "#2E3192",
-                  color: "#2E3192",
-                  "&:hover": {
-                    backgroundColor: "#F15A29",
-                    borderColor: "#F15A29",
-                    color: "white",
-                  },
-                }}
-                onClick={handleStartScanner}
-              >
-                Escanear QR
-              </Button>
+          <Button
+            variant="contained"
+            color="warning"
+            sx={{
+              marginRight: 2,
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
+            onClick={() => navigate("/movilidad")}
+          >
+            <img
+              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa11.png?alt=media&token=6d72c9af-25f8-43b4-89e8-fb82b22224de"
+              alt="Ícono de Anticipo Viajes"
+              style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+            />
+            Movilidad
+          </Button>
 
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  gap: 2,
-                  marginTop: 2,
-                }}
-              >
+          <Button
+            variant="contained"
+            color="success"
+            sx={{
+              marginRight: 2,
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
+            onClick={() => setConfirmFinalizarDialogOpen(true)}
+          >
+            <img
+              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa13.png?alt=media&token=7b15c497-d494-4a52-9011-ee7e6bdbe1e8"
+              alt="Ícono de Anticipo Viajes"
+              style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+            />
+            Finalizar Rendición
+          </Button>
+        </Box>
+      </Container>
+      {showForm && (
+        <Card sx={{ boxShadow: 10 }}>
+          <CardContent>
+            <div className="form-group row">
+              <div className="col-md-4">
+                <TextField
+                  label="Buscar por RUC"
+                  variant="outlined"
+                  fullWidth
+                  value={searchRuc}
+                  onChange={handleSearchRucChange}
+                  sx={{ marginBottom: 2 }}
+                />
                 <Button
                   variant="contained"
                   color="primary"
+                  onClick={handleSearch}
                   sx={{
                     backgroundColor: "#2E3192",
                     "&:hover": { backgroundColor: "#1F237A" },
                   }}
-                  onClick={handleCameraSwitch}
                 >
-                  Reiniciar Escáner
+                  Buscar
                 </Button>
-              </Box>
+              </div>
 
-              {isScanning && (
-                <Typography
-                  variant="body1"
-                  color="primary"
-                  sx={{ marginTop: 2 }}
-                >
-                  Escaneando... Por favor, apunta al código QR.
-                </Typography>
-              )}
-
-              {showQrReader && (
-                <Box
+              <div className="col-md-4">
+                <Button
+                  variant="outlined"
+                  component="label"
+                  fullWidth
                   sx={{
                     marginTop: 2,
-                    position: "relative",
-                    width: "100%",
-                    maxWidth: "500px",
-                    margin: "0 auto",
+                    borderColor: "#2E3192",
+                    color: "#2E3192",
+                    "&:hover": {
+                      backgroundColor: "#F15A29",
+                      borderColor: "#F15A29",
+                      color: "white",
+                    },
                   }}
-                  id="qr-reader-container"
                 >
-                  {/* Html5QrcodeScanner se auto-inyectará aquí */}
-                </Box>
+                  Subir Recibo
+                  <input type="file" hidden onChange={handleFileUpload} />
+                </Button>
+                {formErrors.archivo && (
+                  <p style={{ color: "red", marginTop: "5px" }}>
+                    {formErrors.archivo}
+                  </p>
+                )}
+              </div>
+              <div className="col-md-4">
+                <Button
+                  variant="outlined"
+                  component="label"
+                  fullWidth
+                  sx={{
+                    marginTop: 2,
+                    borderColor: "#2E3192",
+                    color: "#2E3192",
+                    "&:hover": {
+                      backgroundColor: "#F15A29",
+                      borderColor: "#F15A29",
+                      color: "white",
+                    },
+                  }}
+                >
+                  Escanear QR
+                  <input type="file" hidden onChange={handleQrFileChange} />
+                </Button>
+              </div>
+            </div>
+
+            {isLoading ? (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: "20px",
+                }}
+              >
+                <CircularProgress />
+              </div>
+            ) : (
+              <>
+                {error && <Alert severity="error">{error}</Alert>}
+                {searchResult && (
+                  <Alert severity="success">
+                    <p>
+                      <strong>Razón Social:</strong> {searchResult.razonSocial}
+                    </p>
+                    <p>
+                      <strong>Dirección:</strong> {searchResult.direccion}
+                    </p>
+                    <p>
+                      <strong>Estado:</strong> {searchResult.estado}
+                    </p>
+                  </Alert>
+                )}
+              </>
+            )}
+
+            <form onSubmit={handleSubmit}>
+              {["fecha", "ruc", "cuentaContable", "serie", "numero"].map(
+                (field) => (
+                  <TextField
+                    key={field}
+                    label={field.charAt(0).toUpperCase() + field.slice(1)}
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    id={field}
+                    name={field}
+                    value={formData[field]}
+                    onChange={handleChange}
+                  />
+                )
               )}
 
-              {qrError && (
-                <Alert severity="error" sx={{ marginTop: 2 }}>
-                  {qrError}
-                </Alert>
-              )}
-            </div>
-          </div>
-          {isLoading ? (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                marginTop: "20px",
-              }}
-            >
-              <CircularProgress />
-            </div>
-          ) : (
-            <>
-              {/* {error && <Alert severity="error">{error}</Alert>} */}
-              {error && !qrError && <Alert severity="error">{error}</Alert>}
-              {searchResult && (
-                <Alert severity="success">
-                  <p>
-                    <strong>Razón Social:</strong> {searchResult.razonSocial}
+              <FormControl
+                fullWidth
+                variant="outlined"
+                sx={{ marginBottom: 3 }}
+                error={!!formErrors.rubro}
+              >
+                <InputLabel id="category-label">Rubro</InputLabel>
+                <Select
+                  labelId="category-label"
+                  id="category"
+                  value={category}
+                  onChange={handleCategoryChange}
+                  label="Rubro"
+                >
+                  <MenuItem value="" disabled>
+                    Seleccione un rubro
+                  </MenuItem>
+                  {categoryOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+                {formErrors.rubro && (
+                  <p style={{ color: "red", marginTop: "5px" }}>
+                    {formErrors.rubro}
                   </p>
-                  <p>
-                    <strong>Dirección:</strong> {searchResult.direccion}
-                  </p>
-                  <p>
-                    <strong>Estado:</strong> {searchResult.estado}
-                  </p>
-                </Alert>
-              )}
-            </>
-          )}
+                )}
+              </FormControl>
+              <TextField
+                label="Tipo de Documento"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                id="tipoDoc"
+                name="tipoDoc"
+                value={formData.tipoDoc}
+                onChange={handleChange}
+                select
+              >
+                <MenuItem value="Factura">Factura</MenuItem>
+                <MenuItem value="Recibo por Honorarios">
+                  Recibo por Honorarios
+                </MenuItem>
+                <MenuItem value="Boleta de Venta">Boleta de Venta</MenuItem>
+                <MenuItem value="Boleto Aéreo">Boleto Aéreo</MenuItem>
+                <MenuItem value="Nota de Crédito">Nota de Crédito</MenuItem>
+                <MenuItem value="Nota de Débito">Nota de Débito</MenuItem>
+                <MenuItem value="Ticket o cinta emitido por máquina registradora">
+                  Ticket o cinta emitido por máquina registradora
+                </MenuItem>
+                <MenuItem value="Recibo Servicio Público">
+                  Recibo Servicio Público
+                </MenuItem>
+              </TextField>
 
-          <form onSubmit={handleSubmit}>
-            {["fecha", "ruc", "cuentaContable", "serie", "numero"].map(
-              (field) => (
+              <TextField
+                label="Moneda"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                id="moneda"
+                name="moneda"
+                value={formData.moneda}
+                onChange={handleChange}
+                select
+              >
+                <MenuItem value="PEN">PEN</MenuItem>
+                <MenuItem value="USD">USD</MenuItem>
+              </TextField>
+
+              <TextField
+                label="Afecto"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                id="afecto"
+                name="afecto"
+                value={formData.afecto}
+              />
+
+              {["igv", "inafecto", "total"].map((field) => (
                 <TextField
                   key={field}
                   label={field.charAt(0).toUpperCase() + field.slice(1)}
@@ -1178,146 +1009,184 @@ const DatosRecibo = () => {
                   value={formData[field]}
                   onChange={handleChange}
                 />
-              )
-            )}
+              ))}
 
-            <FormControl
-              fullWidth
-              variant="outlined"
-              sx={{ marginBottom: 3 }}
-              error={!!formErrors.rubro}
-            >
-              <InputLabel id="category-label">Rubro</InputLabel>
-              <Select
-                labelId="category-label"
-                id="category"
-                value={category}
-                onChange={handleCategoryChange}
-                label="Rubro"
-              >
-                <MenuItem value="" disabled>
-                  Seleccione un rubro
-                </MenuItem>
-                {categoryOptions.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-              {formErrors.rubro && (
-                <p style={{ color: "red", marginTop: "5px" }}>
-                  {formErrors.rubro}
-                </p>
-              )}
-            </FormControl>
-            <TextField
-              label="Tipo de Documento"
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              id="tipoDoc"
-              name="tipoDoc"
-              value={formData.tipoDoc}
-              onChange={handleChange}
-              select
-            >
-              <MenuItem value="Factura">Factura</MenuItem>
-              <MenuItem value="Recibo por Honorarios">
-                Recibo por Honorarios
-              </MenuItem>
-              <MenuItem value="Boleta de Venta">Boleta de Venta</MenuItem>
-              <MenuItem value="Boleto Aéreo">Boleto Aéreo</MenuItem>
-              <MenuItem value="Nota de Crédito">Nota de Crédito</MenuItem>
-              <MenuItem value="Nota de Débito">Nota de Débito</MenuItem>
-              <MenuItem value="Ticket o cinta emitido por máquina registradora">
-                Ticket o cinta emitido por máquina registradora
-              </MenuItem>
-              <MenuItem value="Recibo Servicio Público">
-                Recibo Servicio Público
-              </MenuItem>
-            </TextField>
-
-            <TextField
-              label="Moneda"
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              id="moneda"
-              name="moneda"
-              value={formData.moneda}
-              onChange={handleChange}
-              select
-            >
-              <MenuItem value="PEN">PEN</MenuItem>
-              <MenuItem value="USD">USD</MenuItem>
-            </TextField>
-
-            <TextField
-              label="Afecto"
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              id="afecto"
-              name="afecto"
-              value={formatNumber(formData.afecto)}
-            />
-            <TextField
-              label="Inafecto"
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              id="inafecto"
-              name="inafecto"
-              value={formatNumber(formData.inafecto)}
-              InputProps={{
-                readOnly: true,
-              }}
-            />
-
-            {["igv", "total"].map((field) => (
-              <TextField
-                key={field}
-                label={field.charAt(0).toUpperCase() + field.slice(1)}
-                variant="outlined"
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
                 fullWidth
-                margin="normal"
-                id={field}
-                name={field}
-                value={formatNumber(formData[field])}
-                onChange={handleChange}
-              />
-            ))}
+                onClick={editRecord ? handleUpdate : handleSubmit}
+                sx={{
+                  marginTop: 4,
+                  backgroundColor: "#2E3192",
+                  "&:hover": { backgroundColor: "#1F237A" },
+                }}
+              >
+                {editRecord ? "Actualizar" : "Solicitar"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      )}
 
-            <div className="form-group">
-              <label htmlFor="detalle">Detalle:</label>
-              <textarea
-                id="detalle"
-                name="detalle"
-                value={detalle}
-                onChange={(e) => setDetalle(e.target.value)}
-                className="form-control"
-                rows="4"
-              />
-            </div>
+      <Typography variant="h6" gutterBottom>
+        RENDICIÓN: {nombreRendicion}
+      </Typography>
 
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              fullWidth
-              onClick={editRecord ? handleUpdate : handleSubmit}
-              sx={{
-                marginTop: 4,
-                backgroundColor: "#2E3192",
-                "&:hover": { backgroundColor: "#1F237A" },
-              }}
-            >
-              {editRecord ? "Actualizar" : "Solicitar"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-
+      {isLoading ? (
+        <CircularProgress />
+      ) : (
+        <TableContainer component={Paper} sx={{ marginBottom: 4 }}>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ backgroundColor: "#1F237A" }}>
+                <TableCell
+                  align="left"
+                  sx={{ color: "white", fontWeight: "bold" }}
+                >
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa14.png?alt=media&token=0adf0d7c-ba88-48a2-abee-864cbf6850e5"
+                    alt="Ícono Número de Ítem"
+                    style={{ height: "24px", marginRight: "8px" }} // Ajusta el tamaño de la imagen
+                  />
+                  Número de Ítem
+                </TableCell>
+                <TableCell
+                  align="left"
+                  sx={{ color: "white", fontWeight: "bold" }}
+                >
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa15.png?alt=media&token=3e9271c1-9533-4661-ab02-d30de0ad90e6"
+                    alt="Ícono Número de Ítem"
+                    style={{ height: "24px", marginRight: "8px" }} // Ajusta el tamaño de la imagen
+                  />
+                  Rubro
+                </TableCell>
+                <TableCell
+                  align="left"
+                  sx={{ color: "white", fontWeight: "bold" }}
+                >
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa16.png?alt=media&token=d8afd433-339c-4f9a-ab2d-b211e10345b2"
+                    alt="Ícono Número de Ítem"
+                    style={{ height: "24px", marginRight: "8px" }} // Ajusta el tamaño de la imagen
+                  />
+                  Total
+                </TableCell>
+                <TableCell
+                  align="left"
+                  sx={{ color: "white", fontWeight: "bold" }}
+                >
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa17.png?alt=media&token=aae19df1-ae52-45f4-8653-042af6b5a59b"
+                    alt="Ícono Número de Ítem"
+                    style={{ height: "24px", marginRight: "8px" }} // Ajusta el tamaño de la imagen
+                  />
+                  Ver Archivo
+                </TableCell>
+                <TableCell
+                  align="left"
+                  sx={{ color: "white", fontWeight: "bold" }}
+                >
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa18.png?alt=media&token=8228c7ef-c92f-478c-995a-2104ea29f3d4"
+                    alt="Ícono Número de Ítem"
+                    style={{ height: "24px", marginRight: "8px" }} // Ajusta el tamaño de la imagen
+                  />
+                  Detalle
+                </TableCell>
+                <TableCell
+                  align="left"
+                  sx={{ color: "white", fontWeight: "bold" }}
+                >
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa21.png?alt=media&token=8eacf126-3bd4-42cb-bdb1-900c746eea23"
+                    alt="Ícono Número de Ítem"
+                    style={{ height: "24px", marginRight: "8px" }} // Ajusta el tamaño de la imagen
+                  />
+                  Editar
+                </TableCell>
+                <TableCell
+                  align="left"
+                  sx={{ color: "white", fontWeight: "bold" }}
+                >
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa22.png?alt=media&token=554ee3ea-2338-48be-ba94-fd6535f34fc4"
+                    alt="Ícono Número de Ítem"
+                    style={{ height: "24px", marginRight: "8px" }} // Ajusta el tamaño de la imagen
+                  />
+                  Eliminar
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {records.map((record, index) => (
+                <TableRow key={record.id}>
+                  <TableCell align="left">{index + 1}</TableCell>
+                  <TableCell align="left">{record.rubro}</TableCell>
+                  <TableCell align="left">{record.total}</TableCell>
+                  <TableCell align="left">
+                    {record.archivo && (
+                      <Button
+                        variant="contained"
+                        color="success"
+                        onClick={() => handleViewFile(record.archivo)}
+                      >
+                        <img
+                          src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa17.png?alt=media&token=aae19df1-ae52-45f4-8653-042af6b5a59b"
+                          alt="Ícono Número de Ítem"
+                          style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                        />
+                      </Button>
+                    )}
+                  </TableCell>
+                  <TableCell align="left">
+                    <Button
+                      variant="contained"
+                      color="warning"
+                      onClick={() => handleViewDetail(record.id)}
+                    >
+                      <img
+                        src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa18.png?alt=media&token=8228c7ef-c92f-478c-995a-2104ea29f3d4"
+                        alt="Ícono Número de Ítem"
+                        style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                      />
+                    </Button>
+                  </TableCell>
+                  <TableCell align="left">
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => handleEditRecord(record)}
+                      disabled={record.rubro.toLowerCase() === "movilidad"}
+                    >
+                      <img
+                        src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa21.png?alt=media&token=8eacf126-3bd4-42cb-bdb1-900c746eea23"
+                        alt="Ícono Número de Ítem"
+                        style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                      />
+                    </Button>
+                  </TableCell>
+                  <TableCell align="left">
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={() => handleOpenConfirmDeleteDialog(record.id)}
+                    >
+                      <img
+                        src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa22.png?alt=media&token=554ee3ea-2338-48be-ba94-fd6535f34fc4"
+                        alt="Ícono Número de Ítem"
+                        style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                      />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
       <Dialog open={dialogOpen} onClose={() => handleDialogClose(false)}>
         <DialogTitle>Datos enviados con éxito</DialogTitle>
         <DialogContent>
@@ -1329,15 +1198,16 @@ const DatosRecibo = () => {
           </Button>
           <Button
             onClick={async () => {
+              await handleFinalizarRendicion();
               handleDialogClose(false);
             }}
             color="secondary"
           >
-            Volver
+            Finalizar Rendición
           </Button>
         </DialogActions>
       </Dialog>
-      <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
+      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>Archivo del Documento</DialogTitle>
         <DialogContent>
           {selectedFile && (
@@ -1347,6 +1217,7 @@ const DatosRecibo = () => {
               height="600px"
               title="Archivo del Documento"
               frameBorder="0"
+              //style={{ transform: "scale(0.4)", transformOrigin: "top" }}
             />
           )}
         </DialogContent>
@@ -1368,6 +1239,7 @@ const DatosRecibo = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
       <Dialog
         open={detailDialogOpen}
         onClose={handleCloseDetailDialog}
@@ -1380,20 +1252,103 @@ const DatosRecibo = () => {
             <TableContainer component={Paper}>
               <Table>
                 <TableBody>
-                  {Object.entries(documentDetail).map(
-                    ([key, value]) =>
-                      key !== "id" &&
-                      key !== "archivo" && (
-                        <TableRow key={key}>
-                          <TableCell sx={{ fontWeight: "bold" }}>
-                            {key}
-                          </TableCell>
-                          <TableCell>
-                            {value ? value.toString() : "-"}
-                          </TableCell>
-                        </TableRow>
-                      )
-                  )}
+                  {/* Información básica del documento */}
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      Fecha de Solicitud
+                    </TableCell>
+                    <TableCell>
+                      {documentDetail.fecha_solicitud
+                        ? new Date(
+                            documentDetail.fecha_solicitud
+                          ).toLocaleDateString()
+                        : "-"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      Fecha de Rendición
+                    </TableCell>
+                    <TableCell>
+                      {documentDetail.fecha_rendicion
+                        ? new Date(
+                            documentDetail.fecha_rendicion
+                          ).toLocaleDateString()
+                        : "-"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>RUC</TableCell>
+                    <TableCell>{documentDetail.ruc || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Proveedor</TableCell>
+                    <TableCell>{documentDetail.proveedor || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      Tipo de Documento
+                    </TableCell>
+                    <TableCell>
+                      {documentDetail.tipo_documento || "-"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Serie</TableCell>
+                    <TableCell>{documentDetail.serie || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      Correlativo
+                    </TableCell>
+                    <TableCell>{documentDetail.correlativo || "-"}</TableCell>
+                  </TableRow>
+
+                  {/* Información financiera */}
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Sub Total</TableCell>
+                    <TableCell>{documentDetail.sub_total || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>IGV</TableCell>
+                    <TableCell>{documentDetail.igv || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Total</TableCell>
+                    <TableCell>{documentDetail.total || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Moneda</TableCell>
+                    <TableCell>{documentDetail.moneda || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      Tipo de Cambio
+                    </TableCell>
+                    <TableCell>{documentDetail.tipo_cambio || "-"}</TableCell>
+                  </TableRow>
+
+                  {/* Información adicional */}
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Rubro</TableCell>
+                    <TableCell>{documentDetail.rubro || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      Cuenta Contable
+                    </TableCell>
+                    <TableCell>
+                      {documentDetail.cuenta_contable || "-"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Estado</TableCell>
+                    <TableCell>{documentDetail.estado || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Detalle</TableCell>
+                    <TableCell>{documentDetail.detalle || "-"}</TableCell>
+                  </TableRow>
                 </TableBody>
               </Table>
             </TableContainer>
@@ -1410,34 +1365,191 @@ const DatosRecibo = () => {
 
       <Dialog
         open={confirmFinalizarDialogOpen}
-        onClose={() => setConfirmFinalizarDialogOpen(false)}
+        onClose={handleCloseFinalizarDialog}
       >
-        <DialogTitle>Confirmación</DialogTitle>
+        <DialogTitle>Seleccionar Anticipos</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            ¿Estás seguro de finalizar la rendición de gastos?
-          </DialogContentText>
+          {isLoadingSolicitudes ? (
+            <CircularProgress /> // Mostrar un indicador de carga
+          ) : (
+            <>
+              <DialogContentText>
+                Seleccione los anticipos que incluirán esta rendición.
+              </DialogContentText>
+              {solicitudOpciones.length > 0 ? (
+                <FormGroup>
+                  {solicitudOpciones.map((opcion) => (
+                    <FormControlLabel
+                      key={opcion.id}
+                      control={
+                        <Checkbox
+                          checked={checkedOpciones.includes(opcion.id)}
+                          onChange={() => {
+                            setCheckedOpciones((prevChecked) =>
+                              prevChecked.includes(opcion.id)
+                                ? prevChecked.filter(
+                                    (item) => item !== opcion.id
+                                  )
+                                : [...prevChecked, opcion.id]
+                            );
+                          }}
+                        />
+                      }
+                      label={opcion.nombre}
+                    />
+                  ))}
+                </FormGroup>
+              ) : (
+                <Typography variant="body1" sx={{ textAlign: "center", mt: 2 }}>
+                  No hay anticipos disponibles.
+                </Typography>
+              )}
+            </>
+          )}
         </DialogContent>
         <DialogActions>
-          <Button
-            onClick={() => setConfirmFinalizarDialogOpen(false)}
-            color="primary"
-          >
-            No
+          <Button onClick={handleCloseFinalizarDialog} color="primary">
+            Cancelar
           </Button>
           <Button
             onClick={async () => {
-              setConfirmFinalizarDialogOpen(false);
-              await handleFinalizarRendicion();
-              navigate("/colaborador");
+              try {
+                const userString = localStorage.getItem("user");
+                const user = userString ? JSON.parse(userString) : null;
+                const userId = user ? user.id : null;
+
+                if (!userId) {
+                  alert("Error: Usuario no autenticado");
+                  return;
+                }
+
+                const lastRendicionResponse = await axios.get(
+                  `${baseURL}/api/rendicion/last`,
+                  {
+                    params: { id_user: userId, tipo: "RENDICION" },
+                  }
+                );
+
+                const rendicionId = lastRendicionResponse.data.id;
+
+                if (!rendicionId) {
+                  alert("No se encontró una rendición activa");
+                  return;
+                }
+
+                await axios.put(`${baseURL}/api/rendicion/${rendicionId}`, {
+                  estado: "POR APROBAR",
+                });
+
+                let isRendicionCreated = false;
+                for (const solicitudId of checkedOpciones) {
+                  await axios.put(`${baseURL}/api/solicitud/${solicitudId}`, {
+                    estado: "TERMINADO",
+                  });
+
+                  await axios.post(`${baseURL}/rendicion_solicitud`, {
+                    rendicion_id: rendicionId,
+                    solicitud_id: solicitudId,
+                    estado: "POR APROBAR",
+                  });
+
+                  if (!isRendicionCreated) {
+                    const newRendicionResponse = await axios.post(
+                      `${baseURL}/api/rendicion/`,
+                      {
+                        id_user: userId,
+                        id_empresa: user.id_empresa,
+                      }
+                    );
+                    isRendicionCreated = true;
+                  }
+                }
+
+                setCheckedOpciones([]);
+                setConfirmFinalizarDialogOpen(false);
+                navigate("/colaborador");
+              } catch (error) {
+                console.error("Error al finalizar la rendición:", error);
+                alert(
+                  "Ocurrió un error al procesar las solicitudes. Intente nuevamente."
+                );
+              }
+            }}
+            color="secondary"
+            disabled={solicitudOpciones.length === 0}
+          >
+            Confirmar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Modal para "No se encontraron anticipos" */}
+      <Dialog open={noAnticiposModalOpen} onClose={handleCloseNoAnticiposModal}>
+        <DialogTitle>No se encontraron anticipos</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            No hay anticipos disponibles para asociar a esta rendición. ¿Desea
+            crear una nueva rendición sin anticipos?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseNoAnticiposModal} color="primary">
+            Cancelar
+          </Button>
+          <Button
+            onClick={async () => {
+              try {
+                const userString = localStorage.getItem("user");
+                const user = userString ? JSON.parse(userString) : null;
+                const userId = user ? user.id : null;
+
+                if (!userId) {
+                  alert("Error: Usuario no autenticado");
+                  return;
+                }
+
+                const lastRendicionResponse = await axios.get(
+                  `${baseURL}/api/rendicion/last`,
+                  {
+                    params: { id_user: userId, tipo: "RENDICION" },
+                  }
+                );
+
+                const rendicionId = lastRendicionResponse.data.id;
+
+                await axios.put(`${baseURL}/api/rendicion/${rendicionId}`, {
+                  estado: "POR APROBAR",
+                });
+
+                // Llamar a la API para crear una nueva rendición
+                const newRendicionResponse = await axios.post(
+                  `${baseURL}/api/rendicion/`,
+                  {
+                    id_user: userId,
+                    id_empresa: user.id_empresa,
+                  }
+                );
+
+                // Cerrar el modal
+                setNoAnticiposModalOpen(false);
+
+                // Navegar a la página de colaborador o realizar otra acción
+                navigate("/colaborador");
+              } catch (error) {
+                console.error("Error al crear la rendición:", error);
+                alert(
+                  "Ocurrió un error al crear la rendición. Intente nuevamente."
+                );
+              }
             }}
             color="secondary"
           >
-            Sí
+            Confirmar
           </Button>
         </DialogActions>
       </Dialog>
     </Container>
   );
 };
-export default DatosRecibo;
+
+export default DatosReciboTable;
