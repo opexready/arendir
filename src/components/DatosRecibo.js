@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { QrReader } from "react-qr-reader";
+import { Html5QrcodeScanner, Html5QrcodeScanType } from "html5-qrcode";
 import FlipCameraIosIcon from "@mui/icons-material/FlipCameraIos";
 import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
+import { QrReader } from "react-qr-reader";
 import {
   Container,
   Card,
@@ -86,6 +87,11 @@ const DatosRecibo = () => {
     { value: "6591", label: "Donaciones" },
     { value: "6592", label: "Sanciones administrativas" },
   ];
+  const [showQrReader2, setShowQrReader2] = useState(false);
+  const [qrResult2, setQrResult2] = useState(null);
+  const [qrError2, setQrError2] = useState(null);
+  const [isScanning2, setIsScanning2] = useState(false);
+  const [cameraFacingMode, setCameraFacingMode] = useState("environment");
   const [category, setCategory] = useState("");
   const handleCategoryChange = (event) => {
     const selectedValue = event.target.value;
@@ -106,6 +112,7 @@ const DatosRecibo = () => {
   const navigate = useNavigate();
   const { selectedCuentaContable, selectedRubro } = location.state || {};
   const [scanTimeout, setScanTimeout] = useState(null);
+  const [html5QrCode, setHtml5QrCode] = useState(null);
   const [formData, setFormData] = useState({
     fecha: "",
     ruc: "",
@@ -142,12 +149,85 @@ const DatosRecibo = () => {
   const [qrResult, setQrResult] = useState(null);
   const [qrError, setQrError] = useState(null);
   const [isScanning, setIsScanning] = useState(false);
-  const [availableCameras, setAvailableCameras] = useState([]);
-  const [selectedCamera, setSelectedCamera] = useState(null);
-  const [cameraFacingMode, setCameraFacingMode] = useState("environment");
   // Busca donde están los otros estados y añade:
   const [mainCameraId, setMainCameraId] = useState(null);
   const [cameraInitialized, setCameraInitialized] = useState(false);
+
+  const handleStartScanner2 = () => {
+    limpiarFormulario();
+    setShowQrReader2(true);
+    setIsScanning2(true);
+    setError("");
+    setQrResult2(null);
+    setQrError2(null);
+
+    if (scanTimeout) {
+      clearTimeout(scanTimeout);
+    }
+
+    const timeout = setTimeout(() => {
+      if (!qrResult2) {
+        setQrError2(
+          "No se pudo leer el QR después de 30 segundos. Por favor, intenta nuevamente."
+        );
+        setShowQrReader2(false);
+        setIsScanning2(false);
+      }
+    }, 30000);
+
+    setScanTimeout(timeout);
+  };
+
+  useEffect(() => {
+    if (qrResult2) {
+      handleProcessQrResult2();
+    }
+  }, [qrResult2]);
+
+  const handleProcessQrResult2 = async () => {
+    try {
+      if (!qrResult2) {
+        console.error("No se ha detectado un resultado del escaneo.");
+        return;
+      }
+
+      console.log("Llamando a la API con el resultado:", qrResult2);
+
+      const response = await axios.post(`${baseURL}/api/process-qr/`, {
+        data: qrResult2,
+      });
+
+      console.log("Respuesta del backend:", response.data);
+
+      const processedData = response.data;
+
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        fecha: processedData.fecha || "",
+        ruc: processedData.ruc || "",
+        tipoDoc: processedData.tipo || "",
+        serie: processedData.serie || "",
+        numero: processedData.numero || "",
+        igv: processedData.igv || "",
+        total: processedData.total || "",
+      }));
+      setSearchRuc(processedData.ruc || "");
+      setError("");
+
+      if (processedData.ruc) {
+        handleSearch(processedData.ruc);
+      }
+    } catch (error) {
+      setError("Error al procesar el QR. Por favor, inténtalo nuevamente.");
+      console.error("Error al llamar a /api/process-qr/:", error);
+    }
+  };
+
+  const handleCameraSwitch2 = (mode) => {
+    setCameraFacingMode(mode);
+    setShowQrReader2(false);
+    setTimeout(() => setShowQrReader2(true), 100);
+  };
 
   const limpiarFormulario = () => {
     setFormData({
@@ -170,18 +250,60 @@ const DatosRecibo = () => {
     setSearchResult(null);
     setError("");
     setQrError(null);
+    setQrError2(null); // Agregar esta línea
     setDetalle("");
     setQrFile(null);
     setQrResult(null);
+    setQrResult2(null); // Agregar esta línea
     setShowQrReader(false);
+    setShowQrReader2(false); // Agregar esta línea
     setIsScanning(false);
+    setIsScanning2(false); // Agregar esta línea
   };
 
-  
+  // const limpiarFormulario = () => {
+  //   setFormData({
+  //     fecha: "",
+  //     ruc: "",
+  //     tipoDoc: "",
+  //     cuentaContable: selectedCuentaContable || "",
+  //     serie: "",
+  //     numero: "",
+  //     rubro: selectedRubro || "",
+  //     moneda: "PEN",
+  //     afecto: "",
+  //     igv: "",
+  //     inafecto: "",
+  //     total: "",
+  //     archivo: "",
+  //   });
+  //   setCategory("");
+  //   setSearchRuc("");
+  //   setSearchResult(null);
+  //   setError("");
+  //   setQrError(null);
+  //   setDetalle("");
+  //   setQrFile(null);
+  //   setQrResult(null);
+  //   setShowQrReader(false);
+  //   setIsScanning(false);
+  // };
+
+  const formatNumber = (value) => {
+    if (value === "" || value === null || value === undefined) return "";
+    const num = typeof value === "string" ? parseFloat(value) : value;
+    return isNaN(num) ? "" : num.toFixed(2);
+  };
+
   useEffect(() => {
     if (qrResult) {
       handleProcessQrResult();
     }
+    return () => {
+      if (html5QrScanner.current) {
+        html5QrScanner.current.clear();
+      }
+    };
   }, [qrResult]);
 
   const handleProcessQrResult = async () => {
@@ -223,10 +345,61 @@ const DatosRecibo = () => {
     }
   };
 
-  const handleCameraSwitch = (mode) => {
-    setCameraFacingMode(mode);
-    setShowQrReader(false);
-    setTimeout(() => setShowQrReader(true), 100);
+  const handleCameraSwitch = () => {
+    if (html5QrScanner) {
+      html5QrScanner.clear();
+      setShowQrReader(false);
+      setTimeout(() => {
+        initScanner();
+      }, 100);
+    }
+  };
+
+  const html5QrScanner = useRef(null);
+
+  const initScanner = () => {
+    if (html5QrScanner.current) {
+      html5QrScanner.current.clear();
+    }
+
+    const config = {
+      fps: 10,
+      qrbox: { width: 250, height: 250 },
+      rememberLastUsedCamera: true,
+      supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
+      facingMode: "environment", // Siempre usa la cámara trasera
+    };
+
+    html5QrScanner.current = new Html5QrcodeScanner(
+      "qr-reader-container",
+      config,
+      false
+    );
+
+    html5QrScanner.current.render(
+      (decodedText) => {
+        limpiarFormulario();
+        console.log("Resultado del QR:", decodedText);
+        if (scanTimeout) {
+          clearTimeout(scanTimeout);
+          setScanTimeout(null);
+        }
+        setError(null);
+        setQrError(null);
+        setQrResult(decodedText);
+        setShowQrReader(false);
+        setIsScanning(false);
+
+        if (html5QrScanner.current) {
+          html5QrScanner.current.clear();
+        }
+      },
+      (error) => {
+        console.error("Error al leer el QR:", error);
+      }
+    );
+
+    setShowQrReader(true);
   };
 
   useEffect(() => {
@@ -568,15 +741,17 @@ const DatosRecibo = () => {
 
   const handleSearch = async (ruc) => {
     try {
+      const rucToSearch = typeof ruc === "string" ? ruc : searchRuc;
       const response = await axios.get(
-        `${baseURL}/consulta-ruc?ruc=${ruc || searchRuc}`
+        `${baseURL}/consulta-ruc/?ruc=${encodeURIComponent(rucToSearch)}`
       );
 
       setSearchResult(response.data);
 
+      // Actualizar formData.ruc con el valor correcto (rucToSearch)
       setFormData((prevFormData) => ({
         ...prevFormData,
-        ruc: ruc || searchRuc,
+        ruc: rucToSearch, // Usar directamente rucToSearch en lugar de ruc || searchRuc
       }));
 
       setError("");
@@ -686,6 +861,34 @@ const DatosRecibo = () => {
     }
   };
 
+  const handleStartScanner = () => {
+    limpiarFormulario();
+    setShowQrReader(true);
+    setIsScanning(true);
+    setError("");
+    setQrResult(null);
+    setQrError(null);
+
+    if (scanTimeout) {
+      clearTimeout(scanTimeout);
+    }
+
+    const timeout = setTimeout(() => {
+      if (!qrResult) {
+        setQrError(
+          "No se pudo leer el QR después de 30 segundos. Por favor, intenta nuevamente."
+        );
+        setShowQrReader(false);
+        setIsScanning(false);
+        if (html5QrScanner.current) {
+          html5QrScanner.current.clear();
+        }
+      }
+    }, 30000);
+
+    setScanTimeout(timeout);
+  };
+
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
 
@@ -737,6 +940,14 @@ const DatosRecibo = () => {
       }));
     }
   }, [formData.afecto, formData.igv, formData.total]);
+
+  useEffect(() => {
+    if (showQrReader) {
+      setTimeout(() => {
+        initScanner();
+      }, 100); // Espera 100ms para asegurar que el DOM ya renderizó el contenedor
+    }
+  }, [showQrReader]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -917,7 +1128,6 @@ const DatosRecibo = () => {
                 Buscar
               </Button>
             </div>
-
             <div className="col-md-4">
               <Button
                 variant="outlined"
@@ -977,32 +1187,81 @@ const DatosRecibo = () => {
                     color: "white",
                   },
                 }}
-                onClick={() => {
-                  limpiarFormulario();
-                  setShowQrReader(true);
-                  setIsScanning(true);
-                  setError("");
-                  setQrResult(null);
-                  setQrError(null); // Limpiar errores anteriores
-
-                  if (scanTimeout) {
-                    clearTimeout(scanTimeout);
-                  }
-
-                  const timeout = setTimeout(() => {
-                    if (!qrResult) {
-                      setQrError(
-                        "No se pudo leer el QR después de 30 segundos. Por favor, intenta nuevamente."
-                      );
-                      setShowQrReader(false);
-                      setIsScanning(false);
-                    }
-                  }, 30000);
-
-                  setScanTimeout(timeout);
-                }}
+                onClick={handleStartScanner}
               >
                 Escanear QR
+              </Button>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: 2,
+                  marginTop: 2,
+                }}
+              >
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{
+                    backgroundColor: "#2E3192",
+                    "&:hover": { backgroundColor: "#1F237A" },
+                  }}
+                  onClick={handleCameraSwitch}
+                >
+                  Reiniciar Escáner
+                </Button>
+              </Box>
+
+              {isScanning && (
+                <Typography
+                  variant="body1"
+                  color="primary"
+                  sx={{ marginTop: 2 }}
+                >
+                  Escaneando... Por favor, apunta al código QR.
+                </Typography>
+              )}
+
+              {showQrReader && (
+                <Box
+                  sx={{
+                    marginTop: 2,
+                    position: "relative",
+                    width: "100%",
+                    maxWidth: "500px",
+                    margin: "0 auto",
+                  }}
+                  id="qr-reader-container"
+                >
+                  {/* Html5QrcodeScanner se auto-inyectará aquí */}
+                </Box>
+              )}
+
+              {qrError && (
+                <Alert severity="error" sx={{ marginTop: 2 }}>
+                  {qrError}
+                </Alert>
+              )}
+            </div>
+            // Buscar donde están los otros botones y agregar esto:
+            <div className="col-md-4">
+              <Button
+                variant="outlined"
+                fullWidth
+                sx={{
+                  marginTop: 2,
+                  borderColor: "#2E3192",
+                  color: "#2E3192",
+                  "&:hover": {
+                    backgroundColor: "#F15A29",
+                    borderColor: "#F15A29",
+                    color: "white",
+                  },
+                }}
+                onClick={handleStartScanner2}
+              >
+                Escanear QR 2
               </Button>
               <Box
                 sx={{
@@ -1019,11 +1278,7 @@ const DatosRecibo = () => {
                     backgroundColor: "#2E3192",
                     "&:hover": { backgroundColor: "#1F237A" },
                   }}
-                  onClick={() => {
-                    setCameraFacingMode("environment");
-                    setShowQrReader(false);
-                    setTimeout(() => setShowQrReader(true), 100);
-                  }}
+                  onClick={() => handleCameraSwitch2("environment")}
                 >
                   Cámara Trasera
                 </Button>
@@ -1034,16 +1289,12 @@ const DatosRecibo = () => {
                     backgroundColor: "#F15A29",
                     "&:hover": { backgroundColor: "#D44115" },
                   }}
-                  onClick={() => {
-                    setCameraFacingMode("user");
-                    setShowQrReader(false);
-                    setTimeout(() => setShowQrReader(true), 100);
-                  }}
+                  onClick={() => handleCameraSwitch2("user")}
                 >
                   Cámara Frontal
                 </Button>
               </Box>
-              {isScanning && (
+              {isScanning2 && (
                 <Typography
                   variant="body1"
                   color="primary"
@@ -1053,7 +1304,7 @@ const DatosRecibo = () => {
                 </Typography>
               )}
 
-              {showQrReader && cameraInitialized && mainCameraId ? (
+              {showQrReader2 && (
                 <Box
                   sx={{
                     marginTop: 2,
@@ -1065,7 +1316,7 @@ const DatosRecibo = () => {
                 >
                   <QrReader
                     constraints={{
-                      deviceId: { exact: mainCameraId },
+                      facingMode: cameraFacingMode,
                       width: { ideal: 1920 },
                       height: { ideal: 1080 },
                       aspectRatio: 16 / 9,
@@ -1081,10 +1332,10 @@ const DatosRecibo = () => {
                           setScanTimeout(null);
                         }
                         setError(null);
-                        setQrError(null);
-                        setQrResult(result.text);
-                        setShowQrReader(false);
-                        setIsScanning(false);
+                        setQrError2(null);
+                        setQrResult2(result.text);
+                        setShowQrReader2(false);
+                        setIsScanning2(false);
                       }
                       if (error) {
                         console.error("Error al leer el QR:", error);
@@ -1104,32 +1355,12 @@ const DatosRecibo = () => {
                       objectFit: "cover",
                     }}
                   />
-                  <Typography
-                    variant="body2"
-                    sx={{ mt: 1, textAlign: "center", color: "#2E3192" }}
-                  >
-                    Usando cámara de mayor resolución disponible
-                  </Typography>
                 </Box>
-              ) : showQrReader && !cameraInitialized ? (
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: "300px",
-                  }}
-                >
-                  <CircularProgress />
-                  <Typography variant="body1" sx={{ ml: 2 }}>
-                    Configurando cámara óptima...
-                  </Typography>
-                </Box>
-              ) : null}
+              )}
 
-              {qrError && (
+              {qrError2 && (
                 <Alert severity="error" sx={{ marginTop: 2 }}>
-                  {qrError}
+                  {qrError2}
                 </Alert>
               )}
             </div>
@@ -1259,7 +1490,7 @@ const DatosRecibo = () => {
               margin="normal"
               id="afecto"
               name="afecto"
-              value={formData.afecto}
+              value={formatNumber(formData.afecto)}
             />
             <TextField
               label="Inafecto"
@@ -1268,7 +1499,7 @@ const DatosRecibo = () => {
               margin="normal"
               id="inafecto"
               name="inafecto"
-              value={formData.inafecto}
+              value={formatNumber(formData.inafecto)}
               InputProps={{
                 readOnly: true,
               }}
@@ -1283,7 +1514,7 @@ const DatosRecibo = () => {
                 margin="normal"
                 id={field}
                 name={field}
-                value={formData[field]}
+                value={formatNumber(formData[field])}
                 onChange={handleChange}
               />
             ))}
