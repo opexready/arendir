@@ -468,7 +468,9 @@ const DatosRecibo = () => {
     if (!dateString) return null;
     if (dateString.includes("/")) {
       const [day, month, year] = dateString.split("/");
-      return new Date(`${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`);
+      return new Date(
+        `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`
+      );
     }
     return new Date(dateString);
   };
@@ -687,12 +689,15 @@ const DatosRecibo = () => {
 
   const fetchTipoCambio = async (fecha) => {
     try {
+      // Formatear la fecha a YYYY-MM-DD
+      const formattedDate = fecha.toISOString().split('T')[0];
+      
       const response = await axios.get(
-        `${baseURL}/tipo-cambio/?fecha=${fecha}`
+        `${baseURL}/tipo-cambio/?fecha=${formattedDate}`
       );
       const precioVenta = response.data.precioVenta;
       setTipoCambio(precioVenta);
-
+  
       // Convertir de PEN a USD multiplicando por el nuevo tipoCambio
       setFormData((prev) => ({
         ...prev,
@@ -933,19 +938,19 @@ const DatosRecibo = () => {
 
   useEffect(() => {
     if (formData.afecto && formData.igv && formData.total) {
-      const afecto = parseFloat(formData.afecto) || 0;
-      const igv = parseFloat(formData.igv) || 0;
-      const total = parseFloat(formData.total) || 0;
-
-      //const inafectoValue = Math.max(0, total - (afecto + igv)).toFixed(2);
-      let rawValue = total - (afecto + igv);
-      const inafectoValue = (Math.abs(rawValue) < 0.005 ? 0 : rawValue).toFixed(
-        2
-      );
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        inafecto: inafectoValue,
-      }));
+      // Solo calcular inafecto si no se ha ingresado manualmente
+      if (!formData.inafecto || formData.inafecto === "0.00") {
+        const afecto = parseFloat(formData.afecto) || 0;
+        const igv = parseFloat(formData.igv) || 0;
+        const total = parseFloat(formData.total) || 0;
+        let rawValue = total - (afecto + igv);
+        const inafectoValue = (Math.abs(rawValue) < 0.005 ? 0 : rawValue).toFixed(2);
+        
+        setFormData(prevFormData => ({
+          ...prevFormData,
+          inafecto: inafectoValue
+        }));
+      }
     }
   }, [formData.afecto, formData.igv, formData.total]);
 
@@ -1538,7 +1543,8 @@ const DatosRecibo = () => {
               margin="normal"
               id="afecto"
               name="afecto"
-              value={formatNumber(formData.afecto)}
+              value={formData.afecto}
+              onChange={handleChange}
             />
             <TextField
               label="Inafecto"
@@ -1547,10 +1553,8 @@ const DatosRecibo = () => {
               margin="normal"
               id="inafecto"
               name="inafecto"
-              value={formatNumber(formData.inafecto)}
-              InputProps={{
-                readOnly: true,
-              }}
+              value={formData.inafecto}
+              onChange={handleChange}
             />
 
             {["igv", "total"].map((field) => (
@@ -1562,7 +1566,7 @@ const DatosRecibo = () => {
                 margin="normal"
                 id={field}
                 name={field}
-                value={formatNumber(formData[field])}
+                value={formData[field]}
                 onChange={handleChange}
               />
             ))}
