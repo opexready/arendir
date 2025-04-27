@@ -452,7 +452,7 @@ const DatosRecibo = () => {
           setCameraInitialized(true);
         } else {
           setQrError(
-            "No se pudo acceder a ninguna cámara con buena resolución"
+            // "No se pudo acceder a ninguna cámara con buena resolución"
           );
         }
       } catch (error) {
@@ -1000,7 +1000,7 @@ const DatosRecibo = () => {
       gerencia: gerencia,
       ruc: formData.ruc,
       proveedor: formData.proveedor || "Proveedor Desconocido",
-      fecha_emision: formData.fecha,
+      fecha_emision: formData.fecha ? new Date(formData.fecha).toISOString().split('T')[0] : null,
       moneda: formData.moneda || "PEN",
       tipo_documento: formData.tipoDoc,
       serie: formData.serie,
