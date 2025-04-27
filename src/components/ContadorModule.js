@@ -37,25 +37,52 @@ const ContadorModule = () => {
     fechaHasta: "",
   });
 
+  // const updateEstadoRendicion = async (id, tipo, nuevoEstado) => {
+  //   try {
+  //     if (tipo === "RENDICION") {
+  //       await axios.put(`${baseURL}/api/rendicion/${id}`, { estado: nuevoEstado });
+  //     } else if (tipo === "ANTICIPO") {
+  //       await axios.put(`${baseURL}/api/solicitud/${id}`, {
+  //         estado: nuevoEstado,
+  //       });
+  //     }
+  //     setRendiciones((prevRendiciones) =>
+  //       prevRendiciones.map((rendicion) =>
+  //         rendicion.rendicion.id === id
+  //           ? {
+  //               ...rendicion,
+  //               rendicion: { ...rendicion.rendicion, estado: nuevoEstado },
+  //             }
+  //           : rendicion
+  //       )
+  //     );
+  //   } catch (error) {
+  //     console.error("Error al actualizar el estado de la rendición:", error);
+  //   }
+  // };
+
   const updateEstadoRendicion = async (id, tipo, nuevoEstado) => {
     try {
+      const userString = localStorage.getItem("user");
+      const user = userString ? JSON.parse(userString) : null;
+      const idAprobador = user ? user.id : null;
+      const nomAprobador = user ? user.full_name : null;
+      console.log("###############nomAprobador",nomAprobador)
+
       if (tipo === "RENDICION") {
-        await axios.put(`${baseURL}/api/rendicion/${id}`, { estado: nuevoEstado });
+        await axios.put(`${baseURL}/api/rendicion/${id}`, {
+          estado: nuevoEstado,
+          id_aprobador: idAprobador,
+          nom_aprobador: nomAprobador,
+        });
       } else if (tipo === "ANTICIPO") {
         await axios.put(`${baseURL}/api/solicitud/${id}`, {
           estado: nuevoEstado,
+          id_aprobador: idAprobador,
+          nom_aprobador: nomAprobador,
         });
       }
-      setRendiciones((prevRendiciones) =>
-        prevRendiciones.map((rendicion) =>
-          rendicion.rendicion.id === id
-            ? {
-                ...rendicion,
-                rendicion: { ...rendicion.rendicion, estado: nuevoEstado },
-              }
-            : rendicion
-        )
-      );
+      // Aquí puedes agregar lógica para actualizar el estado local si es necesario
     } catch (error) {
       console.error("Error al actualizar el estado de la rendición:", error);
     }
@@ -105,7 +132,7 @@ const ContadorModule = () => {
         `${baseURL}/api/rendiciones-solicitudes/con-documentos/`,
         {
           params: {
-            tipo: filtros.tipo_solicitud || undefined,
+            tipo_solicitud: filtros.tipo_solicitud || undefined,
             estado: filtros.estado || "POR APROBAR",
             id_user: filtros.colaborador || undefined,
             fecha_registro_from: filtros.fechaDesde || undefined,

@@ -38,13 +38,50 @@ const AdministracionModule2 = () => {
     fechaHasta: "",
   });
 
+  // const updateEstadoRendicion = async (id, tipo, nuevoEstado) => {
+  //   try {
+  //     if (tipo === "RENDICION") {
+  //       await axios.put(`${baseURL}/api/rendicion/${id}`, { estado: nuevoEstado });
+  //     } else if (tipo === "ANTICIPO") {
+  //       await axios.put(`${baseURL}/api/solicitud/${id}`, {
+  //         estado: nuevoEstado,
+  //       });
+  //     }
+  //     setRendiciones((prevRendiciones) =>
+  //       prevRendiciones.map((rendicion) =>
+  //         rendicion.rendicion.id === id
+  //           ? {
+  //               ...rendicion,
+  //               rendicion: { ...rendicion.rendicion, estado: nuevoEstado },
+  //             }
+  //           : rendicion
+  //       )
+  //     );
+  //   } catch (error) {
+  //     console.error("Error al actualizar el estado de la rendición:", error);
+  //   }
+  // };
+
+
   const updateEstadoRendicion = async (id, tipo, nuevoEstado) => {
     try {
+      const userString = localStorage.getItem("user");
+      const user = userString ? JSON.parse(userString) : null;
+      const idAprobador = user ? user.id : null;
+      const nomAprobador = user ? user.full_name : null; // Cambiado de email a full_name
+      console.log("###############nomAprobador",nomAprobador)
+  
       if (tipo === "RENDICION") {
-        await axios.put(`${baseURL}/api/rendicion/${id}`, { estado: nuevoEstado });
+        await axios.put(`${baseURL}/api/rendicion/${id}`, { 
+          estado: nuevoEstado,
+          id_contador: idAprobador,
+          nom_contador: nomAprobador
+        });
       } else if (tipo === "ANTICIPO") {
         await axios.put(`${baseURL}/api/solicitud/${id}`, {
           estado: nuevoEstado,
+          id_contador: idAprobador,
+          nom_contador: nomAprobador
         });
       }
       setRendiciones((prevRendiciones) =>
@@ -61,6 +98,9 @@ const AdministracionModule2 = () => {
       console.error("Error al actualizar el estado de la rendición:", error);
     }
   };
+
+
+
 
   // Obtener empresa y colaboradores al cargar el componente
   useEffect(() => {
@@ -210,6 +250,7 @@ const AdministracionModule2 = () => {
       username: filtros.colaborador,
       fecha_desde: filtros.fechaDesde || undefined, // Agregando filtro de fecha desde
       fecha_hasta: filtros.fechaHasta || undefined, // Agregando filtro de fecha hasta
+      tipo_solicitud: filtros.tipo_solicitud || undefined // Añadir este parámetro
     };
     try {
       const response = await axios.get(`${baseURL}/documentos/export/excel`, {
@@ -291,7 +332,7 @@ const AdministracionModule2 = () => {
                 displayEmpty
               >
                 <MenuItem value="">
-                  <em>Tipos los tipos</em>
+                  <em>Tipos</em>
                 </MenuItem>
                 <MenuItem value="RENDICION">RENDICIÓN</MenuItem>
                 <MenuItem value="ANTICIPO">ANTICIPO</MenuItem>

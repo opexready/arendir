@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Html5QrcodeScanner, Html5QrcodeScanType } from "html5-qrcode";
-import FlipCameraIosIcon from "@mui/icons-material/FlipCameraIos";
-import CloseIcon from "@mui/icons-material/Close";
-import IconButton from "@mui/material/IconButton";
 import { QrReader } from "react-qr-reader";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import esLocale from "date-fns/locale/es";
 import {
   Container,
   Card,
@@ -114,7 +114,7 @@ const DatosRecibo = () => {
   const [scanTimeout, setScanTimeout] = useState(null);
   const [html5QrCode, setHtml5QrCode] = useState(null);
   const [formData, setFormData] = useState({
-    fecha: "",
+    fecha: null,
     ruc: "",
     tipoDoc: "",
     cuentaContable: selectedCuentaContable || "",
@@ -203,7 +203,7 @@ const DatosRecibo = () => {
 
       setFormData((prevFormData) => ({
         ...prevFormData,
-        fecha: processedData.fecha || "",
+        fecha: normalizeDate(processedData.fecha || ""),
         ruc: processedData.ruc || "",
         tipoDoc: processedData.tipo || "",
         serie: processedData.serie || "",
@@ -231,7 +231,7 @@ const DatosRecibo = () => {
 
   const limpiarFormulario = () => {
     setFormData({
-      fecha: "",
+      fecha: null,
       ruc: "",
       tipoDoc: "",
       cuentaContable: selectedCuentaContable || "",
@@ -325,7 +325,7 @@ const DatosRecibo = () => {
 
       setFormData((prevFormData) => ({
         ...prevFormData,
-        fecha: processedData.fecha || "",
+        fecha: normalizeDate(processedData.fecha || ""),
         ruc: processedData.ruc || "",
         tipoDoc: processedData.tipo || "",
         serie: processedData.serie || "",
@@ -465,11 +465,12 @@ const DatosRecibo = () => {
   }, []);
 
   const normalizeDate = (dateString) => {
+    if (!dateString) return null;
     if (dateString.includes("/")) {
       const [day, month, year] = dateString.split("/");
-      return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+      return new Date(`${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`);
     }
-    return dateString;
+    return new Date(dateString);
   };
 
   const handleCloseDetailDialog = () => {
@@ -733,6 +734,13 @@ const DatosRecibo = () => {
         fetchTipoCambio(formData.fecha);
       }
     }
+  };
+
+  const handleDateChange = (date) => {
+    setFormData((prev) => ({
+      ...prev,
+      fecha: date,
+    }));
   };
 
   const handleSearchRucChange = (e) => {
@@ -1244,7 +1252,6 @@ const DatosRecibo = () => {
                 </Alert>
               )}
             </div>
-            // Buscar donde están los otros botones y agregar esto:
             <div className="col-md-4">
               <Button
                 variant="outlined"
@@ -1396,7 +1403,7 @@ const DatosRecibo = () => {
           )}
 
           <form onSubmit={handleSubmit}>
-            {["fecha", "ruc", "cuentaContable", "serie", "numero"].map(
+            {/* {["fecha", "ruc", "cuentaContable", "serie", "numero"].map(
               (field) => (
                 <TextField
                   key={field}
@@ -1410,6 +1417,47 @@ const DatosRecibo = () => {
                   onChange={handleChange}
                 />
               )
+            )} */}
+
+            {["fecha", "ruc", "cuentaContable", "serie", "numero"].map(
+              (field) => {
+                if (field === "fecha") {
+                  return (
+                    <LocalizationProvider
+                      key={field}
+                      dateAdapter={AdapterDateFns}
+                      locale={esLocale}
+                    >
+                      <DatePicker
+                        label="Fecha"
+                        value={formData.fecha}
+                        onChange={handleDateChange}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            fullWidth
+                            margin="normal"
+                            required
+                          />
+                        )}
+                      />
+                    </LocalizationProvider>
+                  );
+                }
+                return (
+                  <TextField
+                    key={field}
+                    label={field.charAt(0).toUpperCase() + field.slice(1)}
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    id={field}
+                    name={field}
+                    value={formData[field]}
+                    onChange={handleChange}
+                  />
+                );
+              }
             )}
 
             <FormControl
