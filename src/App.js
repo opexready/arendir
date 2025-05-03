@@ -13,6 +13,7 @@ import AdminDashboard from './components/AdminDashboard';
 import RendicionGastos from './components/RendicionGastos';
 import LandingPage from './components/LandingPage';
 import DatosRecibo from './components/DatosRecibo';
+import ResetPassword from './components/ResetPassword';
 import DatosReciboTable from './components/DatosReciboTable';
 import Movilidad from './components/Movilidad';
 import AnticiposViajes from './components/AnticiposViajes';
@@ -24,6 +25,7 @@ import HistorialGastos from './components/HistorialGastos';// Importa tu nueva c
 import api from './api';
 import DocumentoDetail from './components/DocumentoDetail';
 import Profile from "./components/Profile";
+
 
 // Define el tema
 const theme = createTheme({
@@ -81,6 +83,7 @@ function App() {
                                     <Route path="/historial" element={<Historial />} /> {/* Nueva ruta para Historial */}
                                     <Route path="/editar-documento/:documento_id" element={<DocumentoDetail />} />
                                     <Route path="/profile" element={<Profile />} />
+                                    <Route path="/reset-password" element={<ResetPassword />} />
                                 </Routes>
                             </>
                         }
