@@ -166,7 +166,7 @@ const AnticipoTable = () => {
         //     Authorization: `Bearer ${localStorage.getItem("token")}`,
         //   },
         // });
-        const response = await api.get('/api/users/me/');
+        const response = await api.get("/api/users/me/");
         const userData = response.data;
         console.log("User ID:", userData.id);
         const userString = localStorage.getItem("user");
@@ -479,7 +479,7 @@ const AnticipoTable = () => {
                 </TableCell>
 
                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                <img
+                  <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa15.png?alt=media&token=3e9271c1-9533-4661-ab02-d30de0ad90e6"
                     alt="Ícono Número de Ítem"
                     style={{ height: "24px" }} // Ajusta el tamaño de la imagen
@@ -488,7 +488,7 @@ const AnticipoTable = () => {
                 </TableCell>
 
                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                <img
+                  <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa16.png?alt=media&token=d8afd433-339c-4f9a-ab2d-b211e10345b2"
                     alt="Ícono Número de Ítem"
                     style={{ height: "24px" }} // Ajusta el tamaño de la imagen
@@ -496,7 +496,7 @@ const AnticipoTable = () => {
                   Total
                 </TableCell>
                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                <img
+                  <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa17.png?alt=media&token=aae19df1-ae52-45f4-8653-042af6b5a59b"
                     alt="Ícono Número de Ítem"
                     style={{ height: "24px" }} // Ajusta el tamaño de la imagen
@@ -504,7 +504,7 @@ const AnticipoTable = () => {
                   Ver Archivo
                 </TableCell>
                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                <img
+                  <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa18.png?alt=media&token=8228c7ef-c92f-478c-995a-2104ea29f3d4"
                     alt="Ícono Número de Ítem"
                     style={{ height: "24px" }} // Ajusta el tamaño de la imagen
@@ -512,7 +512,7 @@ const AnticipoTable = () => {
                   Detalle
                 </TableCell>
                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                <img
+                  <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa22.png?alt=media&token=554ee3ea-2338-48be-ba94-fd6535f34fc4"
                     alt="Ícono Número de Ítem"
                     style={{ height: "24px" }} // Ajusta el tamaño de la imagen
@@ -620,76 +620,71 @@ const AnticipoTable = () => {
         fullWidth
       >
         <DialogTitle>Detalle del Documento</DialogTitle>
-                <DialogContent>
-                  {documentDetail ? (
-                    <TableContainer component={Paper}>
-                      <Table>
-                        <TableBody>
-                          {/* Información básica del documento */}
-                          <TableRow>
-                            <TableCell sx={{ fontWeight: "bold" }}>
-                              Fecha de Solicitud
-                            </TableCell>
-                            <TableCell>
-                              {documentDetail.fecha_solicitud
-                                ? new Date(
-                                    documentDetail.fecha_solicitud
-                                  ).toLocaleDateString()
-                                : "-"}
-                            </TableCell>
-                          </TableRow>
-                          
-                    
-                          <TableRow>
-                            <TableCell sx={{ fontWeight: "bold" }}>
-                              Tipo de Documento
-                            </TableCell>
-                            <TableCell>
-                              {documentDetail.tipo_documento || "-"}
-                            </TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell sx={{ fontWeight: "bold" }}>Tipo de Anticipo</TableCell>
-                            <TableCell>{documentDetail.tipo_anticipo || "-"}</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell sx={{ fontWeight: "bold" }}>Destino</TableCell>
-                            <TableCell>{documentDetail.destino || "-"}</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell sx={{ fontWeight: "bold" }}>Motivo</TableCell>
-                            <TableCell>{documentDetail.motivo || "-"}</TableCell>
-                          </TableRow>
-                          
-        
-                          {/* Información financiera */}
-                     
-                          <TableRow>
-                            <TableCell sx={{ fontWeight: "bold" }}>Total</TableCell>
-                            <TableCell>{documentDetail.total || "-"}</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell sx={{ fontWeight: "bold" }}>Moneda</TableCell>
-                            <TableCell>{documentDetail.moneda || "-"}</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell sx={{ fontWeight: "bold" }}>
-                              Tipo de Cambio
-                            </TableCell>
-                            <TableCell>{documentDetail.tipo_cambio || "-"}</TableCell>
-                          </TableRow>
-        
-                    
-                      
-                          
-                       
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  ) : (
-                    <CircularProgress />
-                  )}
-                </DialogContent>
+        <DialogContent>
+          {documentDetail ? (
+            <TableContainer component={Paper}>
+              <Table>
+                <TableBody>
+                  {/* Información básica del documento */}
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      Fecha de Solicitud
+                    </TableCell>
+                    <TableCell>
+                      {documentDetail.fecha_solicitud
+                        ? new Date(
+                            documentDetail.fecha_solicitud + "T00:00:00"
+                          ).toLocaleDateString()
+                        : "-"}
+                    </TableCell>
+                  </TableRow>
+
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      Tipo de Documento
+                    </TableCell>
+                    <TableCell>
+                      {documentDetail.tipo_documento || "-"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      Tipo de Anticipo
+                    </TableCell>
+                    <TableCell>{documentDetail.tipo_anticipo || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Destino</TableCell>
+                    <TableCell>{documentDetail.destino || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Motivo</TableCell>
+                    <TableCell>{documentDetail.motivo || "-"}</TableCell>
+                  </TableRow>
+
+                  {/* Información financiera */}
+
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Total</TableCell>
+                    <TableCell>{documentDetail.total || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Moneda</TableCell>
+                    <TableCell>{documentDetail.moneda || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      Tipo de Cambio
+                    </TableCell>
+                    <TableCell>{documentDetail.tipo_cambio || "-"}</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          ) : (
+            <CircularProgress />
+          )}
+        </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDetailDialog} color="primary">
             Cerrar

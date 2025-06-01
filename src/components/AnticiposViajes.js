@@ -653,7 +653,7 @@ const AnticiposViajes = () => {
               value={formData.presupuesto}
               onChange={handleChange}
             />
-            <TextField
+            {/* <TextField
               variant="outlined"
               margin="normal"
               required
@@ -671,7 +671,7 @@ const AnticiposViajes = () => {
                   importe_facturado: value,
                 });
               }}
-            />
+            /> */}
 
             <Button
               type="submit"
