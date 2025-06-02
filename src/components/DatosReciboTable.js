@@ -192,7 +192,7 @@ const DatosReciboTable = () => {
   useEffect(() => {
     fetchSolicitudOpciones();
   }, []);
-  
+
   // Modificar el efecto existente para evitar cargar duplicados
   useEffect(() => {
     if (confirmFinalizarDialogOpen && !hasFetchedSolicitudes) {
@@ -1260,7 +1260,7 @@ const DatosReciboTable = () => {
                     <TableCell>
                       {documentDetail.fecha_solicitud
                         ? new Date(
-                            documentDetail.fecha_solicitud
+                            documentDetail.fecha_solicitud + "T00:00:00"
                           ).toLocaleDateString()
                         : "-"}
                     </TableCell>
