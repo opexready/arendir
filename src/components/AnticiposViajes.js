@@ -55,7 +55,7 @@ const AnticiposViajes = () => {
     destino: "",
     motivo: "",
     empresa: "",
-    estado: "POR APROBAR",
+    estado: "NUEVO",
     fecha_emision: "",
     dias: "",
     moneda: "PEN",
@@ -114,7 +114,7 @@ const AnticiposViajes = () => {
         const response = await axios.get(`${baseURL}/documentos/`, {
           params: {
             empresa: company_name,
-            estado: "POR APROBAR",
+            estado: "NUEVO",
             username: username,
             tipo_solicitud: "",
             tipo_anticipo: "",

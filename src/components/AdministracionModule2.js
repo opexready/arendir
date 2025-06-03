@@ -12,13 +12,17 @@ import {
   TableBody,
   TableCell,
   TableContainer,
+  CircularProgress,  // Agregar esta importación
+  DialogActions, 
   TableHead,
   TableRow,
   Paper,
   Collapse,
   Modal,
   Box,
-  Dialog, DialogTitle, DialogContent,
+  Dialog,
+  DialogTitle,
+  DialogContent,
 } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import axios from "axios";
@@ -62,26 +66,25 @@ const AdministracionModule2 = () => {
   //   }
   // };
 
-
   const updateEstadoRendicion = async (id, tipo, nuevoEstado) => {
     try {
       const userString = localStorage.getItem("user");
       const user = userString ? JSON.parse(userString) : null;
       const idAprobador = user ? user.id : null;
       const nomAprobador = user ? user.full_name : null; // Cambiado de email a full_name
-      console.log("###############nomAprobador",nomAprobador)
-  
+      console.log("###############nomAprobador", nomAprobador);
+
       if (tipo === "RENDICION") {
-        await axios.put(`${baseURL}/api/rendicion/${id}`, { 
+        await axios.put(`${baseURL}/api/rendicion/${id}`, {
           estado: nuevoEstado,
           id_contador: idAprobador,
-          nom_contador: nomAprobador
+          nom_contador: nomAprobador,
         });
       } else if (tipo === "ANTICIPO") {
         await axios.put(`${baseURL}/api/solicitud/${id}`, {
           estado: nuevoEstado,
           id_contador: idAprobador,
-          nom_contador: nomAprobador
+          nom_contador: nomAprobador,
         });
       }
       setRendiciones((prevRendiciones) =>
@@ -99,8 +102,23 @@ const AdministracionModule2 = () => {
     }
   };
 
+  const [documentDetail, setDocumentDetail] = useState(null);
+  const [detailDialogOpen, setDetailDialogOpen] = useState(false);
 
+  const handleViewDetail = async (documentId) => {
+    try {
+      const response = await axios.get(`${baseURL}/documentos/${documentId}`);
+      setDocumentDetail(response.data);
+      setDetailDialogOpen(true);
+    } catch (error) {
+      console.error("Error al obtener los detalles del documento:", error);
+    }
+  };
 
+  const handleCloseDetailDialog = () => {
+    setDetailDialogOpen(false);
+    setDocumentDetail(null);
+  };
 
   // Obtener empresa y colaboradores al cargar el componente
   useEffect(() => {
@@ -250,7 +268,7 @@ const AdministracionModule2 = () => {
       username: filtros.colaborador,
       fecha_desde: filtros.fechaDesde || undefined, // Agregando filtro de fecha desde
       fecha_hasta: filtros.fechaHasta || undefined, // Agregando filtro de fecha hasta
-      tipo_solicitud: filtros.tipo_solicitud || undefined // Añadir este parámetro
+      tipo_solicitud: filtros.tipo_solicitud || undefined, // Añadir este parámetro
     };
     try {
       const response = await axios.get(`${baseURL}/documentos/export/excel`, {
@@ -649,6 +667,14 @@ const AdministracionModule2 = () => {
                                 />
                                 Archivo
                               </TableCell>
+                              <TableCell style={headerStyle}>
+                                <img
+                                  src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa18.png?alt=media&token=8228c7ef-c92f-478c-995a-2104ea29f3d4"
+                                  alt="Ícono Detalle"
+                                  style={{ height: "24px" }}
+                                />
+                                Detalle
+                              </TableCell>
                             </TableRow>
                           </TableHead>
                           <TableBody>
@@ -686,21 +712,39 @@ const AdministracionModule2 = () => {
                                 </TableCell>
                                 <TableCell>{doc.empresa}</TableCell>
                                 <TableCell>
-                                <Button
-                                  variant="contained"
-                                  color="primary"
-                                  onClick={() => handleViewFile(doc.archivo)} // Llama a la función en lugar de usar href
-                                >
-                                  {/* <Button
+                                  <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={() => handleViewFile(doc.archivo)} // Llama a la función en lugar de usar href
+                                  >
+                                    {/* <Button
                                     component="a"
                                     href={doc.archivo}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                   > */}
-                                  <img
+                                    <img
                                       src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa17.png?alt=media&token=aae19df1-ae52-45f4-8653-042af6b5a59b"
                                       alt="Ícono Número de Ítem"
                                       style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                    />
+                                  </Button>
+                                </TableCell>
+                                <TableCell>
+                                  <Button
+                                    variant="contained"
+                                    color="warning"
+                                    onClick={() => handleViewDetail(doc.id)}
+                                    sx={{
+                                      backgroundColor: "#F15A29",
+                                      color: "white",
+                                      "&:hover": { backgroundColor: "#D14A23" },
+                                    }}
+                                  >
+                                    <img
+                                      src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa18.png?alt=media&token=8228c7ef-c92f-478c-995a-2104ea29f3d4"
+                                      alt="Ícono Detalle"
+                                      style={{ height: "24px" }}
                                     />
                                   </Button>
                                 </TableCell>
@@ -718,22 +762,143 @@ const AdministracionModule2 = () => {
         </TableContainer>
       </Paper>
 
-
-    <Dialog open={selectedFile!== null} onClose={() => setSelectedFile(null)} maxWidth="lg" fullWidth>
-      <DialogTitle>Archivo del Documento</DialogTitle>
-      <DialogContent>
-        {selectedFile && (
-          <iframe
-            src={selectedFile}
-            width="100%"
-            height="600px"
-            title="Archivo del Documento"
-            frameBorder="0"
-          />
-        )}
-      </DialogContent>
-    </Dialog>
-
+      <Dialog
+        open={selectedFile !== null}
+        onClose={() => setSelectedFile(null)}
+        maxWidth="lg"
+        fullWidth
+      >
+        <DialogTitle>Archivo del Documento</DialogTitle>
+        <DialogContent>
+          {selectedFile && (
+            <iframe
+              src={selectedFile}
+              width="100%"
+              height="600px"
+              title="Archivo del Documento"
+              frameBorder="0"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+      {/* Diálogo de Detalle */}
+      <Dialog
+        open={detailDialogOpen}
+        onClose={handleCloseDetailDialog}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Detalle del Documento</DialogTitle>
+        <DialogContent>
+          {documentDetail ? (
+            <TableContainer component={Paper}>
+              <Table>
+                <TableBody>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      Fecha de Solicitud
+                    </TableCell>
+                    <TableCell>
+                      {documentDetail.fecha_solicitud
+                        ? new Date(
+                            documentDetail.fecha_solicitud + "T00:00:00"
+                          ).toLocaleDateString()
+                        : "-"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      Fecha de Rendición
+                    </TableCell>
+                    <TableCell>
+                      {documentDetail.fecha_rendicion
+                        ? new Date(
+                            documentDetail.fecha_rendicion
+                          ).toLocaleDateString()
+                        : "-"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>RUC</TableCell>
+                    <TableCell>{documentDetail.ruc || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Proveedor</TableCell>
+                    <TableCell>{documentDetail.proveedor || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      Tipo de Documento
+                    </TableCell>
+                    <TableCell>
+                      {documentDetail.tipo_documento || "-"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Serie</TableCell>
+                    <TableCell>{documentDetail.serie || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      Correlativo
+                    </TableCell>
+                    <TableCell>{documentDetail.correlativo || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Sub Total</TableCell>
+                    <TableCell>{documentDetail.sub_total || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>IGV</TableCell>
+                    <TableCell>{documentDetail.igv || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Total</TableCell>
+                    <TableCell>{documentDetail.total || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Moneda</TableCell>
+                    <TableCell>{documentDetail.moneda || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      Tipo de Cambio
+                    </TableCell>
+                    <TableCell>{documentDetail.tipo_cambio || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Rubro</TableCell>
+                    <TableCell>{documentDetail.rubro || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      Cuenta Contable
+                    </TableCell>
+                    <TableCell>
+                      {documentDetail.cuenta_contable || "-"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Estado</TableCell>
+                    <TableCell>{documentDetail.estado || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Detalle</TableCell>
+                    <TableCell>{documentDetail.detalle || "-"}</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          ) : (
+            <CircularProgress />
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDetailDialog} color="primary">
+            Cerrar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

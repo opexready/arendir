@@ -634,7 +634,7 @@ const DatosRecibo = () => {
         const response = await api.get("/documentos/", {
           params: {
             company_name: user.company_name,
-            estado: "POR APROBAR",
+            estado: "NUEVO",
             username: username,
             tipo_solicitud: "",
             tipo_anticipo: "",
@@ -1015,7 +1015,7 @@ const DatosRecibo = () => {
       total: parseFloat(formData.total),
       pago: parseFloat(formData.total),
       detalle: detalle,
-      estado: "POR APROBAR",
+      estado: "NUEVO",
       tipo_solicitud: "RENDICION",
       empresa: user.company_name,
       archivo: formData.archivo,

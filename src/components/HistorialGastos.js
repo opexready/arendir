@@ -14,9 +14,14 @@ import {
   TextField,
   Select,
   MenuItem,
+  CircularProgress,
   FormControl,
   InputLabel,
   Collapse,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import axios from "axios";
@@ -28,7 +33,11 @@ const HistorialGastos = () => {
   const [tipo, setTipo] = useState("RENDICION");
   const [fechaRegistroFrom, setFechaRegistroFrom] = useState("");
   const [fechaRegistroTo, setFechaRegistroTo] = useState("");
-  const [openRendiciones, setOpenRendiciones] = useState({}); // Controla las filas abiertas
+  const [openRendiciones, setOpenRendiciones] = useState({});
+  const [documentDetail, setDocumentDetail] = useState(null);
+  const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [openFileDialog, setOpenFileDialog] = useState(false);
 
   const fetchRendiciones = async () => {
     try {
@@ -48,33 +57,58 @@ const HistorialGastos = () => {
           id_user: userId,
         },
       });
-      console.log("Respuesta de la API:", response.data); // Depuración
+      console.log("Respuesta de la API:", response.data);
       setRendiciones(response.data);
-      setOpenRendiciones({}); // Reinicia el estado de las filas abiertas
+      setOpenRendiciones({});
     } catch (error) {
       console.error("Error al obtener las rendiciones:", error);
     }
   };
 
   useEffect(() => {
-    fetchRendiciones(); // Cargar rendiciones al montar el componente
+    fetchRendiciones();
   }, []);
 
   const toggleRendicion = (id) => {
     setOpenRendiciones((prev) => ({
       ...prev,
-      [id]: !prev[id], // Alterna el estado de apertura de la fila
+      [id]: !prev[id],
     }));
   };
 
+  const handleViewDetail = async (documentId) => {
+    try {
+      const response = await axios.get(`${baseURL}/documentos/${documentId}`);
+      setDocumentDetail(response.data);
+      setDetailDialogOpen(true);
+    } catch (error) {
+      console.error("Error al obtener los detalles del documento:", error);
+    }
+  };
+
+  const handleCloseDetailDialog = () => {
+    setDetailDialogOpen(false);
+    setDocumentDetail(null);
+  };
+
+  const handleViewFile = (fileLocation) => {
+    setSelectedFile(fileLocation);
+    setOpenFileDialog(true);
+  };
+
+  const handleCloseFileDialog = () => {
+    setOpenFileDialog(false);
+    setSelectedFile(null);
+  };
+
   const headerStyle = {
-    backgroundColor: "#2E3192", // Color de fondo de la cabecera
-    color: "white", // Texto blanco
-    fontWeight: "bold", // Negrita
+    backgroundColor: "#2E3192",
+    color: "white",
+    fontWeight: "bold",
   };
 
   const rowStyle = {
-    backgroundColor: "#f3f3f3", // Fondo claro para las filas
+    backgroundColor: "#f3f3f3",
   };
 
   return (
@@ -160,7 +194,7 @@ const HistorialGastos = () => {
               <img
                 src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
                 alt="Ícono Eliminar"
-                style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                style={{ height: "24px" }}
               />
               Aplicar Filtros
             </Button>
@@ -184,7 +218,7 @@ const HistorialGastos = () => {
             </TableHead>
             <TableBody>
               {rendiciones.map((item) => {
-                const data = item.rendicion || item.solicitud; // Maneja tanto rendicion como solicitud
+                const data = item.rendicion || item.solicitud;
                 return (
                   <React.Fragment key={data.id}>
                     <TableRow>
@@ -234,6 +268,8 @@ const HistorialGastos = () => {
                                 <TableCell style={headerStyle}>Moneda</TableCell>
                                 <TableCell style={headerStyle}>Tipo Documento</TableCell>
                                 <TableCell style={headerStyle}>Total</TableCell>
+                                <TableCell style={headerStyle}>Ver Archivo</TableCell>
+                                <TableCell style={headerStyle}>Detalle</TableCell>
                               </TableRow>
                             </TableHead>
                             <TableBody>
@@ -245,6 +281,44 @@ const HistorialGastos = () => {
                                   <TableCell>{doc.moneda}</TableCell>
                                   <TableCell>{doc.tipo_documento}</TableCell>
                                   <TableCell>{doc.total}</TableCell>
+                                  <TableCell>
+                                    {doc.archivo && (
+                                      <Button
+                                        variant="contained"
+                                        color="success"
+                                        onClick={() => handleViewFile(doc.archivo)}
+                                        sx={{
+                                          backgroundColor: "#2E3192",
+                                          color: "white",
+                                          "&:hover": { backgroundColor: "#1F237A" },
+                                        }}
+                                      >
+                                        <img
+                                          src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa17.png?alt=media&token=aae19df1-ae52-45f4-8653-042af6b5a59b"
+                                          alt="Ícono Ver Archivo"
+                                          style={{ height: "24px" }}
+                                        />
+                                      </Button>
+                                    )}
+                                  </TableCell>
+                                  <TableCell>
+                                    <Button
+                                      variant="contained"
+                                      color="warning"
+                                      onClick={() => handleViewDetail(doc.id)}
+                                      sx={{
+                                        backgroundColor: "#F15A29",
+                                        color: "white",
+                                        "&:hover": { backgroundColor: "#D14A23" },
+                                      }}
+                                    >
+                                      <img
+                                        src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa18.png?alt=media&token=8228c7ef-c92f-478c-995a-2104ea29f3d4"
+                                        alt="Ícono Detalle"
+                                        style={{ height: "24px" }}
+                                      />
+                                    </Button>
+                                  </TableCell>
                                 </TableRow>
                               ))}
                             </TableBody>
@@ -259,6 +333,130 @@ const HistorialGastos = () => {
           </Table>
         </TableContainer>
       </Paper>
+
+      {/* Diálogo de Detalle */}
+      <Dialog
+        open={detailDialogOpen}
+        onClose={handleCloseDetailDialog}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Detalle del Documento</DialogTitle>
+        <DialogContent>
+          {documentDetail ? (
+            <TableContainer component={Paper}>
+              <Table>
+                <TableBody>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Fecha de Solicitud</TableCell>
+                    <TableCell>
+                      {documentDetail.fecha_solicitud
+                        ? new Date(
+                            documentDetail.fecha_solicitud + "T00:00:00"
+                          ).toLocaleDateString()
+                        : "-"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Fecha de Rendición</TableCell>
+                    <TableCell>
+                      {documentDetail.fecha_rendicion
+                        ? new Date(
+                            documentDetail.fecha_rendicion
+                          ).toLocaleDateString()
+                        : "-"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>RUC</TableCell>
+                    <TableCell>{documentDetail.ruc || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Proveedor</TableCell>
+                    <TableCell>{documentDetail.proveedor || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Tipo de Documento</TableCell>
+                    <TableCell>{documentDetail.tipo_documento || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Serie</TableCell>
+                    <TableCell>{documentDetail.serie || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Correlativo</TableCell>
+                    <TableCell>{documentDetail.correlativo || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Sub Total</TableCell>
+                    <TableCell>{documentDetail.sub_total || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>IGV</TableCell>
+                    <TableCell>{documentDetail.igv || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Total</TableCell>
+                    <TableCell>{documentDetail.total || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Moneda</TableCell>
+                    <TableCell>{documentDetail.moneda || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Tipo de Cambio</TableCell>
+                    <TableCell>{documentDetail.tipo_cambio || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Rubro</TableCell>
+                    <TableCell>{documentDetail.rubro || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Cuenta Contable</TableCell>
+                    <TableCell>{documentDetail.cuenta_contable || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Estado</TableCell>
+                    <TableCell>{documentDetail.estado || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Detalle</TableCell>
+                    <TableCell>{documentDetail.detalle || "-"}</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          ) : (
+            <CircularProgress />
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDetailDialog} color="primary">
+            Cerrar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Diálogo para visualizar archivo */}
+      <Dialog open={openFileDialog} onClose={handleCloseFileDialog} maxWidth="sm" fullWidth>
+        <DialogTitle>Archivo del Documento</DialogTitle>
+        <DialogContent>
+          {selectedFile && (
+            <iframe
+              src={selectedFile}
+              width="100%"
+              height="600px"
+              title="Archivo del Documento"
+              frameBorder="0"
+            />
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseFileDialog} color="primary">
+            Cerrar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };
