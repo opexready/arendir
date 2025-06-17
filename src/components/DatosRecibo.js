@@ -756,7 +756,8 @@ const DatosRecibo = () => {
     try {
       const rucToSearch = typeof ruc === "string" ? ruc : searchRuc;
       const response = await axios.get(
-        `${baseURL}/consulta-ruc/?ruc=${encodeURIComponent(rucToSearch)}`
+       // `${baseURL}/consulta-ruc/?ruc=${encodeURIComponent(rucToSearch)}`
+       'https://api-5vp0.onrender.com/consulta-ruc/?ruc=${encodeURIComponent(rucToSearch)}'
       );
 
       setSearchResult(response.data);
