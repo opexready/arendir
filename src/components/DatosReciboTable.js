@@ -1267,6 +1267,18 @@ const DatosReciboTable = () => {
                   </TableRow>
                   <TableRow>
                     <TableCell sx={{ fontWeight: "bold" }}>
+                      Fecha de Emisión
+                    </TableCell>
+                    <TableCell>
+                      {documentDetail.fecha_emision
+                        ? new Date(
+                            documentDetail.fecha_emision + "T00:00:00"
+                          ).toLocaleDateString()
+                        : "-"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>
                       Fecha de Rendición
                     </TableCell>
                     <TableCell>
@@ -1305,10 +1317,10 @@ const DatosReciboTable = () => {
                   </TableRow>
 
                   {/* Información financiera */}
-                  <TableRow>
+                  {/* <TableRow>
                     <TableCell sx={{ fontWeight: "bold" }}>Sub Total</TableCell>
                     <TableCell>{documentDetail.sub_total || "-"}</TableCell>
-                  </TableRow>
+                  </TableRow> */}
                   <TableRow>
                     <TableCell sx={{ fontWeight: "bold" }}>IGV</TableCell>
                     <TableCell>{documentDetail.igv || "-"}</TableCell>

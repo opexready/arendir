@@ -991,7 +991,8 @@ const DatosRecibo = () => {
     const user = userString ? JSON.parse(userString) : null;
     const userId = user ? user.id : null;
     const gerencia = user ? user.gerencia : null;
-    const todayDate = new Date().toISOString().split("T")[0];
+    //const todayDate = new Date().toISOString().split("T")[0];
+    const todayDate = new Date().toLocaleDateString('en-CA'); 
 
     const requestData = {
       fecha_solicitud: todayDate,
@@ -1000,7 +1001,10 @@ const DatosRecibo = () => {
       gerencia: gerencia,
       ruc: formData.ruc,
       proveedor: formData.proveedor || "Proveedor Desconocido",
-      fecha_emision: formData.fecha ? new Date(formData.fecha).toISOString().split('T')[0] : null,
+      // fecha_emision: formData.fecha ? new Date(formData.fecha).toISOString().split('T')[0] : null,
+      fecha_emision: formData.fecha
+    ? new Date(formData.fecha).toLocaleDateString('en-CA')
+    : null,
       moneda: formData.moneda || "PEN",
       tipo_documento: formData.tipoDoc,
       serie: formData.serie,
