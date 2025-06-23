@@ -31,7 +31,7 @@ const Movilidad = () => {
     origen: "",
     destino: "",
     motivo: "",
-    estado: "POR APROBAR",
+    estado: "NUEVO",
     tipo_gasto: "LOCAL",
     gastoDeducible: "",
     gastoNoDeducible: "",

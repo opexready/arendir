@@ -39,30 +39,6 @@ const ContadorModule = () => {
     fechaHasta: "",
   });
 
-  // const updateEstadoRendicion = async (id, tipo, nuevoEstado) => {
-  //   try {
-  //     if (tipo === "RENDICION") {
-  //       await axios.put(`${baseURL}/api/rendicion/${id}`, { estado: nuevoEstado });
-  //     } else if (tipo === "ANTICIPO") {
-  //       await axios.put(`${baseURL}/api/solicitud/${id}`, {
-  //         estado: nuevoEstado,
-  //       });
-  //     }
-  //     setRendiciones((prevRendiciones) =>
-  //       prevRendiciones.map((rendicion) =>
-  //         rendicion.rendicion.id === id
-  //           ? {
-  //               ...rendicion,
-  //               rendicion: { ...rendicion.rendicion, estado: nuevoEstado },
-  //             }
-  //           : rendicion
-  //       )
-  //     );
-  //   } catch (error) {
-  //     console.error("Error al actualizar el estado de la rendición:", error);
-  //   }
-  // };
-
   const [documentDetail, setDocumentDetail] = useState(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
 

@@ -61,7 +61,7 @@ const AnticipoTable = () => {
     destino: "",
     motivo: "",
     empresa: "",
-    estado: "NUEVO",
+    estado: "POR APROBAR",
     fecha_emision: "",
     dias: "",
     moneda: "PEN",
@@ -115,8 +115,8 @@ const AnticipoTable = () => {
         const response = await axios.get(`${baseURL}/documentos/`, {
           params: {
             company_name: user.company_name,
-            estado: "NUEVO",
-            username: username,
+            estado: "POR APROBAR",
+            username: user.username,
             tipo_solicitud: "",
             tipo_anticipo: "",
             numero_rendicion: numeroRendicion,
@@ -168,6 +168,7 @@ const AnticipoTable = () => {
         // });
         const response = await api.get("/api/users/me/");
         const userData = response.data;
+        console.log(userData);
         console.log("User ID:", userData.id);
         const userString = localStorage.getItem("user");
         const user = userString ? JSON.parse(userString) : null;

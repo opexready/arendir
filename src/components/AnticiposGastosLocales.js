@@ -76,6 +76,7 @@ const fetchTipoCambio = async (fecha) => {
       try {
         const userResponse = await api.get('/api/users/me/');
         const userData = userResponse.data;
+        console.log(userData);
         console.log("userData", userData);
         let numeroRendicion = "";
         let idRendicion = 0;
@@ -94,7 +95,7 @@ const fetchTipoCambio = async (fecha) => {
 
         setFormData({
           ...formData,
-          usuario: userData.email,
+          usuario: userData.username,
           dni: userData.dni,
           responsable: userData.full_name,
           gerencia: userData.gerencia,

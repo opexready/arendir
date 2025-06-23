@@ -55,7 +55,7 @@ const AnticiposViajes = () => {
     destino: "",
     motivo: "",
     empresa: "",
-    estado: "NUEVO",
+    estado: "POR APROBAR",
     fecha_emision: "",
     dias: "",
     moneda: "PEN",
@@ -114,7 +114,7 @@ const AnticiposViajes = () => {
         const response = await axios.get(`${baseURL}/documentos/`, {
           params: {
             empresa: company_name,
-            estado: "NUEVO",
+            estado: "POR APROBAR",
             username: username,
             tipo_solicitud: "",
             tipo_anticipo: "",
@@ -164,6 +164,7 @@ const AnticiposViajes = () => {
         // });
         const response = await api.get('/api/users/me/');
         const userData = response.data;
+        console.log(userData);
         console.log("User ID:", userData.id);
         const userString = localStorage.getItem("user");
         const user = userString ? JSON.parse(userString) : null;
@@ -178,7 +179,7 @@ const AnticiposViajes = () => {
         setFormData({
           ...formData,
           empresa: company_name,
-          usuario: userData.email,
+          usuario: userData.username,
           dni: userData.dni,
           responsable: userData.full_name,
           gerencia: userData.gerencia,

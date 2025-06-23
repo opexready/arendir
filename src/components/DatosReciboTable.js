@@ -375,7 +375,7 @@ const DatosReciboTable = () => {
         const response = await api.get("/documentos/", {
           params: {
             company_name: user.company_name,
-            estado: "NUEVO",
+            estado: "POR APROBAR",
             username: username,
             tipo_solicitud: "",
             tipo_anticipo: "",
