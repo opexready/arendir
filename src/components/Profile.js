@@ -10,7 +10,11 @@ import {
   Button,
   Box,
   Alert,
-  Divider
+  Divider,
+  InputLabel,
+  MenuItem,
+  FormControl,
+  Select
 } from "@mui/material";
 
 const Profile = () => {
@@ -35,6 +39,29 @@ const Profile = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const navigate = useNavigate();
+
+const bancosPeru = [
+    "Banco de Crédito del Perú (BCP)",
+    "BBVA Perú",
+    "Scotiabank Perú",
+    "Interbank",
+    "Banco Pichincha",
+    "Banco de la Nación",
+    "Banco GNB Perú",
+    "Banco Falabella",
+    "Banco Ripley",
+    "Banco Santander Perú",
+    "Banco Azteca",
+    "MiBanco",
+    "Banco Cencosud",
+    "Banco Continental",
+    "Banco Financiero",
+    "Banco Interamericano de Finanzas (BIF)",
+    "Citibank Perú",
+    "Banco HSBC",
+    "Banco Internacional del Perú - Interbank",
+    "Banco de Comercio"
+  ];
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -253,15 +280,27 @@ const Profile = () => {
               />
             </Box>
 
-            <Box sx={{ mb: 3 }}>
-              <TextField
-                fullWidth
-                label="Banco"
-                name="banco"
-                value={formData.banco || ""}
-                onChange={handleChange}
-                variant="outlined"
-              />
+           <Box sx={{ mb: 3 }}>
+              <FormControl fullWidth>
+                <InputLabel id="banco-label">Banco</InputLabel>
+                <Select
+                  labelId="banco-label"
+                  label="Banco"
+                  name="banco"
+                  value={formData.banco || ""}
+                  onChange={handleChange}
+                  variant="outlined"
+                >
+                  <MenuItem value="">
+                    <em>Seleccionar banco</em>
+                  </MenuItem>
+                  {bancosPeru.map((banco) => (
+                    <MenuItem key={banco} value={banco}>
+                      {banco}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Box>
 
             <Divider sx={{ my: 3 }} />
