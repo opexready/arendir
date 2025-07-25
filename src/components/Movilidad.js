@@ -134,6 +134,7 @@ const Movilidad = () => {
     let idRendicion;
     try {
       const userString = localStorage.getItem("user");
+      console.log(userString);
       const user = userString ? JSON.parse(userString) : null;
       const userId = user?.id;
 
@@ -179,6 +180,7 @@ const Movilidad = () => {
     const user = userString ? JSON.parse(userString) : null;
     const full_name = user?.full_name;
     const userId = user?.id;
+    const description = user?.description;
 
     const dataToSend = {
       ...formData,
@@ -188,7 +190,7 @@ const Movilidad = () => {
         : today,
       usuario: loggedInUser,
       correlativo: "00000001",
-      ruc: "20612958271",
+      ruc: description,
       dni: user.dni,
       gerencia: user.gerencia,
       numero_rendicion: numeroRendicion,
