@@ -451,9 +451,8 @@ const DatosRecibo = () => {
           setMainCameraId(bestCamera.deviceId);
           setCameraInitialized(true);
         } else {
-          setQrError(
-            // "No se pudo acceder a ninguna cámara con buena resolución"
-          );
+          setQrError();
+          // "No se pudo acceder a ninguna cámara con buena resolución"
         }
       } catch (error) {
         console.error("Error detectando cámaras:", error);
@@ -690,14 +689,14 @@ const DatosRecibo = () => {
   const fetchTipoCambio = async (fecha) => {
     try {
       // Formatear la fecha a YYYY-MM-DD
-      const formattedDate = fecha.toISOString().split('T')[0];
-      
+      const formattedDate = fecha.toISOString().split("T")[0];
+
       const response = await axios.get(
         `${baseURL}/tipo-cambio/?fecha=${formattedDate}`
       );
       const precioVenta = response.data.precioVenta;
       setTipoCambio(precioVenta);
-  
+
       // Convertir de PEN a USD multiplicando por el nuevo tipoCambio
       setFormData((prev) => ({
         ...prev,
@@ -944,11 +943,13 @@ const DatosRecibo = () => {
         const igv = parseFloat(formData.igv) || 0;
         const total = parseFloat(formData.total) || 0;
         let rawValue = total - (afecto + igv);
-        const inafectoValue = (Math.abs(rawValue) < 0.005 ? 0 : rawValue).toFixed(2);
-        
-        setFormData(prevFormData => ({
+        const inafectoValue = (
+          Math.abs(rawValue) < 0.005 ? 0 : rawValue
+        ).toFixed(2);
+
+        setFormData((prevFormData) => ({
           ...prevFormData,
-          inafecto: inafectoValue
+          inafecto: inafectoValue,
         }));
       }
     }
@@ -992,7 +993,7 @@ const DatosRecibo = () => {
     const userId = user ? user.id : null;
     const gerencia = user ? user.gerencia : null;
     //const todayDate = new Date().toISOString().split("T")[0];
-    const todayDate = new Date().toLocaleDateString('en-CA'); 
+    const todayDate = new Date().toLocaleDateString("en-CA");
 
     const requestData = {
       fecha_solicitud: todayDate,
@@ -1003,8 +1004,8 @@ const DatosRecibo = () => {
       proveedor: formData.proveedor || "Proveedor Desconocido",
       // fecha_emision: formData.fecha ? new Date(formData.fecha).toISOString().split('T')[0] : null,
       fecha_emision: formData.fecha
-    ? new Date(formData.fecha).toLocaleDateString('en-CA')
-    : null,
+        ? new Date(formData.fecha).toLocaleDateString("en-CA")
+        : null,
       moneda: formData.moneda || "PEN",
       tipo_documento: formData.tipoDoc,
       serie: formData.serie,
@@ -1441,14 +1442,13 @@ const DatosRecibo = () => {
                         label="Fecha"
                         value={formData.fecha}
                         onChange={handleDateChange}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            fullWidth
-                            margin="normal"
-                            required
-                          />
-                        )}
+                        slotProps={{
+                          textField: {
+                            fullWidth: true,
+                            margin: "normal",
+                            required: true,
+                          },
+                        }}
                       />
                     </LocalizationProvider>
                   );
