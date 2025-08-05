@@ -153,6 +153,69 @@ const DatosRecibo = () => {
   const [mainCameraId, setMainCameraId] = useState(null);
   const [cameraInitialized, setCameraInitialized] = useState(false);
 
+  // Busca donde están los otros estados y añade:
+  const [ticketFile, setTicketFile] = useState(null);
+  const [ticketResult, setTicketResult] = useState(null);
+  const [ticketError, setTicketError] = useState(null);
+
+  const handleTicketFileChange = async (event) => {
+    const file = event.target.files[0];
+    setTicketFile(file);
+    limpiarFormulario();
+    setTicketError(null);
+
+    if (file) {
+      const formData = new FormData();
+      formData.append("file", file);
+      setIsLoading(true);
+
+      try {
+        const response = await axios.post(
+          `${baseURL}/extract-ticket/`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        const processedData = response.data;
+
+        // Actualizar formulario
+        setFormData((prev) => ({
+          ...prev,
+          fecha: normalizeDate(processedData.fecha || ""),
+          ruc: processedData.ruc || "",
+          tipoDoc: processedData.tipo || "Boleta de Venta",
+          serie: processedData.serie || "",
+          numero: processedData.numero || "",
+          igv: processedData.igv || "",
+          total: processedData.total || "",
+        }));
+
+        setSearchRuc(processedData.ruc || "");
+
+        if (processedData.ruc) {
+          handleSearch(processedData.ruc);
+        }
+      } catch (error) {
+        setTicketError(
+          <span>
+            Error al leer ticket. Consejos:
+            <ul>
+              <li>Use una imagen nítida</li>
+              <li>Asegúrese que los datos sean visibles</li>
+              <li>Evite sombras o reflejos</li>
+            </ul>
+          </span>
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
   const handleStartScanner2 = () => {
     limpiarFormulario();
     setShowQrReader2(true);
@@ -259,6 +322,9 @@ const DatosRecibo = () => {
     setShowQrReader2(false); // Agregar esta línea
     setIsScanning(false);
     setIsScanning2(false); // Agregar esta línea
+    setTicketFile(null);
+    setTicketResult(null);
+    setTicketError(null);
   };
 
   // const limpiarFormulario = () => {
@@ -1190,6 +1256,32 @@ const DatosRecibo = () => {
                 Escanear imagen adjunta
                 <input type="file" hidden onChange={handleQrFileChange} />
               </Button>
+            </div>
+            {/* Busca la sección de botones y añade esto junto a los demás: */}
+            <div className="col-md-4">
+              <Button
+                variant="outlined"
+                component="label"
+                fullWidth
+                sx={{
+                  marginTop: 2,
+                  borderColor: "#2E3192",
+                  color: "#2E3192",
+                  "&:hover": {
+                    backgroundColor: "#F15A29",
+                    borderColor: "#F15A29",
+                    color: "white",
+                  },
+                }}
+              >
+                Leer datos de ticket
+                <input type="file" hidden onChange={handleTicketFileChange} />
+              </Button>
+              {ticketError && (
+                <Alert severity="error" sx={{ marginTop: 2 }}>
+                  {ticketError}
+                </Alert>
+              )}
             </div>
             <div className="col-md-4">
               <Button
