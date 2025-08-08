@@ -742,15 +742,15 @@ const DatosRecibo = () => {
     };
   }, [scanTimeout]);
 
-  useEffect(() => {
-    if (formData.igv) {
-      const afectoValue = (parseFloat(formData.igv) / 0.18).toFixed(2);
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        afecto: afectoValue,
-      }));
-    }
-  }, [formData.igv]);
+  // useEffect(() => {
+  //   if (formData.igv) {
+  //     const afectoValue = (parseFloat(formData.igv) / 0.18).toFixed(2);
+  //     setFormData((prevFormData) => ({
+  //       ...prevFormData,
+  //       afecto: afectoValue,
+  //     }));
+  //   }
+  // }, [formData.igv]);
 
   const fetchTipoCambio = async (fecha) => {
     try {
@@ -1001,22 +1001,50 @@ const DatosRecibo = () => {
     }
   };
 
+  // useEffect(() => {
+  //   if (formData.afecto && formData.igv && formData.total) {
+  //     // Solo calcular inafecto si no se ha ingresado manualmente
+  //     if (!formData.inafecto || formData.inafecto === "0.00") {
+  //       const afecto = parseFloat(formData.afecto) || 0;
+  //       const igv = parseFloat(formData.igv) || 0;
+  //       const total = parseFloat(formData.total) || 0;
+  //       let rawValue = total - (afecto + igv);
+  //       const inafectoValue = (
+  //         Math.abs(rawValue) < 0.005 ? 0 : rawValue
+  //       ).toFixed(2);
+
+  //       setFormData((prevFormData) => ({
+  //         ...prevFormData,
+  //         inafecto: inafectoValue,
+  //       }));
+  //     }
+  //   }
+  // }, [formData.afecto, formData.igv, formData.total]);
+
   useEffect(() => {
     if (formData.afecto && formData.igv && formData.total) {
       // Solo calcular inafecto si no se ha ingresado manualmente
       if (!formData.inafecto || formData.inafecto === "0.00") {
+        // Convertir a números y manejar casos vacíos o inválidos
         const afecto = parseFloat(formData.afecto) || 0;
         const igv = parseFloat(formData.igv) || 0;
         const total = parseFloat(formData.total) || 0;
-        let rawValue = total - (afecto + igv);
-        const inafectoValue = (
-          Math.abs(rawValue) < 0.005 ? 0 : rawValue
-        ).toFixed(2);
 
-        setFormData((prevFormData) => ({
-          ...prevFormData,
-          inafecto: inafectoValue,
-        }));
+        // Calcular inafecto
+        let inafectoValue = total - (afecto + igv);
+
+        // Redondear a 2 decimales y manejar valores cercanos a cero
+        inafectoValue = Math.round(inafectoValue * 100) / 100;
+
+        // Solo actualizar si el valor es diferente al actual para evitar bucles
+        if (
+          Math.abs(inafectoValue - (parseFloat(formData.inafecto) || 0) > 0.01)
+        ) {
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            inafecto: inafectoValue.toFixed(2),
+          }));
+        }
       }
     }
   }, [formData.afecto, formData.igv, formData.total]);
