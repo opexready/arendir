@@ -273,6 +273,8 @@ const DatosRecibo = () => {
         numero: processedData.numero || "",
         igv: processedData.igv || "",
         total: processedData.total || "",
+        afecto: processedData.afecto || "", // ← NUEVO
+        inafecto: processedData.inafecto || "", // ← NUEVO
       }));
       setSearchRuc(processedData.ruc || "");
       setError("");
@@ -398,6 +400,8 @@ const DatosRecibo = () => {
         numero: processedData.numero || "",
         igv: processedData.igv || "",
         total: processedData.total || "",
+        afecto: processedData.afecto || "", // ← NUEVO
+        inafecto: processedData.inafecto || "", // ← NUEVO
       }));
       setSearchRuc(processedData.ruc || "");
       setError("");
@@ -907,6 +911,8 @@ const DatosRecibo = () => {
             numero: decodeResponse.data.numero || "",
             igv: decodeResponse.data.igv || "",
             total: decodeResponse.data.total || "",
+            afecto: decodeResponse.data.afecto || "", // ← NUEVO
+            inafecto: decodeResponse.data.inafecto || "", // ← NUEVO
             proveedor: razonSocial,
           }));
           setSearchRuc(decodeResponse.data.ruc || "");
@@ -1021,33 +1027,33 @@ const DatosRecibo = () => {
   //   }
   // }, [formData.afecto, formData.igv, formData.total]);
 
-  useEffect(() => {
-    if (formData.afecto && formData.igv && formData.total) {
-      // Solo calcular inafecto si no se ha ingresado manualmente
-      if (!formData.inafecto || formData.inafecto === "0.00") {
-        // Convertir a números y manejar casos vacíos o inválidos
-        const afecto = parseFloat(formData.afecto) || 0;
-        const igv = parseFloat(formData.igv) || 0;
-        const total = parseFloat(formData.total) || 0;
+  // useEffect(() => {
+  //   if (formData.afecto && formData.igv && formData.total) {
+  //     // Solo calcular inafecto si no se ha ingresado manualmente
+  //     if (!formData.inafecto || formData.inafecto === "0.00") {
+  //       // Convertir a números y manejar casos vacíos o inválidos
+  //       const afecto = parseFloat(formData.afecto) || 0;
+  //       const igv = parseFloat(formData.igv) || 0;
+  //       const total = parseFloat(formData.total) || 0;
 
-        // Calcular inafecto
-        let inafectoValue = total - (afecto + igv);
+  //       // Calcular inafecto
+  //       let inafectoValue = total - (afecto + igv);
 
-        // Redondear a 2 decimales y manejar valores cercanos a cero
-        inafectoValue = Math.round(inafectoValue * 100) / 100;
+  //       // Redondear a 2 decimales y manejar valores cercanos a cero
+  //       inafectoValue = Math.round(inafectoValue * 100) / 100;
 
-        // Solo actualizar si el valor es diferente al actual para evitar bucles
-        if (
-          Math.abs(inafectoValue - (parseFloat(formData.inafecto) || 0) > 0.01)
-        ) {
-          setFormData((prevFormData) => ({
-            ...prevFormData,
-            inafecto: inafectoValue.toFixed(2),
-          }));
-        }
-      }
-    }
-  }, [formData.afecto, formData.igv, formData.total]);
+  //       // Solo actualizar si el valor es diferente al actual para evitar bucles
+  //       if (
+  //         Math.abs(inafectoValue - (parseFloat(formData.inafecto) || 0) > 0.01)
+  //       ) {
+  //         setFormData((prevFormData) => ({
+  //           ...prevFormData,
+  //           inafecto: inafectoValue.toFixed(2),
+  //         }));
+  //       }
+  //     }
+  //   }
+  // }, [formData.afecto, formData.igv, formData.total]);
 
   useEffect(() => {
     if (showQrReader) {
@@ -1548,7 +1554,6 @@ const DatosRecibo = () => {
                 />
               )
             )} */}
-
             {["fecha", "ruc", "cuentaContable", "serie", "numero"].map(
               (field) => {
                 if (field === "fecha") {
@@ -1588,7 +1593,6 @@ const DatosRecibo = () => {
                 );
               }
             )}
-
             <FormControl
               fullWidth
               variant="outlined"
@@ -1644,7 +1648,6 @@ const DatosRecibo = () => {
                 Recibo Servicio Público
               </MenuItem>
             </TextField>
-
             <TextField
               label="Moneda"
               variant="outlined"
@@ -1659,7 +1662,6 @@ const DatosRecibo = () => {
               <MenuItem value="PEN">PEN</MenuItem>
               <MenuItem value="USD">USD</MenuItem>
             </TextField>
-
             <TextField
               label="Afecto"
               variant="outlined"
@@ -1670,17 +1672,57 @@ const DatosRecibo = () => {
               value={formData.afecto}
               onChange={handleChange}
             />
-            <TextField
-              label="Inafecto"
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              id="inafecto"
-              name="inafecto"
-              value={formData.inafecto}
-              onChange={handleChange}
-            />
+        
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <TextField
+                label="Inafecto"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                id="inafecto"
+                name="inafecto"
+                value={formData.inafecto}
+                onChange={handleChange}
+              />
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  // Validar que todos los campos necesarios estén presentes
+                  if (!formData.total || !formData.afecto || !formData.igv) {
+                    setError(
+                      "Faltan datos para realizar el cálculo. Complete Total, Afecto e IGV primero."
+                    );
+                    return;
+                  }
 
+                  // Convertir a números
+                  const total = parseFloat(formData.total) || 0;
+                  const afecto = parseFloat(formData.afecto) || 0;
+                  const igv = parseFloat(formData.igv) || 0;
+
+                  // Calcular inafecto
+                  const inafectoValue = total - (afecto + igv);
+
+                  // Actualizar el estado
+                  setFormData((prevFormData) => ({
+                    ...prevFormData,
+                    inafecto: inafectoValue.toFixed(2),
+                  }));
+
+                  // Limpiar mensaje de error si existe
+                  setError("");
+                }}
+                sx={{
+                  marginTop: 2,
+                  backgroundColor: "#2E3192",
+                  "&:hover": { backgroundColor: "#1F237A" },
+                  whiteSpace: "nowrap",
+                }}
+              >
+                Calcular
+              </Button>
+            </Box>
             {["igv", "total"].map((field) => (
               <TextField
                 key={field}
@@ -1694,7 +1736,6 @@ const DatosRecibo = () => {
                 onChange={handleChange}
               />
             ))}
-
             <div className="form-group">
               <label htmlFor="detalle">Detalle:</label>
               <textarea
@@ -1706,7 +1747,6 @@ const DatosRecibo = () => {
                 rows="4"
               />
             </div>
-
             <Button
               type="submit"
               variant="contained"
