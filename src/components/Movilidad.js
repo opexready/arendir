@@ -18,6 +18,7 @@ import {
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import esLocale from "date-fns/locale/es";
+import { esES } from "@mui/x-date-pickers/locales";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import "./Movilidad.css";
@@ -142,7 +143,7 @@ const Movilidad = () => {
         const response = await api.get(`/api/rendicion/last`, {
           params: {
             id_user: userId,
-            tipo: "RENDICION", 
+            tipo: "RENDICION",
           },
         });
         if (response?.data?.nombre) {
@@ -207,7 +208,10 @@ const Movilidad = () => {
     };
 
     try {
-      console.log("##################### dataToSend #################",dataToSend)
+      console.log(
+        "##################### dataToSend #################",
+        dataToSend
+      );
       await axios.post(`${baseURL}/generar-pdf-movilidad/`, dataToSend);
       setResponseMessage("Documento creado correctamente.");
       setOpen(true);
@@ -273,7 +277,7 @@ const Movilidad = () => {
         <Button
           variant="contained"
           color="warning"
-          onClick={() => navigate(-1)} 
+          onClick={() => navigate(-1)}
         >
           Regresar
         </Button>
@@ -291,7 +295,10 @@ const Movilidad = () => {
           >
             <LocalizationProvider
               dateAdapter={AdapterDateFns}
-              locale={esLocale}
+              adapterLocale={esLocale}
+              localeText={
+                esES.components.MuiLocalizationProvider.defaultProps.localeText
+              }
             >
               <DatePicker
                 label="Fecha de Viaje"
@@ -299,6 +306,7 @@ const Movilidad = () => {
                 onChange={(newValue) =>
                   setFormData({ ...formData, fecha_emision: newValue })
                 }
+                inputFormat="dd/MM/yyyy"
                 renderInput={(params) => (
                   <TextField {...params} fullWidth margin="normal" required />
                 )}
