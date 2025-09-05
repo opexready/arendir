@@ -5,6 +5,7 @@ import { QrReader } from "react-qr-reader";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import esLocale from "date-fns/locale/es";
+import { esES } from "@mui/x-date-pickers/locales";
 import {
   Container,
   Card,
@@ -533,15 +534,39 @@ const DatosRecibo = () => {
     findHighestResolutionCamera();
   }, []);
 
+  // const normalizeDate = (dateString) => {
+  //   if (!dateString) return null;
+  //   if (dateString.includes("/")) {
+  //     const [day, month, year] = dateString.split("/");
+  //     return new Date(
+  //       `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`
+  //     );
+  //   }
+  //   return new Date(dateString);
+  // };
+
   const normalizeDate = (dateString) => {
     if (!dateString) return null;
-    if (dateString.includes("/")) {
-      const [day, month, year] = dateString.split("/");
-      return new Date(
-        `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`
-      );
+
+    try {
+      // Si es formato ISO (YYYY-MM-DD)
+      if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+        // Parsear como fecha local (no UTC)
+        const [year, month, day] = dateString.split("-");
+        return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+      }
+
+      // Si tiene formato de fecha con slash
+      if (dateString.includes("/")) {
+        const [day, month, year] = dateString.split("/");
+        return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+      }
+
+      return new Date(dateString);
+    } catch (error) {
+      console.error("Error parsing date:", error);
+      return null;
     }
-    return new Date(dateString);
   };
 
   const handleCloseDetailDialog = () => {
@@ -1561,7 +1586,11 @@ const DatosRecibo = () => {
                     <LocalizationProvider
                       key={field}
                       dateAdapter={AdapterDateFns}
-                      locale={esLocale}
+                      adapterLocale={esLocale}
+                      localeText={
+                        esES.components.MuiLocalizationProvider.defaultProps
+                          .localeText
+                      }
                     >
                       <DatePicker
                         label="Fecha"
@@ -1672,7 +1701,7 @@ const DatosRecibo = () => {
               value={formData.afecto}
               onChange={handleChange}
             />
-        
+
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <TextField
                 label="Inafecto"
