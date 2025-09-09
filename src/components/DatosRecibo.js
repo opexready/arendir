@@ -859,6 +859,7 @@ const DatosRecibo = () => {
       setFormData((prevFormData) => ({
         ...prevFormData,
         ruc: rucToSearch, // Usar directamente rucToSearch en lugar de ruc || searchRuc
+        proveedor: response.data.razon_social || "Proveedor Desconocido", 
       }));
 
       setError("");
@@ -916,7 +917,7 @@ const DatosRecibo = () => {
               `${baseURL}/consulta-ruc?ruc=${decodedRuc}`
             );
 
-            razonSocial = rucResponse.data.razonSocial || razonSocial;
+            razonSocial = rucResponse.data.razon_social || razonSocial;
           } catch (error) {
             if (error.response && error.response.status === 404) {
               console.warn(
@@ -1550,7 +1551,7 @@ const DatosRecibo = () => {
               {searchResult && (
                 <Alert severity="success">
                   <p>
-                    <strong>Razón Social:</strong> {searchResult.razonSocial}
+                    <strong>Razón Social:</strong> {searchResult.razon_social}
                   </p>
                   <p>
                     <strong>Dirección:</strong> {searchResult.direccion}
