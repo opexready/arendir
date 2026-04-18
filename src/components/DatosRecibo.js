@@ -37,6 +37,8 @@ import { jwtDecode } from "jwt-decode";
 import "./DatosRecibo.css";
 import api, { baseURL } from "../api";
 
+
+// ─── Componente principal ─────────────────────────────────────────────────────
 const DatosRecibo = () => {
   const categoryOptions = [
     { value: "63111", label: "Servicio transporte De carga" },
@@ -88,12 +90,14 @@ const DatosRecibo = () => {
     { value: "6591", label: "Donaciones" },
     { value: "6592", label: "Sanciones administrativas" },
   ];
+
   const [showQrReader2, setShowQrReader2] = useState(false);
   const [qrResult2, setQrResult2] = useState(null);
   const [qrError2, setQrError2] = useState(null);
   const [isScanning2, setIsScanning2] = useState(false);
   const [cameraFacingMode, setCameraFacingMode] = useState("environment");
   const [category, setCategory] = useState("");
+
   const handleCategoryChange = (event) => {
     const selectedValue = event.target.value;
     setCategory(selectedValue);
@@ -106,6 +110,7 @@ const DatosRecibo = () => {
       rubro: selectedOption ? selectedOption.label : "",
     }));
   };
+
   const [records, setRecords] = useState([]);
   const location = useLocation();
   const [confirmFinalizarDialogOpen, setConfirmFinalizarDialogOpen] =
@@ -129,7 +134,7 @@ const DatosRecibo = () => {
     total: "",
     archivo: "",
   });
-  const [tipoCambio, setTipoCambio] = useState(1); // Inicialmente 1 para PEN
+  const [tipoCambio, setTipoCambio] = useState(1);
   const [searchRuc, setSearchRuc] = useState("");
   const [searchResult, setSearchResult] = useState(null);
   const [error, setError] = useState("");
@@ -150,70 +155,86 @@ const DatosRecibo = () => {
   const [qrResult, setQrResult] = useState(null);
   const [qrError, setQrError] = useState(null);
   const [isScanning, setIsScanning] = useState(false);
-  // Busca donde están los otros estados y añade:
   const [mainCameraId, setMainCameraId] = useState(null);
   const [cameraInitialized, setCameraInitialized] = useState(false);
 
-  // Busca donde están los otros estados y añade:
+  // ─── Estados para lectura de ticket con Claude Vision ─────────────────────
   const [ticketFile, setTicketFile] = useState(null);
   const [ticketResult, setTicketResult] = useState(null);
   const [ticketError, setTicketError] = useState(null);
+  // Preview de la imagen seleccionada
+  const [ticketPreview, setTicketPreview] = useState(null);
+  // Popup de revisión de datos extraídos
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
 
+  // ─── handleTicketFileChange: llama al backend que usa Claude Vision ──────────
   const handleTicketFileChange = async (event) => {
     const file = event.target.files[0];
+    if (!file) return;
+
     setTicketFile(file);
     limpiarFormulario();
     setTicketError(null);
 
-    if (file) {
-      const formData = new FormData();
-      formData.append("file", file);
-      setIsLoading(true);
+    // Mostrar preview de la imagen
+    const previewUrl = URL.createObjectURL(file);
+    setTicketPreview(previewUrl);
 
-      try {
-        const response = await axios.post(
-          `${baseURL}/extract-ticket/`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
+    setIsLoading(true);
 
-        const processedData = response.data;
+    try {
+      const formDataImg = new FormData();
+      formDataImg.append("file", file);
 
-        // Actualizar formulario
-        setFormData((prev) => ({
-          ...prev,
-          fecha: normalizeDate(processedData.fecha || ""),
-          ruc: processedData.ruc || "",
-          tipoDoc: processedData.tipo || "Boleta de Venta",
-          serie: processedData.serie || "",
-          numero: processedData.numero || "",
-          igv: processedData.igv || "",
-          total: processedData.total || "",
-        }));
+      const response = await axios.post(
+        `${baseURL}/extract-ticket/`,
+        formDataImg,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
 
-        setSearchRuc(processedData.ruc || "");
+      const processedData = response.data;
 
-        if (processedData.ruc) {
-          handleSearch(processedData.ruc);
-        }
-      } catch (error) {
-        setTicketError(
-          <span>
-            Error al leer ticket. Consejos:
-            <ul>
-              <li>Use una imagen nítida</li>
-              <li>Asegúrese que los datos sean visibles</li>
-              <li>Evite sombras o reflejos</li>
-            </ul>
-          </span>
-        );
-      } finally {
-        setIsLoading(false);
+      // Poblar el formulario con los datos extraídos
+      setFormData((prev) => ({
+        ...prev,
+        fecha: normalizeDate(processedData.fecha || ""),
+        ruc: processedData.ruc || "",
+        tipoDoc: processedData.tipo || "Boleta de Venta",
+        serie: processedData.serie || "",
+        numero: processedData.numero || "",
+        igv: processedData.igv != null ? String(processedData.igv) : "",
+        afecto:
+          processedData.afecto != null ? String(processedData.afecto) : "",
+        inafecto:
+          processedData.inafecto != null
+            ? String(processedData.inafecto)
+            : "0",
+        total: processedData.total != null ? String(processedData.total) : "",
+      }));
+
+      setSearchRuc(processedData.ruc || "");
+
+      if (processedData.ruc) {
+        handleSearch(processedData.ruc);
       }
+
+      setTicketResult(processedData);
+      setReviewDialogOpen(true);
+    } catch (err) {
+      console.error("Error al procesar ticket con IA:", err);
+      setTicketError(
+        <span>
+          Error al leer ticket con IA. Consejos:
+          <ul>
+            <li>Use una imagen nítida y bien iluminada</li>
+            <li>Asegúrese que todos los datos sean visibles</li>
+            <li>Evite sombras, reflejos o imágenes borrosas</li>
+            <li>Formatos soportados: JPG, PNG, WEBP</li>
+          </ul>
+        </span>
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -250,18 +271,11 @@ const DatosRecibo = () => {
 
   const handleProcessQrResult2 = async () => {
     try {
-      if (!qrResult2) {
-        console.error("No se ha detectado un resultado del escaneo.");
-        return;
-      }
-
-      console.log("Llamando a la API con el resultado:", qrResult2);
+      if (!qrResult2) return;
 
       const response = await axios.post(`${baseURL}/api/process-qr/`, {
         data: qrResult2,
       });
-
-      console.log("Respuesta del backend:", response.data);
 
       const processedData = response.data;
 
@@ -274,8 +288,8 @@ const DatosRecibo = () => {
         numero: processedData.numero || "",
         igv: processedData.igv || "",
         total: processedData.total || "",
-        afecto: processedData.afecto || "", // ← NUEVO
-        inafecto: processedData.inafecto || "", // ← NUEVO
+        afecto: processedData.afecto || "",
+        inafecto: processedData.inafecto || "",
       }));
       setSearchRuc(processedData.ruc || "");
       setError("");
@@ -285,7 +299,6 @@ const DatosRecibo = () => {
       }
     } catch (error) {
       setError("Error al procesar el QR. Por favor, inténtalo nuevamente.");
-      console.error("Error al llamar a /api/process-qr/:", error);
     }
   };
 
@@ -316,47 +329,21 @@ const DatosRecibo = () => {
     setSearchResult(null);
     setError("");
     setQrError(null);
-    setQrError2(null); // Agregar esta línea
+    setQrError2(null);
     setDetalle("");
     setQrFile(null);
     setQrResult(null);
-    setQrResult2(null); // Agregar esta línea
+    setQrResult2(null);
     setShowQrReader(false);
-    setShowQrReader2(false); // Agregar esta línea
+    setShowQrReader2(false);
     setIsScanning(false);
-    setIsScanning2(false); // Agregar esta línea
+    setIsScanning2(false);
     setTicketFile(null);
     setTicketResult(null);
     setTicketError(null);
+    setTicketPreview(null);
+    setReviewDialogOpen(false);
   };
-
-  // const limpiarFormulario = () => {
-  //   setFormData({
-  //     fecha: "",
-  //     ruc: "",
-  //     tipoDoc: "",
-  //     cuentaContable: selectedCuentaContable || "",
-  //     serie: "",
-  //     numero: "",
-  //     rubro: selectedRubro || "",
-  //     moneda: "PEN",
-  //     afecto: "",
-  //     igv: "",
-  //     inafecto: "",
-  //     total: "",
-  //     archivo: "",
-  //   });
-  //   setCategory("");
-  //   setSearchRuc("");
-  //   setSearchResult(null);
-  //   setError("");
-  //   setQrError(null);
-  //   setDetalle("");
-  //   setQrFile(null);
-  //   setQrResult(null);
-  //   setShowQrReader(false);
-  //   setIsScanning(false);
-  // };
 
   const formatNumber = (value) => {
     if (value === "" || value === null || value === undefined) return "";
@@ -377,18 +364,11 @@ const DatosRecibo = () => {
 
   const handleProcessQrResult = async () => {
     try {
-      if (!qrResult) {
-        console.error("No se ha detectado un resultado del escaneo.");
-        return;
-      }
-
-      console.log("Llamando a la API con el resultado:", qrResult);
+      if (!qrResult) return;
 
       const response = await axios.post(`${baseURL}/api/process-qr/`, {
         data: qrResult,
       });
-
-      console.log("Respuesta del backend:", response.data);
 
       const processedData = response.data;
 
@@ -401,8 +381,8 @@ const DatosRecibo = () => {
         numero: processedData.numero || "",
         igv: processedData.igv || "",
         total: processedData.total || "",
-        afecto: processedData.afecto || "", // ← NUEVO
-        inafecto: processedData.inafecto || "", // ← NUEVO
+        afecto: processedData.afecto || "",
+        inafecto: processedData.inafecto || "",
       }));
       setSearchRuc(processedData.ruc || "");
       setError("");
@@ -412,7 +392,6 @@ const DatosRecibo = () => {
       }
     } catch (error) {
       setError("Error al procesar el QR. Por favor, inténtalo nuevamente.");
-      console.error("Error al llamar a /api/process-qr/:", error);
     }
   };
 
@@ -438,7 +417,7 @@ const DatosRecibo = () => {
       qrbox: { width: 250, height: 250 },
       rememberLastUsedCamera: true,
       supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
-      facingMode: "environment", // Siempre usa la cámara trasera
+      facingMode: "environment",
     };
 
     html5QrScanner.current = new Html5QrcodeScanner(
@@ -450,7 +429,6 @@ const DatosRecibo = () => {
     html5QrScanner.current.render(
       (decodedText) => {
         limpiarFormulario();
-        console.log("Resultado del QR:", decodedText);
         if (scanTimeout) {
           clearTimeout(scanTimeout);
           setScanTimeout(null);
@@ -486,7 +464,6 @@ const DatosRecibo = () => {
           return;
         }
 
-        // Probaremos cada cámara para encontrar la de mayor resolución
         let bestCamera = null;
         let maxResolution = 0;
 
@@ -495,7 +472,7 @@ const DatosRecibo = () => {
             const stream = await navigator.mediaDevices.getUserMedia({
               video: {
                 deviceId: { exact: device.deviceId },
-                width: { ideal: 4096 }, // Probamos con resolución muy alta
+                width: { ideal: 4096 },
                 height: { ideal: 2160 },
               },
             });
@@ -521,12 +498,8 @@ const DatosRecibo = () => {
         if (bestCamera) {
           setMainCameraId(bestCamera.deviceId);
           setCameraInitialized(true);
-        } else {
-          setQrError();
-          // "No se pudo acceder a ninguna cámara con buena resolución"
         }
       } catch (error) {
-        console.error("Error detectando cámaras:", error);
         setQrError("Error al acceder a las cámaras. Verifica los permisos.");
       }
     };
@@ -534,29 +507,15 @@ const DatosRecibo = () => {
     findHighestResolutionCamera();
   }, []);
 
-  // const normalizeDate = (dateString) => {
-  //   if (!dateString) return null;
-  //   if (dateString.includes("/")) {
-  //     const [day, month, year] = dateString.split("/");
-  //     return new Date(
-  //       `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`
-  //     );
-  //   }
-  //   return new Date(dateString);
-  // };
-
   const normalizeDate = (dateString) => {
     if (!dateString) return null;
 
     try {
-      // Si es formato ISO (YYYY-MM-DD)
       if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
-        // Parsear como fecha local (no UTC)
         const [year, month, day] = dateString.split("-");
         return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
       }
 
-      // Si tiene formato de fecha con slash
       if (dateString.includes("/")) {
         const [day, month, year] = dateString.split("/");
         return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
@@ -636,17 +595,11 @@ const DatosRecibo = () => {
           estado: "POR APROBAR",
         });
 
-        const newRendicionResponse = await axios.post(
-          `${baseURL}/api/rendicion/`,
-          {
-            id_user: userId,
-          }
-        );
-      } else {
+        await axios.post(`${baseURL}/api/rendicion/`, {
+          id_user: userId,
+        });
       }
     } catch (error) {
-      console.error("Error al finalizar la rendición:", error);
-
       setError(
         "Error al finalizar la rendición. Por favor, intente nuevamente."
       );
@@ -705,12 +658,9 @@ const DatosRecibo = () => {
 
         handleCloseConfirmDeleteDialog();
       } catch (error) {
-        console.error("Error al eliminar el documento:", error);
-
         setError(
           "Error al eliminar el documento. Por favor, intente nuevamente."
         );
-
         handleCloseConfirmDeleteDialog();
       }
     }
@@ -764,26 +714,14 @@ const DatosRecibo = () => {
 
   useEffect(() => {
     return () => {
-      // Limpiar timeout al desmontar el componente
       if (scanTimeout) {
         clearTimeout(scanTimeout);
       }
     };
   }, [scanTimeout]);
 
-  // useEffect(() => {
-  //   if (formData.igv) {
-  //     const afectoValue = (parseFloat(formData.igv) / 0.18).toFixed(2);
-  //     setFormData((prevFormData) => ({
-  //       ...prevFormData,
-  //       afecto: afectoValue,
-  //     }));
-  //   }
-  // }, [formData.igv]);
-
   const fetchTipoCambio = async (fecha) => {
     try {
-      // Formatear la fecha a YYYY-MM-DD
       const formattedDate = fecha.toISOString().split("T")[0];
 
       const response = await axios.get(
@@ -792,7 +730,6 @@ const DatosRecibo = () => {
       const precioVenta = response.data.precioVenta;
       setTipoCambio(precioVenta);
 
-      // Convertir de PEN a USD multiplicando por el nuevo tipoCambio
       setFormData((prev) => ({
         ...prev,
         afecto: (parseFloat(prev.afecto) * precioVenta).toFixed(2),
@@ -812,7 +749,6 @@ const DatosRecibo = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Actualizar primero el valor en el formData
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -821,7 +757,6 @@ const DatosRecibo = () => {
     if (name === "moneda") {
       if (value === "PEN") {
         setTipoCambio(1);
-        // Convertir de USD a PEN dividiendo por el tipoCambio anterior
         setFormData((prev) => ({
           ...prev,
           afecto: parseFloat(prev.afecto) / tipoCambio,
@@ -855,11 +790,10 @@ const DatosRecibo = () => {
 
       setSearchResult(response.data);
 
-      // Actualizar formData.ruc con el valor correcto (rucToSearch)
       setFormData((prevFormData) => ({
         ...prevFormData,
-        ruc: rucToSearch, // Usar directamente rucToSearch en lugar de ruc || searchRuc
-        proveedor: response.data.razon_social || "Proveedor Desconocido", 
+        ruc: rucToSearch,
+        proveedor: response.data.razon_social || "Proveedor Desconocido",
       }));
 
       setError("");
@@ -879,8 +813,6 @@ const DatosRecibo = () => {
       const formData = new FormData();
       formData.append("file", file);
       setIsLoading(true);
-      console.log(file);
-      console.log(formData);
       try {
         const decodeResponse = await axios.post(
           `${baseURL}/decode-qr/`,
@@ -891,9 +823,6 @@ const DatosRecibo = () => {
             },
           }
         );
-
-        console.log("############decodeResponse############");
-        console.log(decodeResponse);
 
         if (decodeResponse.data.detail === "No QR code found in the image") {
           setQrError(
@@ -909,20 +838,16 @@ const DatosRecibo = () => {
           );
         } else {
           const decodedRuc = decodeResponse.data.ruc;
-          console.log(decodedRuc);
 
           let razonSocial = "Proveedor Desconocido";
           try {
             const rucResponse = await axios.get(
               `${baseURL}/consulta-ruc?ruc=${decodedRuc}`
             );
-
             razonSocial = rucResponse.data.razon_social || razonSocial;
           } catch (error) {
             if (error.response && error.response.status === 404) {
-              console.warn(
-                "RUC no encontrado, utilizando valor por defecto para Razón Social."
-              );
+              console.warn("RUC no encontrado.");
             } else {
               throw error;
             }
@@ -937,8 +862,8 @@ const DatosRecibo = () => {
             numero: decodeResponse.data.numero || "",
             igv: decodeResponse.data.igv || "",
             total: decodeResponse.data.total || "",
-            afecto: decodeResponse.data.afecto || "", // ← NUEVO
-            inafecto: decodeResponse.data.inafecto || "", // ← NUEVO
+            afecto: decodeResponse.data.afecto || "",
+            inafecto: decodeResponse.data.inafecto || "",
             proveedor: razonSocial,
           }));
           setSearchRuc(decodeResponse.data.ruc || "");
@@ -949,20 +874,13 @@ const DatosRecibo = () => {
         }
       } catch (error) {
         if (error.response) {
-          console.error(
-            "Error de respuesta del servidor:",
-            error.response.data
-          );
-
           setError(
             "Error al procesar el QR: " +
               (error.response.data.message || "Por favor, intente nuevamente.")
           );
         } else if (error.request) {
-          console.error("No se recibió respuesta:", error.request);
           setError("No se recibió respuesta del servidor. Intente nuevamente.");
         } else {
-          console.error("Error al configurar la solicitud:", error.message);
           setError("Ocurrió un error. Intente nuevamente.");
         }
       } finally {
@@ -1033,59 +951,11 @@ const DatosRecibo = () => {
     }
   };
 
-  // useEffect(() => {
-  //   if (formData.afecto && formData.igv && formData.total) {
-  //     // Solo calcular inafecto si no se ha ingresado manualmente
-  //     if (!formData.inafecto || formData.inafecto === "0.00") {
-  //       const afecto = parseFloat(formData.afecto) || 0;
-  //       const igv = parseFloat(formData.igv) || 0;
-  //       const total = parseFloat(formData.total) || 0;
-  //       let rawValue = total - (afecto + igv);
-  //       const inafectoValue = (
-  //         Math.abs(rawValue) < 0.005 ? 0 : rawValue
-  //       ).toFixed(2);
-
-  //       setFormData((prevFormData) => ({
-  //         ...prevFormData,
-  //         inafecto: inafectoValue,
-  //       }));
-  //     }
-  //   }
-  // }, [formData.afecto, formData.igv, formData.total]);
-
-  // useEffect(() => {
-  //   if (formData.afecto && formData.igv && formData.total) {
-  //     // Solo calcular inafecto si no se ha ingresado manualmente
-  //     if (!formData.inafecto || formData.inafecto === "0.00") {
-  //       // Convertir a números y manejar casos vacíos o inválidos
-  //       const afecto = parseFloat(formData.afecto) || 0;
-  //       const igv = parseFloat(formData.igv) || 0;
-  //       const total = parseFloat(formData.total) || 0;
-
-  //       // Calcular inafecto
-  //       let inafectoValue = total - (afecto + igv);
-
-  //       // Redondear a 2 decimales y manejar valores cercanos a cero
-  //       inafectoValue = Math.round(inafectoValue * 100) / 100;
-
-  //       // Solo actualizar si el valor es diferente al actual para evitar bucles
-  //       if (
-  //         Math.abs(inafectoValue - (parseFloat(formData.inafecto) || 0) > 0.01)
-  //       ) {
-  //         setFormData((prevFormData) => ({
-  //           ...prevFormData,
-  //           inafecto: inafectoValue.toFixed(2),
-  //         }));
-  //       }
-  //     }
-  //   }
-  // }, [formData.afecto, formData.igv, formData.total]);
-
   useEffect(() => {
     if (showQrReader) {
       setTimeout(() => {
         initScanner();
-      }, 100); // Espera 100ms para asegurar que el DOM ya renderizó el contenedor
+      }, 100);
     }
   }, [showQrReader]);
 
@@ -1110,15 +980,12 @@ const DatosRecibo = () => {
     if (token) {
       const decodedToken = jwtDecode(token);
       loggedInUser = decodedToken.sub;
-    } else {
-      console.error("Token not found in localStorage.");
     }
 
     const userString = localStorage.getItem("user");
     const user = userString ? JSON.parse(userString) : null;
     const userId = user ? user.id : null;
     const gerencia = user ? user.gerencia : null;
-    //const todayDate = new Date().toISOString().split("T")[0];
     const todayDate = new Date().toLocaleDateString("en-CA");
 
     const requestData = {
@@ -1128,7 +995,6 @@ const DatosRecibo = () => {
       gerencia: gerencia,
       ruc: formData.ruc,
       proveedor: formData.proveedor || "Proveedor Desconocido",
-      // fecha_emision: formData.fecha ? new Date(formData.fecha).toISOString().split('T')[0] : null,
       fecha_emision: formData.fecha
         ? new Date(formData.fecha).toLocaleDateString("en-CA")
         : null,
@@ -1161,8 +1027,6 @@ const DatosRecibo = () => {
       id_empresa: user.id_empresa,
     };
 
-    console.log("##################requestData##########", requestData);
-
     try {
       await axios.post(`${baseURL}/documentos/`, requestData, {
         headers: {
@@ -1173,7 +1037,6 @@ const DatosRecibo = () => {
       setDialogOpen(true);
     } catch (error) {
       if (error.response && error.response.status === 400) {
-        // Mostrar el mensaje de error específico del backend
         setError(
           error.response.data.message ||
             "Este documento ya se encuentra registrado"
@@ -1205,9 +1068,7 @@ const DatosRecibo = () => {
         total: "",
         archivo: "",
       });
-      setCategory(""); // ← Esto es lo que faltaba
-
-      // Limpiar otros estados
+      setCategory("");
       setSearchRuc("");
       setSearchResult(null);
       setError("");
@@ -1216,6 +1077,10 @@ const DatosRecibo = () => {
       setQrResult(null);
       setShowQrReader(false);
       setIsScanning(false);
+      setTicketFile(null);
+      setTicketResult(null);
+      setTicketError(null);
+      setTicketPreview(null);
 
       try {
         const userString = localStorage.getItem("user");
@@ -1223,19 +1088,17 @@ const DatosRecibo = () => {
         const userId = user ? user.id : null;
 
         if (userId) {
-          const response = await api.get(`/api/rendicion/last`, {
+          await api.get(`/api/rendicion/last`, {
             params: {
               id_user: userId,
               tipo: "RENDICION",
             },
           });
-          const { nombre } = response.data;
           navigate("/datos-recibo");
         } else {
           alert("Error: Usuario no autenticado");
         }
       } catch (error) {
-        console.error("Error al obtener la última rendición:", error);
         alert("Error al obtener la última rendición. Intente nuevamente.");
       }
     } else {
@@ -1317,7 +1180,8 @@ const DatosRecibo = () => {
                 <input type="file" hidden onChange={handleQrFileChange} />
               </Button>
             </div>
-            {/* Busca la sección de botones y añade esto junto a los demás: */}
+
+            {/* ─── Botón: Leer datos de ticket con IA (Claude Vision) ─────── */}
             <div className="col-md-4">
               <Button
                 variant="outlined"
@@ -1334,15 +1198,62 @@ const DatosRecibo = () => {
                   },
                 }}
               >
-                Leer datos de ticket
-                <input type="file" hidden onChange={handleTicketFileChange} />
+                📷 Leer ticket con IA
+                <input
+                  type="file"
+                  hidden
+                  accept="image/*"
+                  capture="environment"
+                  onChange={handleTicketFileChange}
+                />
               </Button>
+
+              {/* Preview de la imagen cargada */}
+              {ticketPreview && (
+                <Box
+                  sx={{
+                    marginTop: 1,
+                    border: "1px solid #ddd",
+                    borderRadius: 1,
+                    overflow: "hidden",
+                    maxHeight: 150,
+                  }}
+                >
+                  <img
+                    src={ticketPreview}
+                    alt="Vista previa del ticket"
+                    style={{
+                      width: "100%",
+                      height: "150px",
+                      objectFit: "contain",
+                      backgroundColor: "#f5f5f5",
+                    }}
+                  />
+                </Box>
+              )}
+
+              {/* Estado de carga de IA */}
+              {isLoading && ticketFile && (
+                <Alert severity="info" sx={{ marginTop: 1 }}>
+                  🤖 Claude está analizando el comprobante...
+                </Alert>
+              )}
+
+              {/* Datos extraídos exitosamente */}
+              {ticketResult && !isLoading && (
+                <Alert severity="success" sx={{ marginTop: 1 }}>
+                  ✅ Datos extraídos con IA
+                </Alert>
+              )}
+
+              {/* Error de extracción */}
               {ticketError && (
                 <Alert severity="error" sx={{ marginTop: 2 }}>
                   {ticketError}
                 </Alert>
               )}
             </div>
+
             <div className="col-md-4">
               <Button
                 variant="outlined"
@@ -1495,7 +1406,6 @@ const DatosRecibo = () => {
                     onResult={(result, error) => {
                       if (result) {
                         limpiarFormulario();
-                        console.log("Resultado del QR:", result.text);
                         if (scanTimeout) {
                           clearTimeout(scanTimeout);
                           setScanTimeout(null);
@@ -1546,7 +1456,6 @@ const DatosRecibo = () => {
             </div>
           ) : (
             <>
-              {/* {error && <Alert severity="error">{error}</Alert>} */}
               {error && !qrError && <Alert severity="error">{error}</Alert>}
               {searchResult && (
                 <Alert severity="success">
@@ -1565,21 +1474,6 @@ const DatosRecibo = () => {
           )}
 
           <form onSubmit={handleSubmit}>
-            {/* {["fecha", "ruc", "cuentaContable", "serie", "numero"].map(
-              (field) => (
-                <TextField
-                  key={field}
-                  label={field.charAt(0).toUpperCase() + field.slice(1)}
-                  variant="outlined"
-                  fullWidth
-                  margin="normal"
-                  id={field}
-                  name={field}
-                  value={formData[field]}
-                  onChange={handleChange}
-                />
-              )
-            )} */}
             {["fecha", "ruc", "cuentaContable", "serie", "numero"].map(
               (field) => {
                 if (field === "fecha") {
@@ -1718,7 +1612,6 @@ const DatosRecibo = () => {
                 variant="contained"
                 color="primary"
                 onClick={() => {
-                  // Validar que todos los campos necesarios estén presentes
                   if (!formData.total || !formData.afecto || !formData.igv) {
                     setError(
                       "Faltan datos para realizar el cálculo. Complete Total, Afecto e IGV primero."
@@ -1726,21 +1619,16 @@ const DatosRecibo = () => {
                     return;
                   }
 
-                  // Convertir a números
                   const total = parseFloat(formData.total) || 0;
                   const afecto = parseFloat(formData.afecto) || 0;
                   const igv = parseFloat(formData.igv) || 0;
-
-                  // Calcular inafecto
                   const inafectoValue = total - (afecto + igv);
 
-                  // Actualizar el estado
                   setFormData((prevFormData) => ({
                     ...prevFormData,
                     inafecto: inafectoValue.toFixed(2),
                   }));
 
-                  // Limpiar mensaje de error si existe
                   setError("");
                 }}
                 sx={{
@@ -1914,7 +1802,39 @@ const DatosRecibo = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      {/* ─── Popup revisión de datos extraídos por IA ─── */}
+      <Dialog
+        open={reviewDialogOpen}
+        onClose={() => setReviewDialogOpen(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          ✅ Datos extraídos
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Se han completado los campos automáticamente. Por favor{" "}
+            <strong>revisa y corrige los datos</strong> antes de enviar, ya que
+            la lectura automática puede contener errores.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setReviewDialogOpen(false)}
+            variant="contained"
+            sx={{
+              backgroundColor: "#2E3192",
+              "&:hover": { backgroundColor: "#1F237A" },
+            }}
+          >
+            Revisar datos
+          </Button>
+        </DialogActions>
+      </Dialog>
+
     </Container>
   );
 };
+
 export default DatosRecibo;
