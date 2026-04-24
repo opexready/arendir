@@ -16,6 +16,8 @@ import {
 } from "@mui/material";
 import axios from "axios";
 //import { baseURL, api } from "../api";
+import "../arendir-design.css";
+import { FormSkeleton, PageFade } from "./PageLoader";
 import api, { baseURL } from "../api";
 import "./AnticiposGastosLocales.css"; // Mantén tu archivo CSS personalizado si es necesario
 import { useNavigate } from "react-router-dom";
@@ -189,7 +191,7 @@ const fetchTipoCambio = async (fecha) => {
   };
 
   return (
-    <Container sx={{ marginTop: -20 }}>
+    <Container sx={{ paddingTop: 2 }}>
       <Container sx={{ marginBottom: 2 }}>
         <Box display="flex" justifyContent="flex-end">
           <Button

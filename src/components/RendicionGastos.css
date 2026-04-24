@@ -1,25 +1,7 @@
-.card {
-    border: none;
-}
-
-.card-title {
-    color: #0056b3; /* Azul */
-}
-
-.form-group label {
-    color: #0056b3; /* Azul */
-}
-
-.btn-primary {
-    background-color: #ff6600; /* Naranja */
-    border-color: #ff6600; /* Naranja */
-}
-
-.btn-primary:hover {
-    background-color: #e65c00; /* Naranja oscuro */
-    border-color: #e65c00; /* Naranja oscuro */
-}
-
-.container {
-    max-width: 600px;
-}
+/* RendicionGastos — Redesigned */
+.card { border: none; border-radius: 16px; }
+.card-title { color: #2E3192; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; }
+.form-group label { color: #5A6280; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 600; }
+.btn-primary { background-color: #2E3192; border-color: #2E3192; border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; }
+.btn-primary:hover { background-color: #1F237A; border-color: #1F237A; }
+.container { max-width: 600px; }

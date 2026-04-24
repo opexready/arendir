@@ -30,6 +30,8 @@ import ubigeoData from "../data/ubigeoData";
 import paisesSudamerica from "../data/paisesMundo";
 import { useNavigate } from "react-router-dom";
 import lupaIcon from "../assets/lupa-icon.png";
+import "../arendir-design.css";
+import { TableSkeleton, PageFade } from "./PageLoader";
 import api, { baseURL } from "../api";
 
 const AnticipoTable = () => {
@@ -392,73 +394,66 @@ const AnticipoTable = () => {
   };
 
   return (
-    <Container sx={{ marginTop: -20 }}>
-      <Container sx={{ marginBottom: 2 }}>
-        <Box display="flex" justifyContent="flex-end">
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{
-              marginRight: 2,
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-            }}
+    <Container sx={{ paddingTop: 2 }}>
+      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5, mb: 2 }}>
+          <Box component="button"
             onClick={handleAnticipoViajes}
-          >
-            <img
-              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa11.png?alt=media&token=6d72c9af-25f8-43b4-89e8-fb82b22224de"
-              alt="Ícono de Anticipo Viajes"
-              style={{ height: "24px" }} // Ajusta el tamaño de la imagen
-            />
+            sx={{
+              display: "flex", alignItems: "center", gap: 1,
+              height: 44, px: 2.5, border: "none", cursor: "pointer",
+              backgroundColor: "#2E3192", color: "#fff",
+              borderRadius: "10px", fontFamily: "'Plus Jakarta Sans', sans-serif",
+              fontWeight: 600, fontSize: 13,
+              boxShadow: "0 4px 12px rgba(46,49,146,0.3)",
+              transition: "all 0.2s",
+              "&:hover": { backgroundColor: "#1F237A", transform: "translateY(-1px)" },
+            }}>
+            <img src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa11.png?alt=media&token=6d72c9af-25f8-43b4-89e8-fb82b22224de"
+              alt="" style={{ height: 18, filter: "brightness(0) invert(1)" }} />
             Anticipo Viajes
-          </Button>
+          </Box>
 
-          <Button
-            variant="contained"
-            color="warning"
-            sx={{
-              marginRight: 2,
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-            }}
+          <Box component="button"
             onClick={handleAnticipoGastosLocales}
-          >
-            <img
-              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa12.png?alt=media&token=605b5260-250c-4fb0-ade2-ff241845be1c"
-              alt="Ícono de Anticipo Gastos Locales"
-              style={{ height: "24px" }} // Ajusta el tamaño de la imagen
-            />
-            Anticipo Gastos Locales
-          </Button>
-
-          <Button
-            variant="contained"
-            color="success"
             sx={{
-              marginRight: -3,
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-            }}
+              display: "flex", alignItems: "center", gap: 1,
+              height: 44, px: 2.5, border: "none", cursor: "pointer",
+              backgroundColor: "#F15A29", color: "#fff",
+              borderRadius: "10px", fontFamily: "'Plus Jakarta Sans', sans-serif",
+              fontWeight: 600, fontSize: 13,
+              boxShadow: "0 4px 12px rgba(241,90,41,0.3)",
+              transition: "all 0.2s",
+              "&:hover": { backgroundColor: "#D44A1C", transform: "translateY(-1px)" },
+            }}>
+            <img src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa12.png?alt=media&token=605b5260-250c-4fb0-ade2-ff241845be1c"
+              alt="" style={{ height: 18, filter: "brightness(0) invert(1)" }} />
+            Anticipo Gastos Locales
+          </Box>
+
+          <Box component="button"
             onClick={handleOpenConfirmFinalizarDialog}
-          >
-            <img
-              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa13.png?alt=media&token=7b15c497-d494-4a52-9011-ee7e6bdbe1e8"
-              alt="Ícono de Finalizar Solicitud"
-              style={{ height: "24px" }} // Ajusta el tamaño de la imagen
-            />
+            sx={{
+              display: "flex", alignItems: "center", gap: 1,
+              height: 44, px: 2.5, border: "none", cursor: "pointer",
+              backgroundColor: "#00B894", color: "#fff",
+              borderRadius: "10px", fontFamily: "'Plus Jakarta Sans', sans-serif",
+              fontWeight: 600, fontSize: 13,
+              boxShadow: "0 4px 12px rgba(0,184,148,0.3)",
+              transition: "all 0.2s",
+              "&:hover": { backgroundColor: "#00a381", transform: "translateY(-1px)" },
+            }}>
+            <img src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa13.png?alt=media&token=7b15c497-d494-4a52-9011-ee7e6bdbe1e8"
+              alt="" style={{ height: 18, filter: "brightness(0) invert(1)" }} />
             Finalizar Solicitud
-          </Button>
+          </Box>
         </Box>
-      </Container>
-      <Typography variant="h6" gutterBottom>
+      <Box className="ar-rendicion-chip" sx={{ mb: 2, display: "inline-flex" }}>
+        <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#F15A29", display: "inline-block", marginRight: 6 }}></span>
         SOLICITUD: {ultimaSolicitud}
-      </Typography>
+      </Box>
       {/* Grilla: Siempre visible */}
       {!showForm && (
-        <TableContainer component={Paper} sx={{ marginBottom: 4 }}>
+        <TableContainer component={Paper} sx={{ marginBottom: 4, borderRadius: "12px", overflowX: "auto", boxShadow: "0 2px 16px rgba(46,49,146,0.08)", border: "1px solid #E2E6F0", WebkitOverflowScrolling: "touch" }}>
           <Table>
             <TableHead>
               <TableRow sx={{ backgroundColor: "#1F237A" }}>
@@ -683,7 +678,7 @@ const AnticipoTable = () => {
               </Table>
             </TableContainer>
           ) : (
-            <CircularProgress />
+            <TableSkeleton rows={5} cols={5} />
           )}
         </DialogContent>
         <DialogActions>

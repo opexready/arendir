@@ -1,0 +1,8 @@
+/* HistorialGastos — Redesigned */
+.container { max-width: 1200px; margin: 0 auto; }
+.table { background-color: #FFFFFF; border-radius: 12px; overflow: hidden; }
+.table thead { background-color: #2E3192; color: white; }
+.table thead th { text-align: left; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 600; padding: 13px 16px; }
+.table tbody tr:hover { background-color: #F0F2F8; }
+.table tbody tr { transition: background 0.15s; border-bottom: 1px solid #F0F2F8; }
+.table tbody td { padding: 12px 16px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: #5A6280; }

@@ -24,6 +24,8 @@ import {
 import axios from "axios";
 import "./AnticiposViajes.css";
 //import { baseURL, api } from "../api";
+import "../arendir-design.css";
+import { FormSkeleton, PageFade } from "./PageLoader";
 import api, { baseURL } from "../api";
 import ubigeoData from "../data/ubigeoData";
 import paisesSudamerica from "../data/paisesMundo";
@@ -444,7 +446,7 @@ const AnticiposViajes = () => {
   };
 
   return (
-    <Container sx={{ marginTop: -20 }}>
+    <Container sx={{ paddingTop: 2 }}>
       <Container sx={{ marginBottom: 2 }}>
         <Box display="flex" justifyContent="flex-end">
           <Button

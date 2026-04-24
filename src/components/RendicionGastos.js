@@ -11,6 +11,7 @@ import {
   MenuItem,
   Button,
 } from "@mui/material";
+import "../arendir-design.css";
 import api from "../api"; 
 
 const RendicionGastos = () => {

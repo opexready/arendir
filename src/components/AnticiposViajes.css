@@ -1,13 +1,3 @@
-/* Puedes agregar estilos personalizados aquí si es necesario */
-.container {
-    max-width: 800px;
-}
-
-.form-group label {
-    font-weight: bold;
-}
-
-.btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
-}
+/* AnticiposViajes — Redesigned */
+.card { border: none; border-radius: 16px; }
+.form-group label { color: #5A6280; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 600; }

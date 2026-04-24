@@ -199,7 +199,7 @@ const DocumentoDetail = () => {
   };
 
   return (
-    <Container sx={{ marginTop: -20 }}>
+    <Container sx={{ paddingTop: 2 }}>
       {isLoading ? (
         <CircularProgress />
       ) : error ? (

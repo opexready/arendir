@@ -33,7 +33,9 @@ import {
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import "./DatosRecibo.css";
+import "../arendir-design.css";
 import api, { baseURL } from "../api";
+import { TableSkeleton, PageFade } from "./PageLoader";
 
 const DatosReciboTable = () => {
   const categoryOptions = [
@@ -110,7 +112,7 @@ const DatosReciboTable = () => {
   const [searchResult, setSearchResult] = useState(null);
   const [error, setError] = useState("");
   const [qrFile, setQrFile] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [open, setOpen] = useState(false);
@@ -729,72 +731,24 @@ const DatosReciboTable = () => {
   };
 
   return (
-    <Container sx={{ marginTop: 0 }}>
-      <Container sx={{ marginBottom: 2, marginTop: -20 }} disableGutters>
-        <Box
-          display="flex"
-          justifyContent="flex-end" // Alinea a la derecha
-          sx={{
-            width: "101%", // Asegura que ocupe todo el ancho disponible
-            marginRight: "-20px", // Ajusta el margen derecho si hay espacio extra
-          }}
-        >
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{
-              marginRight: 2,
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-            }}
-            onClick={() => navigate("/datos-recibo")}
-          >
-            <img
-              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa12.png?alt=media&token=605b5260-250c-4fb0-ade2-ff241845be1c"
-              alt="Ícono de Anticipo Viajes"
-              style={{ height: "24px" }} // Ajusta el tamaño de la imagen
-            />
+    <Container sx={{ paddingTop: 2 }}>
+      <Container sx={{ marginBottom: 2, marginTop: 0 }} disableGutters>
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5, mb: 1 }}>
+          <Box component="button" className="ar-btn ar-btn-primary" onClick={() => navigate("/datos-recibo")}
+            sx={{ display: "flex", alignItems: "center", gap: 1, border: "none", cursor: "pointer" }}>
+            <img src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa12.png?alt=media&token=605b5260-250c-4fb0-ade2-ff241845be1c" alt="" style={{ height: 18, filter: "brightness(0) invert(1)" }} />
             Nuevo Registro
-          </Button>
-
-          <Button
-            variant="contained"
-            color="warning"
-            sx={{
-              marginRight: 2,
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-            }}
-            onClick={() => navigate("/movilidad")}
-          >
-            <img
-              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa11.png?alt=media&token=6d72c9af-25f8-43b4-89e8-fb82b22224de"
-              alt="Ícono de Anticipo Viajes"
-              style={{ height: "24px" }} // Ajusta el tamaño de la imagen
-            />
+          </Box>
+          <Box component="button" className="ar-btn ar-btn-orange" onClick={() => navigate("/movilidad")}
+            sx={{ display: "flex", alignItems: "center", gap: 1, border: "none", cursor: "pointer" }}>
+            <img src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa11.png?alt=media&token=6d72c9af-25f8-43b4-89e8-fb82b22224de" alt="" style={{ height: 18, filter: "brightness(0) invert(1)" }} />
             Movilidad
-          </Button>
-
-          <Button
-            variant="contained"
-            color="success"
-            sx={{
-              marginRight: 2,
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-            }}
-            onClick={() => setConfirmFinalizarDialogOpen(true)}
-          >
-            <img
-              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa13.png?alt=media&token=7b15c497-d494-4a52-9011-ee7e6bdbe1e8"
-              alt="Ícono de Anticipo Viajes"
-              style={{ height: "24px" }} // Ajusta el tamaño de la imagen
-            />
+          </Box>
+          <Box component="button" className="ar-btn ar-btn-success" onClick={() => setConfirmFinalizarDialogOpen(true)}
+            sx={{ display: "flex", alignItems: "center", gap: 1, border: "none", cursor: "pointer" }}>
+            <img src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa13.png?alt=media&token=7b15c497-d494-4a52-9011-ee7e6bdbe1e8" alt="" style={{ height: 18, filter: "brightness(0) invert(1)" }} />
             Finalizar Rendición
-          </Button>
+          </Box>
         </Box>
       </Container>
       {showForm && (
@@ -1030,20 +984,23 @@ const DatosReciboTable = () => {
         </Card>
       )}
 
-      <Typography variant="h6" gutterBottom>
+      <Box className="ar-rendicion-chip" sx={{ mb: 2, display: "inline-flex" }}>
+        <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#F15A29", display: "inline-block", marginRight: 2 }}></span>
         RENDICIÓN: {nombreRendicion}
-      </Typography>
+      </Box>
 
       {isLoading ? (
-        <CircularProgress />
+        <Box sx={{ mt: 2 }}>
+          <TableSkeleton rows={5} cols={7} />
+        </Box>
       ) : (
-        <TableContainer component={Paper} sx={{ marginBottom: 4 }}>
-          <Table>
+        <TableContainer component={Paper} sx={{ marginBottom: 4, borderRadius: "12px", overflowX: "auto", overflowY: "hidden", boxShadow: "0 2px 16px rgba(46,49,146,0.08)", border: "1px solid #E2E6F0", WebkitOverflowScrolling: "touch" }}>
+          <Table sx={{ minWidth: 650 }}>
             <TableHead>
-              <TableRow sx={{ backgroundColor: "#1F237A" }}>
+              <TableRow sx={{ backgroundColor: "#2E3192" }}>
                 <TableCell
                   align="left"
-                  sx={{ color: "white", fontWeight: "bold" }}
+                  sx={{ color: "rgba(255,255,255,0.92)", fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: "0.4px", py: 1.5 }}
                 >
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa14.png?alt=media&token=0adf0d7c-ba88-48a2-abee-864cbf6850e5"
@@ -1054,7 +1011,7 @@ const DatosReciboTable = () => {
                 </TableCell>
                 <TableCell
                   align="left"
-                  sx={{ color: "white", fontWeight: "bold" }}
+                  sx={{ color: "rgba(255,255,255,0.92)", fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: "0.4px", py: 1.5 }}
                 >
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa15.png?alt=media&token=3e9271c1-9533-4661-ab02-d30de0ad90e6"
@@ -1065,7 +1022,7 @@ const DatosReciboTable = () => {
                 </TableCell>
                 <TableCell
                   align="left"
-                  sx={{ color: "white", fontWeight: "bold" }}
+                  sx={{ color: "rgba(255,255,255,0.92)", fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: "0.4px", py: 1.5 }}
                 >
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa16.png?alt=media&token=d8afd433-339c-4f9a-ab2d-b211e10345b2"
@@ -1076,7 +1033,7 @@ const DatosReciboTable = () => {
                 </TableCell>
                 <TableCell
                   align="left"
-                  sx={{ color: "white", fontWeight: "bold" }}
+                  sx={{ color: "rgba(255,255,255,0.92)", fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: "0.4px", py: 1.5 }}
                 >
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa17.png?alt=media&token=aae19df1-ae52-45f4-8653-042af6b5a59b"
@@ -1087,7 +1044,7 @@ const DatosReciboTable = () => {
                 </TableCell>
                 <TableCell
                   align="left"
-                  sx={{ color: "white", fontWeight: "bold" }}
+                  sx={{ color: "rgba(255,255,255,0.92)", fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: "0.4px", py: 1.5 }}
                 >
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa18.png?alt=media&token=8228c7ef-c92f-478c-995a-2104ea29f3d4"
@@ -1098,7 +1055,7 @@ const DatosReciboTable = () => {
                 </TableCell>
                 <TableCell
                   align="left"
-                  sx={{ color: "white", fontWeight: "bold" }}
+                  sx={{ color: "rgba(255,255,255,0.92)", fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: "0.4px", py: 1.5 }}
                 >
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa21.png?alt=media&token=8eacf126-3bd4-42cb-bdb1-900c746eea23"
@@ -1109,7 +1066,7 @@ const DatosReciboTable = () => {
                 </TableCell>
                 <TableCell
                   align="left"
-                  sx={{ color: "white", fontWeight: "bold" }}
+                  sx={{ color: "rgba(255,255,255,0.92)", fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: "0.4px", py: 1.5 }}
                 >
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa22.png?alt=media&token=554ee3ea-2338-48be-ba94-fd6535f34fc4"
@@ -1207,18 +1164,30 @@ const DatosReciboTable = () => {
           </Button>
         </DialogActions>
       </Dialog>
-      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-        <DialogTitle>Archivo del Documento</DialogTitle>
-        <DialogContent>
+      <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth
+        PaperProps={{ sx: { borderRadius: "16px", height: "90vh", m: 2 } }}>
+        <DialogTitle sx={{
+          fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700,
+          display: "flex", justifyContent: "space-between", alignItems: "center",
+          borderBottom: "1px solid #E2E6F0", pb: 1.5,
+        }}>
+          Archivo del Documento
+          <Button onClick={handleClose} size="small"
+            sx={{ minWidth: 32, color: "#5A6280", borderRadius: "8px", "&:hover": { background: "#F0F2F8" } }}>
+            ✕
+          </Button>
+        </DialogTitle>
+        <DialogContent sx={{ p: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
           {selectedFile && (
-            <iframe
-              src={selectedFile}
-              width="100%"
-              height="600px"
-              title="Archivo del Documento"
-              frameBorder="0"
-              //style={{ transform: "scale(0.4)", transformOrigin: "top" }}
-            />
+            selectedFile.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+              <Box sx={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", p: 2, background: "#F8F9FC", overflow: "auto" }}>
+                <img src={selectedFile} alt="Archivo"
+                  style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", borderRadius: "8px", boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }} />
+              </Box>
+            ) : (
+              <iframe src={selectedFile} width="100%" style={{ flex: 1, border: "none", height: "100%" }}
+                title="Archivo del Documento" />
+            )
           )}
         </DialogContent>
       </Dialog>

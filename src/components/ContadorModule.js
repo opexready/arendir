@@ -11,6 +11,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  Box,
   TableContainer,
   TableHead,
   CircularProgress,  // Agregar esta importación
@@ -613,13 +614,15 @@ const ContadorModule = () => {
         <DialogTitle>Archivo del Documento</DialogTitle>
         <DialogContent>
           {selectedFile && (
-            <iframe
-              src={selectedFile}
-              width="100%"
-              height="600px"
-              title="Archivo del Documento"
-              frameBorder="0"
-            />
+            selectedFile.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", p: 2, background: "#F8F9FC", minHeight: 300 }}>
+                <img src={selectedFile} alt="Archivo"
+                  style={{ maxWidth: "100%", maxHeight: "70vh", objectFit: "contain", borderRadius: "8px", boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }} />
+              </Box>
+            ) : (
+              <iframe src={selectedFile} width="100%" height="600px"
+                style={{ border: "none" }} title="Archivo del Documento" />
+            )
           )}
         </DialogContent>
       </Dialog>

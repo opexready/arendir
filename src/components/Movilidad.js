@@ -24,6 +24,8 @@ import { jwtDecode } from "jwt-decode";
 import "./Movilidad.css";
 import { baseURL } from "../api";
 import { useNavigate } from "react-router-dom";
+import "../arendir-design.css";
+import { FormSkeleton, PageFade } from "./PageLoader";
 import api from "../api";
 import ubigeoData from "../data/ubigeoData";
 
@@ -272,7 +274,7 @@ const Movilidad = () => {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ marginTop: -20 }}>
+    <Container maxWidth="sm" sx={{ paddingTop: 0 }}>
       <Box display="flex" justifyContent="flex-start" mb={2}>
         <Button
           variant="contained"

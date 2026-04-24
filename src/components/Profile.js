@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import "../arendir-design.css";
+import { ProfileSkeleton, PageFade } from "./PageLoader";
 import api from "../api";
 import {
   Typography,
@@ -122,7 +124,7 @@ const bancosPeru = [
   };
 
   return (
-    <Container sx={{ marginTop: -15}}>
+    <Container sx={{ marginTop: 0}}>
       <Typography
         variant="h4"
         align="center"

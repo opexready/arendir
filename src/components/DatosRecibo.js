@@ -35,6 +35,8 @@ import {
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import "./DatosRecibo.css";
+import { FormSkeleton, PageFade } from "./PageLoader";
+import "../arendir-design.css";
 import api, { baseURL } from "../api";
 
 
@@ -164,8 +166,13 @@ const DatosRecibo = () => {
   const [ticketError, setTicketError] = useState(null);
   // Preview de la imagen seleccionada
   const [ticketPreview, setTicketPreview] = useState(null);
-  // Popup de revisión de datos extraídos
-  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+
+  // ─── Detección automática de plataforma para QR scanner ────────────────
+  // iOS  → usa QR 2 (react-qr-reader) — Safari/WebKit maneja mejor este escáner
+  // Android → usa QR 1 (Html5QrcodeScanner) — Chrome nativo funciona mejor
+  // Desktop → muestra ambos con etiqueta de plataforma
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  const isAndroid = /Android/.test(navigator.userAgent);
 
   // ─── handleTicketFileChange: llama al backend que usa Claude Vision ──────────
   const handleTicketFileChange = async (event) => {
@@ -219,7 +226,6 @@ const DatosRecibo = () => {
       }
 
       setTicketResult(processedData);
-      setReviewDialogOpen(true);
     } catch (err) {
       console.error("Error al procesar ticket con IA:", err);
       setTicketError(
@@ -342,7 +348,6 @@ const DatosRecibo = () => {
     setTicketResult(null);
     setTicketError(null);
     setTicketPreview(null);
-    setReviewDialogOpen(false);
   };
 
   const formatNumber = (value) => {
@@ -1107,343 +1112,170 @@ const DatosRecibo = () => {
   };
 
   return (
-    <Container sx={{ marginTop: -20 }}>
+    <Container sx={{ paddingTop: 2 }}>
       <Typography variant="h6" gutterBottom>
         RENDICIÓN: {nombreRendicion}
       </Typography>
       <Card sx={{ boxShadow: 10 }}>
         <CardContent>
-          <div className="form-group row">
-            <div className="col-md-4">
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, mb: 2 }}>
+
+            {/* Fila 1: RUC + Buscar */}
+            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
               <TextField
                 label="Buscar por RUC"
                 variant="outlined"
                 fullWidth
                 value={searchRuc}
                 onChange={handleSearchRucChange}
-                sx={{ marginBottom: 2 }}
+                size="small"
+                sx={{
+                  "& .MuiOutlinedInput-root": { borderRadius: "10px", background: "#F8F9FC", height: 44 },
+                  "& .MuiInputLabel-root": { lineHeight: "1.2" }
+                }}
               />
               <Button
                 variant="contained"
-                color="primary"
                 onClick={handleSearch}
                 sx={{
-                  backgroundColor: "#2E3192",
+                  height: 44, minWidth: 90, flexShrink: 0,
+                  backgroundColor: "#2E3192", borderRadius: "10px",
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  fontWeight: 600, textTransform: "none",
                   "&:hover": { backgroundColor: "#1F237A" },
                 }}
               >
                 Buscar
               </Button>
-            </div>
-            <div className="col-md-4">
-              <Button
-                variant="outlined"
-                component="label"
-                fullWidth
-                sx={{
-                  marginTop: 2,
-                  borderColor: "#2E3192",
-                  color: "#2E3192",
-                  "&:hover": {
-                    backgroundColor: "#F15A29",
-                    borderColor: "#F15A29",
-                    color: "white",
-                  },
-                }}
-              >
-                Subir Recibo
-                <input type="file" hidden onChange={handleFileUpload} />
-              </Button>
-              {formErrors.archivo && (
-                <p style={{ color: "red", marginTop: "5px" }}>
-                  {formErrors.archivo}
-                </p>
-              )}
-            </div>
-            <div className="col-md-4">
-              <Button
-                variant="outlined"
-                component="label"
-                fullWidth
-                sx={{
-                  marginTop: 2,
-                  borderColor: "#2E3192",
-                  color: "#2E3192",
-                  "&:hover": {
-                    backgroundColor: "#F15A29",
-                    borderColor: "#F15A29",
-                    color: "white",
-                  },
-                }}
-              >
-                Escanear imagen adjunta
+            </Box>
+
+            {/* Fila 2: 4 botones iguales */}
+            <Box sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", md: "1fr 1fr 1fr 1fr" },
+              gap: 1.5,
+              alignItems: "start",
+            }}>
+
+              {/* Subir Recibo */}
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+                <Box component="label" sx={{
+                  height: 44, display: "flex", alignItems: "center", justifyContent: "center", gap: 1,
+                  border: "1.5px solid #2E3192", borderRadius: "10px", color: "#2E3192",
+                  fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 13,
+                  cursor: "pointer", transition: "all 0.2s",
+                  "&:hover": { background: "#F15A29", borderColor: "#F15A29", color: "#fff" },
+                }}>
+                  <span style={{ fontSize: 15 }}>📎</span> Subir Recibo
+                  <input type="file" hidden onChange={handleFileUpload} />
+                </Box>
+                {formErrors.archivo && <Typography sx={{ color: "red", fontSize: 11 }}>{formErrors.archivo}</Typography>}
+              </Box>
+
+              {/* Adjuntar QR */}
+              <Box component="label" sx={{
+                height: 44, display: "flex", alignItems: "center", justifyContent: "center", gap: 1,
+                border: "1.5px solid #2E3192", borderRadius: "10px", color: "#2E3192",
+                fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 13,
+                cursor: "pointer", transition: "all 0.2s",
+                "&:hover": { background: "#F15A29", borderColor: "#F15A29", color: "#fff" },
+              }}>
+                <span style={{ fontSize: 15 }}>🔲</span> Adjuntar QR
                 <input type="file" hidden onChange={handleQrFileChange} />
-              </Button>
-            </div>
-
-            {/* ─── Botón: Leer datos de ticket con IA (Claude Vision) ─────── */}
-            <div className="col-md-4">
-              <Button
-                variant="outlined"
-                component="label"
-                fullWidth
-                sx={{
-                  marginTop: 2,
-                  borderColor: "#2E3192",
-                  color: "#2E3192",
-                  "&:hover": {
-                    backgroundColor: "#F15A29",
-                    borderColor: "#F15A29",
-                    color: "white",
-                  },
-                }}
-              >
-                📷 Leer ticket con IA
-                <input
-                  type="file"
-                  hidden
-                  accept="image/*"
-                  capture="environment"
-                  onChange={handleTicketFileChange}
-                />
-              </Button>
-
-              {/* Preview de la imagen cargada */}
-              {ticketPreview && (
-                <Box
-                  sx={{
-                    marginTop: 1,
-                    border: "1px solid #ddd",
-                    borderRadius: 1,
-                    overflow: "hidden",
-                    maxHeight: 150,
-                  }}
-                >
-                  <img
-                    src={ticketPreview}
-                    alt="Vista previa del ticket"
-                    style={{
-                      width: "100%",
-                      height: "150px",
-                      objectFit: "contain",
-                      backgroundColor: "#f5f5f5",
-                    }}
-                  />
-                </Box>
-              )}
-
-              {/* Estado de carga de IA */}
-              {isLoading && ticketFile && (
-                <Alert severity="info" sx={{ marginTop: 1 }}>
-                  🤖 Claude está analizando el comprobante...
-                </Alert>
-              )}
-
-              {/* Datos extraídos exitosamente */}
-              {ticketResult && !isLoading && (
-                <Alert severity="success" sx={{ marginTop: 1 }}>
-                  ✅ Datos extraídos con IA
-                </Alert>
-              )}
-
-              {/* Error de extracción */}
-              {ticketError && (
-                <Alert severity="error" sx={{ marginTop: 2 }}>
-                  {ticketError}
-                </Alert>
-              )}
-            </div>
-
-            <div className="col-md-4">
-              <Button
-                variant="outlined"
-                fullWidth
-                sx={{
-                  marginTop: 2,
-                  borderColor: "#2E3192",
-                  color: "#2E3192",
-                  "&:hover": {
-                    backgroundColor: "#F15A29",
-                    borderColor: "#F15A29",
-                    color: "white",
-                  },
-                }}
-                onClick={handleStartScanner}
-              >
-                Escanear QR
-              </Button>
-
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  gap: 2,
-                  marginTop: 2,
-                }}
-              >
-                <Button
-                  variant="contained"
-                  color="primary"
-                  sx={{
-                    backgroundColor: "#2E3192",
-                    "&:hover": { backgroundColor: "#1F237A" },
-                  }}
-                  onClick={handleCameraSwitch}
-                >
-                  Reiniciar Escáner
-                </Button>
               </Box>
 
-              {isScanning && (
-                <Typography
-                  variant="body1"
-                  color="primary"
-                  sx={{ marginTop: 2 }}
-                >
-                  Escaneando... Por favor, apunta al código QR.
-                </Typography>
-              )}
+              {/* Escanear QR */}
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
 
-              {showQrReader && (
-                <Box
-                  sx={{
-                    marginTop: 2,
-                    position: "relative",
-                    width: "100%",
-                    maxWidth: "500px",
-                    margin: "0 auto",
-                  }}
-                  id="qr-reader-container"
-                >
-                  {/* Html5QrcodeScanner se auto-inyectará aquí */}
-                </Box>
-              )}
+                {isIOS ? (
+                  <>
+                    <Button variant="outlined" fullWidth
+                      sx={{ height: 44, borderColor: "#2E3192", color: "#2E3192", borderRadius: "10px", fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 600, textTransform: "none", fontSize: 13, "&:hover": { backgroundColor: "#2E3192", borderColor: "#2E3192", color: "white" } }}
+                      onClick={handleStartScanner2}>
+                      📷 Escanear QR
+                    </Button>
+                    <Box sx={{ display: "flex", gap: 0.8 }}>
+                      <Button size="small" variant="contained" fullWidth
+                        sx={{ height: 32, backgroundColor: "#2E3192", borderRadius: "8px", textTransform: "none", fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 600, fontSize: 11, "&:hover": { backgroundColor: "#1F237A" } }}
+                        onClick={() => handleCameraSwitch2("environment")}>
+                        Trasera
+                      </Button>
+                      <Button size="small" variant="contained" fullWidth
+                        sx={{ height: 32, backgroundColor: "#F15A29", borderRadius: "8px", textTransform: "none", fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 600, fontSize: 11, "&:hover": { backgroundColor: "#D44A1C" } }}
+                        onClick={() => handleCameraSwitch2("user")}>
+                        Frontal
+                      </Button>
+                    </Box>
+                  </>
+                ) : (
+                  <>
+                    <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                      <Button variant="outlined" fullWidth
+                        sx={{ height: 44, borderColor: "#2E3192", color: "#2E3192", borderRadius: "10px", fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 600, textTransform: "none", fontSize: 13, "&:hover": { backgroundColor: "#F15A29", borderColor: "#F15A29", color: "white" } }}
+                        onClick={handleStartScanner}>
+                        📷 Escanear QR
+                      </Button>
+                      <Button variant="outlined"
+                        sx={{ height: 44, minWidth: 36, px: 1, borderColor: "#E2E6F0", color: "#5A6280", borderRadius: "10px", fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 600, fontSize: 16, flexShrink: 0, "&:hover": { backgroundColor: "#F0F2F8" } }}
+                        onClick={handleCameraSwitch}>
+                        ↺
+                      </Button>
+                    </Box>
+                  </>
+                )}
 
-              {qrError && (
-                <Alert severity="error" sx={{ marginTop: 2 }}>
-                  {qrError}
-                </Alert>
-              )}
-            </div>
-            <div className="col-md-4">
-              <Button
-                variant="outlined"
-                fullWidth
-                sx={{
-                  marginTop: 2,
-                  borderColor: "#2E3192",
-                  color: "#2E3192",
-                  "&:hover": {
-                    backgroundColor: "#F15A29",
-                    borderColor: "#F15A29",
-                    color: "white",
-                  },
-                }}
-                onClick={handleStartScanner2}
-              >
-                Escanear QR 2
-              </Button>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  gap: 2,
-                  marginTop: 2,
-                }}
-              >
-                <Button
-                  variant="contained"
-                  color="primary"
-                  sx={{
-                    backgroundColor: "#2E3192",
-                    "&:hover": { backgroundColor: "#1F237A" },
-                  }}
-                  onClick={() => handleCameraSwitch2("environment")}
-                >
-                  Cámara Trasera
-                </Button>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  sx={{
-                    backgroundColor: "#F15A29",
-                    "&:hover": { backgroundColor: "#D44115" },
-                  }}
-                  onClick={() => handleCameraSwitch2("user")}
-                >
-                  Cámara Frontal
-                </Button>
-              </Box>
-              {isScanning2 && (
-                <Typography
-                  variant="body1"
-                  color="primary"
-                  sx={{ marginTop: 2 }}
-                >
-                  Escaneando... Por favor, apunta al código QR.
-                </Typography>
-              )}
+                {isScanning && <Alert severity="info" sx={{ borderRadius: "8px", fontSize: 11, py: 0.5 }}>💡 Centra el QR · Evita reflejos</Alert>}
+                {isScanning2 && <Alert severity="info" sx={{ borderRadius: "8px", fontSize: 11, py: 0.5 }}>💡 Centra el QR · Evita reflejos</Alert>}
+                <Box id="qr-reader-container" sx={{ width: "100%" }} />
+                {qrError && <Alert severity="error" sx={{ borderRadius: "8px", fontSize: 11 }}>{qrError}</Alert>}
 
-              {showQrReader2 && (
-                <Box
-                  sx={{
-                    marginTop: 2,
-                    position: "relative",
-                    width: "100%",
-                    maxWidth: "500px",
-                    margin: "0 auto",
-                  }}
-                >
-                  <QrReader
-                    constraints={{
-                      facingMode: cameraFacingMode,
-                      width: { ideal: 1920 },
-                      height: { ideal: 1080 },
-                      aspectRatio: 16 / 9,
-                      focusMode: "continuous",
-                    }}
-                    scanDelay={100}
-                    onResult={(result, error) => {
-                      if (result) {
-                        limpiarFormulario();
-                        if (scanTimeout) {
-                          clearTimeout(scanTimeout);
-                          setScanTimeout(null);
+                {showQrReader2 && (
+                  <Box sx={{ position: "relative", width: "100%", maxWidth: "500px", margin: "0 auto" }}>
+                    <QrReader
+                      constraints={{ facingMode: cameraFacingMode, width: { ideal: 1920 }, height: { ideal: 1080 }, aspectRatio: 16 / 9, focusMode: "continuous" }}
+                      scanDelay={100}
+                      onResult={(result, error) => {
+                        if (result) {
+                          limpiarFormulario();
+                          if (scanTimeout) { clearTimeout(scanTimeout); setScanTimeout(null); }
+                          setError(null); setQrError2(null);
+                          setQrResult2(result.text); setShowQrReader2(false); setIsScanning2(false);
                         }
-                        setError(null);
-                        setQrError2(null);
-                        setQrResult2(result.text);
-                        setShowQrReader2(false);
-                        setIsScanning2(false);
-                      }
-                      if (error) {
-                        console.error("Error al leer el QR:", error);
-                      }
-                    }}
-                    videoContainerStyle={{
-                      paddingTop: "100%",
-                      position: "relative",
-                      width: "100%",
-                    }}
-                    videoStyle={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
-                  />
-                </Box>
-              )}
+                        if (error) console.error("Error al leer el QR:", error);
+                      }}
+                      videoContainerStyle={{ paddingTop: "100%", position: "relative", width: "100%" }}
+                      videoStyle={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover" }}
+                    />
+                  </Box>
+                )}
+                {qrError2 && <Alert severity="error" sx={{ borderRadius: "8px", fontSize: 11 }}>{qrError2}</Alert>}
+              </Box>
 
-              {qrError2 && (
-                <Alert severity="error" sx={{ marginTop: 2 }}>
-                  {qrError2}
-                </Alert>
-              )}
-            </div>
-          </div>
+              {/* Leer ticket con IA */}
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1, alignSelf: "flex-start" }}>
+                <Box component="label" sx={{
+                  height: 44, display: "flex", alignItems: "center", justifyContent: "center", gap: 1,
+                  background: "#F15A29", borderRadius: "10px", color: "#fff",
+                  fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 13,
+                  cursor: "pointer", boxShadow: "0 4px 12px rgba(241,90,41,0.3)",
+                  transition: "all 0.2s",
+                  "&:hover": { background: "#D44A1C", transform: "translateY(-1px)" },
+                }}>
+                  <span style={{ fontSize: 15 }}>📷</span> Leer ticket IA
+                  <input type="file" hidden accept="image/*" capture="environment" onChange={handleTicketFileChange} />
+                </Box>
+                {ticketPreview && (
+                  <Box sx={{ border: "1px solid #E2E6F0", borderRadius: "10px", overflow: "hidden" }}>
+                    <img src={ticketPreview} alt="Vista previa" style={{ width: "100%", height: "120px", objectFit: "contain", backgroundColor: "#f5f5f5" }} />
+                  </Box>
+                )}
+                {isLoading && ticketFile && <Alert severity="info" sx={{ borderRadius: "8px", fontSize: 11, py: 0.5 }}>🤖 Analizando...</Alert>}
+                {ticketResult && !isLoading && <Alert severity="success" sx={{ borderRadius: "8px", fontSize: 11, py: 0.5 }}>✅ Datos extraídos</Alert>}
+                {ticketError && <Alert severity="error" sx={{ borderRadius: "8px", fontSize: 11 }}>{ticketError}</Alert>}
+              </Box>
+
+            </Box>
+          </Box>
           {isLoading ? (
             <div
               style={{
@@ -1665,20 +1497,12 @@ const DatosRecibo = () => {
                 rows="4"
               />
             </div>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              fullWidth
+            <Box component="button" type="submit"
+              className="ar-btn ar-btn-primary ar-btn-lg ar-btn-full"
               onClick={editRecord ? handleUpdate : handleSubmit}
-              sx={{
-                marginTop: 4,
-                backgroundColor: "#2E3192",
-                "&:hover": { backgroundColor: "#1F237A" },
-              }}
-            >
+              style={{ marginTop: 24, borderRadius: 12 }}>
               {editRecord ? "Actualizar" : "Solicitar"}
-            </Button>
+            </Box>
           </form>
         </CardContent>
       </Card>
@@ -1802,37 +1626,6 @@ const DatosRecibo = () => {
           </Button>
         </DialogActions>
       </Dialog>
-      {/* ─── Popup revisión de datos extraídos por IA ─── */}
-      <Dialog
-        open={reviewDialogOpen}
-        onClose={() => setReviewDialogOpen(false)}
-        maxWidth="xs"
-        fullWidth
-      >
-        <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          ✅ Datos extraídos
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Se han completado los campos automáticamente. Por favor{" "}
-            <strong>revisa y corrige los datos</strong> antes de enviar, ya que
-            la lectura automática puede contener errores.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => setReviewDialogOpen(false)}
-            variant="contained"
-            sx={{
-              backgroundColor: "#2E3192",
-              "&:hover": { backgroundColor: "#1F237A" },
-            }}
-          >
-            Revisar datos
-          </Button>
-        </DialogActions>
-      </Dialog>
-
     </Container>
   );
 };

@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
+import "../arendir-design.css";
+import { TableSkeleton, PageFade } from "./PageLoader";
 import {
   Container,
+  Box,
   Table,
   TableBody,
   TableCell,
@@ -112,7 +115,7 @@ const HistorialGastos = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ marginTop: -20 }}>
+    <Container maxWidth="lg" sx={{ paddingTop: 0 }}>
       <Typography
         variant="h4"
         align="center"
@@ -427,7 +430,7 @@ const HistorialGastos = () => {
               </Table>
             </TableContainer>
           ) : (
-            <CircularProgress />
+            <TableSkeleton rows={5} cols={5} />
           )}
         </DialogContent>
         <DialogActions>
@@ -438,24 +441,32 @@ const HistorialGastos = () => {
       </Dialog>
 
       {/* Diálogo para visualizar archivo */}
-      <Dialog open={openFileDialog} onClose={handleCloseFileDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>Archivo del Documento</DialogTitle>
-        <DialogContent>
+      <Dialog open={openFileDialog} onClose={handleCloseFileDialog} maxWidth="lg" fullWidth
+        PaperProps={{ sx: { borderRadius: "16px", height: "90vh", m: 2 } }}>
+        <DialogTitle sx={{
+          fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700,
+          display: "flex", justifyContent: "space-between", alignItems: "center",
+          borderBottom: "1px solid #E2E6F0", pb: 1.5,
+        }}>
+          Archivo del Documento
+          <Button onClick={handleCloseFileDialog} size="small"
+            sx={{ minWidth: 32, color: "#5A6280", borderRadius: "8px", "&:hover": { background: "#F0F2F8" } }}>
+            ✕
+          </Button>
+        </DialogTitle>
+        <DialogContent sx={{ p: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
           {selectedFile && (
-            <iframe
-              src={selectedFile}
-              width="100%"
-              height="600px"
-              title="Archivo del Documento"
-              frameBorder="0"
-            />
+            selectedFile.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+              <Box sx={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", p: 2, background: "#F8F9FC", overflow: "auto" }}>
+                <img src={selectedFile} alt="Archivo"
+                  style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", borderRadius: "8px", boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }} />
+              </Box>
+            ) : (
+              <iframe src={selectedFile} width="100%" style={{ flex: 1, border: "none", height: "100%" }}
+                title="Archivo del Documento" />
+            )
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseFileDialog} color="primary">
-            Cerrar
-          </Button>
-        </DialogActions>
       </Dialog>
     </Container>
   );
