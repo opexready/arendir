@@ -163,6 +163,7 @@ const DatosRecibo = () => {
   // ─── Estados para lectura de ticket con Claude Vision ─────────────────────
   const [ticketFile, setTicketFile] = useState(null);
   const [ticketResult, setTicketResult] = useState(null);
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [ticketError, setTicketError] = useState(null);
   // Preview de la imagen seleccionada
   const [ticketPreview, setTicketPreview] = useState(null);
@@ -226,6 +227,7 @@ const DatosRecibo = () => {
       }
 
       setTicketResult(processedData);
+      setReviewDialogOpen(true);
     } catch (err) {
       console.error("Error al procesar ticket con IA:", err);
       setTicketError(
@@ -348,6 +350,7 @@ const DatosRecibo = () => {
     setTicketResult(null);
     setTicketError(null);
     setTicketPreview(null);
+    setReviewDialogOpen(false);
   };
 
   const formatNumber = (value) => {
@@ -1186,6 +1189,7 @@ const DatosRecibo = () => {
 
               {/* Escanear QR */}
               <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                
 
                 {isIOS ? (
                   <>
@@ -1530,13 +1534,15 @@ const DatosRecibo = () => {
         <DialogTitle>Archivo del Documento</DialogTitle>
         <DialogContent>
           {selectedFile && (
-            <iframe
-              src={selectedFile}
-              width="100%"
-              height="600px"
-              title="Archivo del Documento"
-              frameBorder="0"
-            />
+            selectedFile.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", p: 2, background: "#F8F9FC", minHeight: 300 }}>
+                <img src={selectedFile} alt="Archivo"
+                  style={{ maxWidth: "100%", maxHeight: "70vh", objectFit: "contain", borderRadius: "8px", boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }} />
+              </Box>
+            ) : (
+              <iframe src={selectedFile} width="100%" height="600px"
+                style={{ border: "none" }} title="Archivo del Documento" />
+            )
           )}
         </DialogContent>
       </Dialog>
@@ -1623,6 +1629,45 @@ const DatosRecibo = () => {
             color="secondary"
           >
             Sí
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* ─── Popup revisión de datos extraídos por IA ─── */}
+      <Dialog
+        open={reviewDialogOpen}
+        onClose={() => setReviewDialogOpen(false)}
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: "16px", p: 1 } }}
+      >
+        <DialogTitle sx={{
+          fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 16,
+          display: "flex", alignItems: "center", gap: 1.5,
+        }}>
+          <Box sx={{ width: 36, height: 36, borderRadius: "10px", background: "#e8f8f5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>
+            ✅
+          </Box>
+          Datos extraídos
+        </DialogTitle>
+        <DialogContent>
+          <Typography sx={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: "#5A6280" }}>
+            Se completaron los campos automáticamente. Por favor <strong>revisa y corrige</strong> los datos antes de enviar, ya que la lectura automática puede contener errores.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button
+            fullWidth
+            variant="contained"
+            onClick={() => setReviewDialogOpen(false)}
+            sx={{
+              backgroundColor: "#2E3192", borderRadius: "10px",
+              fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700,
+              textTransform: "none", py: 1.2,
+              "&:hover": { backgroundColor: "#1F237A" },
+            }}
+          >
+            Revisar datos
           </Button>
         </DialogActions>
       </Dialog>
