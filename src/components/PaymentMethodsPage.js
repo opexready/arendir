@@ -23,7 +23,7 @@ const PaymentMethodsPage = () => {
               alt="icono"
               className="top-bar-icon"
             />
-            Aprende más sobre nuestros <strong>Métodos de Pago</strong>.
+            Elige el plan ideal para tu empresa y empieza a rendir en tiempo real.
           </p>
         </div>
 
@@ -72,104 +72,79 @@ const PaymentMethodsPage = () => {
       {/* Nueva Sección de Descripción de Planes */}
       <section id="pricing" className="plans-section">
         <div className="plans-container">
-          <div
-            className="plans-title"
-            style={{ display: "flex", alignItems: "center" }}
-          >
-            <img
-              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/AR33.png?alt=media&token=113925ce-c08b-421b-994b-850d2cc57c20"
-              alt="Icono de planes"
-              style={{
-                width: "100%", // Cambia el ancho según sea necesario en porcentaje
-                maxWidth: "120px", // Ancho máximo para que no sea demasiado grande
-                height: "auto", // Mantiene la proporción de la imagen
-                marginRight: "2%",
-              }}
-            />
+          <div className="plans-title" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
             <h2 className="plan-description">Descripción de Planes</h2>
           </div>
+          <p className="plans-subtitle">
+            Elige el plan según el tamaño de tu equipo y el volumen de comprobantes que manejas.
+          </p>
           <div className="plans-grid">
-            <div className="plan white-rectangle">
+            <div className="plan">
               <h3>
                 <img
                   src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/AR35.png?alt=media&token=2136de01-56dd-4ae0-81b0-d68744259824"
                   alt="icon"
                   className="plan-icon"
-                />{" "}
+                />
                 Personal
               </h3>
-              <ul style={{ textAlign: "left" }}>
-                <li>
-                  Envía hasta 25 tickets de gastos realizados en automático
-                  desde WhatsApp.
-                </li>
-                <li>1 usuario por razón social.</li>
-                <li>Descarga tus facturas desde WhatsApp y email.</li>
+              <p className="plan-tagline">Para independientes o equipos pequeños</p>
+              <ul>
+                <li className="text-card">Hasta 25 comprobantes al mes desde WhatsApp, en automático</li>
+                <li className="text-card">1 usuario por razón social</li>
+                <li className="text-card">Descarga tus facturas desde WhatsApp y email</li>
               </ul>
-              <p className="plan-price">S/ 8 / Mensual</p>
+              <p className="plan-price">S/ 8 <span>/ mensual</span></p>
+              <button className="plan-cta" onClick={handleHomeClick}>Elegir plan</button>
             </div>
-            <div className="plan white-rectangle">
+
+            <div className="plan featured">
+              <span className="plan-badge">Más elegido</span>
               <h3>
                 <img
                   src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/AR35.png?alt=media&token=2136de01-56dd-4ae0-81b0-d68744259824"
                   alt="icon"
                   className="plan-icon"
-                />{" "}
+                />
                 Negocio
               </h3>
-              <ul style={{ textAlign: "left" }}>
-                <li>
-                  Registro de gastos ilimitados desde WhatsApp mediante texto o
-                  foto de tus recibos.
-                </li>
-                <li>Descarga tu historial de gastos a Excel y PDF.</li>
-                <li>Acceso a Arendir, tu asistente financiero 24/7.</li>
+              <p className="plan-tagline">Para empresas en crecimiento</p>
+              <ul>
+                <li className="text-card">Comprobantes ilimitados desde WhatsApp, por texto o foto</li>
+                <li className="text-card">Descarga tu historial de gastos a Excel y PDF</li>
+                <li className="text-card">Acceso a Arendir, tu asistente financiero 24/7</li>
               </ul>
-              <p className="plan-price">S/ 15 / Mensual</p>
+              <p className="plan-price">S/ 15 <span>/ mensual</span></p>
+              <button className="plan-cta" onClick={handleHomeClick}>Elegir plan</button>
             </div>
-            <div className="plan white-rectangle">
+
+            <div className="plan">
               <h3>
                 <img
                   src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/AR35.png?alt=media&token=2136de01-56dd-4ae0-81b0-d68744259824"
                   alt="icon"
                   className="plan-icon"
-                />{" "}
+                />
                 Corporativo
               </h3>
-              <ul style={{ textAlign: "left" }}>
-                <li>
-                  Personaliza la cantidad de tickets a facturar que necesitas.
-                </li>
-                <li>Diferentes usuarios por razón social.</li>
-                <li>Descarga tus facturas desde WhatsApp y email.</li>
-                <li>
-                  Accede a un panel de control para ver todas tus facturas.
-                </li>
-                <li>Todo lo que incluye el Plan Premium.</li>
+              <p className="plan-tagline">Para empresas con múltiples equipos</p>
+              <ul>
+                <li className="text-card">Cantidad de comprobantes personalizada</li>
+                <li className="text-card">Múltiples usuarios por razón social</li>
+                <li className="text-card">Panel de control para ver todas tus facturas</li>
+                <li className="text-card">Todo lo incluido en el Plan Negocio</li>
               </ul>
-              <p className="plan-price">S/ 25 / Mensual</p>
+              <p className="plan-price">S/ 25 <span>/ mensual</span></p>
+              <button className="plan-cta" onClick={handleHomeClick}>Hablar con ventas</button>
             </div>
           </div>
         </div>
       </section>
 
       {/* métddos de pago */}
-      <section id="pricing" className="method-section">
+      <section className="method-section">
         <div className="plans-container">
-          <div
-            className="plans-title"
-            style={{ display: "flex", alignItems: "center" }}
-          >
-            <img
-              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/AR33.png?alt=media&token=113925ce-c08b-421b-994b-850d2cc57c20"
-              alt="Icono de planes"
-              style={{
-                width: "100%", // Cambia el ancho según sea necesario en porcentaje
-                maxWidth: "120px", // Ancho máximo para que no sea demasiado grande
-                height: "auto", // Mantiene la proporción de la imagen
-                marginRight: "2%",
-              }}
-            />
+          <div className="plans-title" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
             <h2 className="method-description">Métodos de Pago</h2>
           </div>
           <div className="payment-methods-grid">
@@ -223,13 +198,20 @@ const PaymentMethodsPage = () => {
             </div>
           </div>
         </div>
-        <p className="center-aligned">
+        <p
+          style={{
+            textAlign: "center",
+            marginTop: "30px",
+            fontSize: "var(--fs-small)",
+            color: "var(--color-text-light)",
+          }}
+        >
           Si tienes dudas sobre cómo realizar un pago,{" "}
           <a
             href="https://wa.me/921136926"
             target="_blank"
             rel="noopener noreferrer"
-            className="contact-link"
+            style={{ color: "var(--color-primary)", fontWeight: "bold", textDecoration: "none" }}
           >
             contáctanos
           </a>{" "}
