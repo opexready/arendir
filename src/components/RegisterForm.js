@@ -101,7 +101,13 @@ const RegisterForm = ({ open, onClose }) => {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
+      maxWidth="xs"
+      PaperProps={{ sx: { borderRadius: "16px" } }}
+    >
       <DialogTitle sx={{ textAlign: "center" }}>
         <div className="title-container">
           <img
@@ -175,10 +181,19 @@ const RegisterForm = ({ open, onClose }) => {
           <DialogActions>
             <Button
               onClick={onClose}
-              type="submit"
-              variant="contained"
-              color="error"
-              sx={{ marginRight: 2 }}
+              type="button"
+              variant="outlined"
+              sx={{
+                marginRight: 2,
+                borderRadius: "50px",
+                borderColor: "#1B3B6F",
+                color: "#1B3B6F",
+                fontFamily: "'Ubuntu', sans-serif",
+                fontWeight: "bold",
+                textTransform: "none",
+                px: 3,
+                "&:hover": { borderColor: "#1B3B6F", backgroundColor: "#F6F8FB" },
+              }}
             >
               Cancelar
             </Button>
@@ -210,11 +225,16 @@ const RegisterForm = ({ open, onClose }) => {
               color="primary"
               disabled={loading}
               sx={{
-                background: loading
-                  ? "#ccc"
-                  : "linear-gradient(90deg,#ff8b31, #FF6E40, #FF007B, #191b38)",
+                background: loading ? "#ccc" : "#10B981",
+                borderRadius: "50px",
                 color: "white",
-                "&:hover": { backgroundColor: loading ? "#ccc" : "#1F237A" },
+                fontFamily: "'Ubuntu', sans-serif",
+                fontWeight: "bold",
+                textTransform: "none",
+                boxShadow: loading ? "none" : "0 8px 20px rgba(16, 185, 129, 0.35)",
+                px: 3,
+                "&:hover": { backgroundColor: loading ? "#ccc" : "#0C9A6C" },
+                "&.Mui-disabled": { color: "white" },
                 display: "flex",
                 alignItems: "center",
                 position: "relative",
