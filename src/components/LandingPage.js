@@ -14,7 +14,8 @@ const LandingPage = () => {
   const handleLoginClick = () => navigate("/login");
   const methodsPageClick = () => navigate("/payment-methods");
 
-  const scrollToSection = (sectionId) => {
+  const scrollToSection = (event, sectionId) => {
+    if (event) event.preventDefault();
     const section = document.getElementById(sectionId);
     if (section) section.scrollIntoView({ behavior: "smooth" });
   };
@@ -37,7 +38,7 @@ const LandingPage = () => {
               className="top-bar-icon"
             />
             ¿Qué esperas para probar Arendir? Tenemos <strong>7 días</strong> gratis.
-            <a href="#" className="top-bar-link" onClick={handleShowRegister}>
+            <a href="#" className="top-bar-link" onClick={(e) => { e.preventDefault(); handleShowRegister(); }}>
               Empezar ahora
             </a>
           </p>
@@ -51,13 +52,13 @@ const LandingPage = () => {
           <nav>
             <ul className="nav-links">
               <li>
-                <a onClick={() => scrollToSection("about")} href="#about">Quiénes somos</a>
+                <a onClick={(e) => scrollToSection(e, "about")} href="#">Quiénes somos</a>
               </li>
               <li>
-                <a onClick={() => scrollToSection("services")} href="#services">Servicios</a>
+                <a onClick={(e) => scrollToSection(e, "services")} href="#">Servicios</a>
               </li>
               <li>
-                <a onClick={() => scrollToSection("pricing")} href="#pricing">Tarifario</a>
+                <a onClick={(e) => scrollToSection(e, "pricing")} href="#">Tarifario</a>
               </li>
               <li>
                 <button onClick={methodsPageClick} className="button btn-method">
@@ -80,7 +81,7 @@ const LandingPage = () => {
             </div>
             <div className="buttons">
               <button onClick={handleLoginClick} className="button btn-login">Ingresar</button>
-              <a href="#" onClick={handleShowRegister} className="button btn-register">Registro</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); handleShowRegister(); }} className="button btn-register">Registro</a>
             </div>
           </div>
         </div>
@@ -105,7 +106,7 @@ const LandingPage = () => {
           <button className="btn-hero-primary" onClick={handleShowRegister}>
             Prueba gratis 7 días
           </button>
-          <button className="btn-hero-secondary" onClick={() => scrollToSection("services")}>
+          <button className="btn-hero-secondary" onClick={() => scrollToSection(null, "services")}>
             Ver cómo funciona
           </button>
         </div>
@@ -390,9 +391,9 @@ const LandingPage = () => {
           <div className="footer-section" style={{ textAlign: "center", minWidth: "150px" }}>
             <h4>Sobre Arendir</h4>
             <ul style={{ listStyleType: "none", padding: "0", margin: "0" }}>
-              <li><a onClick={() => scrollToSection("about")} href="#about">Quiénes somos</a></li>
-              <li><a onClick={() => scrollToSection("services")} href="#services">Servicios</a></li>
-              <li><a onClick={() => scrollToSection("pricing")} href="#pricing">Tarifario</a></li>
+              <li><a onClick={(e) => scrollToSection(e, "about")} href="#">Quiénes somos</a></li>
+              <li><a onClick={(e) => scrollToSection(e, "services")} href="#">Servicios</a></li>
+              <li><a onClick={(e) => scrollToSection(e, "pricing")} href="#">Tarifario</a></li>
               <li><a href="mailto:opexready.soporte@gmail.com">Soporte</a></li>
             </ul>
           </div>
