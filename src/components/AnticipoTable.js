@@ -29,10 +29,55 @@ import "./AnticiposViajes.css";
 import ubigeoData from "../data/ubigeoData";
 import paisesSudamerica from "../data/paisesMundo";
 import { useNavigate } from "react-router-dom";
-import lupaIcon from "../assets/lupa-icon.png";
 import "../arendir-design.css";
 import { TableSkeleton, PageFade } from "./PageLoader";
 import api, { baseURL } from "../api";
+
+
+/* ── Estilos compartidos para uniformidad (tipografía, tamaños y botones) ── */
+const FONT_DISPLAY = "'Plus Jakarta Sans', sans-serif";
+const FONT_BODY = "'DM Sans', sans-serif";
+
+const headCellSx = {
+  color: "rgba(255,255,255,0.95)", fontFamily: FONT_DISPLAY, fontWeight: 600,
+  fontSize: 13, letterSpacing: "0.4px", py: 1.75, whiteSpace: "nowrap",
+};
+const bodyCellSx = {
+  fontFamily: FONT_BODY, fontSize: 14, color: "#2D3350", py: 1.5,
+  borderBottom: "1px solid #F0F2F8",
+};
+const actionBtnSx = {
+  minWidth: 0, width: 56, height: 40, p: 0, borderRadius: "10px",
+  textTransform: "none", boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+};
+const dialogTitleSx = {
+  fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 18, color: "#2D3350",
+};
+const dialogContentSx = {
+  "& .MuiDialogContentText-root, & .MuiTypography-root, & .MuiFormControlLabel-label": {
+    fontFamily: FONT_BODY,
+  },
+  "& .MuiTableCell-root": { fontFamily: FONT_BODY, fontSize: 14, color: "#2D3350" },
+};
+const dialogActionsSx = {
+  px: 3, pb: 2, gap: 1,
+  "& .MuiButton-root": {
+    fontFamily: FONT_DISPLAY, fontWeight: 600, fontSize: 14,
+    textTransform: "none", borderRadius: "10px", px: 2.5,
+  },
+  "& .MuiButton-colorPrimary": { color: "#1B3B6F" },
+  "& .MuiButton-colorSecondary": { color: "#0C9A6C", fontWeight: 700 },
+  "& .MuiButton-root.Mui-disabled": { color: "rgba(0,0,0,0.26)" },
+};
+const formatMoney = (v) => {
+  if (v === null || v === undefined || v === "") return v;
+  const n = Number(v);
+  return Number.isFinite(n) ? n.toFixed(2) : v;
+};
+const topBtnSx = {
+  display: "flex", alignItems: "center", justifyContent: "center", gap: 1,
+  border: "none", cursor: "pointer", minWidth: { xs: "100%", sm: 210 },
+};
 
 const AnticipoTable = () => {
   const getCurrentDate = () => {
@@ -396,52 +441,19 @@ const AnticipoTable = () => {
   return (
     <Container sx={{ paddingTop: 2 }}>
       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5, mb: 2 }}>
-          <Box component="button"
-            onClick={handleAnticipoViajes}
-            sx={{
-              display: "flex", alignItems: "center", gap: 1,
-              height: 44, px: 2.5, border: "none", cursor: "pointer",
-              backgroundColor: "#2E3192", color: "#fff",
-              borderRadius: "10px", fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontWeight: 600, fontSize: 13,
-              boxShadow: "0 4px 12px rgba(46,49,146,0.3)",
-              transition: "all 0.2s",
-              "&:hover": { backgroundColor: "#1F237A", transform: "translateY(-1px)" },
-            }}>
+          <Box component="button" className="ar-btn ar-btn-primary" onClick={handleAnticipoViajes} sx={topBtnSx}>
             <img src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa11.png?alt=media&token=6d72c9af-25f8-43b4-89e8-fb82b22224de"
               alt="" style={{ height: 18, filter: "brightness(0) invert(1)" }} />
             Anticipo Viajes
           </Box>
 
-          <Box component="button"
-            onClick={handleAnticipoGastosLocales}
-            sx={{
-              display: "flex", alignItems: "center", gap: 1,
-              height: 44, px: 2.5, border: "none", cursor: "pointer",
-              backgroundColor: "#F15A29", color: "#fff",
-              borderRadius: "10px", fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontWeight: 600, fontSize: 13,
-              boxShadow: "0 4px 12px rgba(241,90,41,0.3)",
-              transition: "all 0.2s",
-              "&:hover": { backgroundColor: "#D44A1C", transform: "translateY(-1px)" },
-            }}>
+          <Box component="button" className="ar-btn ar-btn-orange" onClick={handleAnticipoGastosLocales} sx={topBtnSx}>
             <img src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa12.png?alt=media&token=605b5260-250c-4fb0-ade2-ff241845be1c"
               alt="" style={{ height: 18, filter: "brightness(0) invert(1)" }} />
             Anticipo Gastos Locales
           </Box>
 
-          <Box component="button"
-            onClick={handleOpenConfirmFinalizarDialog}
-            sx={{
-              display: "flex", alignItems: "center", gap: 1,
-              height: 44, px: 2.5, border: "none", cursor: "pointer",
-              backgroundColor: "#00B894", color: "#fff",
-              borderRadius: "10px", fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontWeight: 600, fontSize: 13,
-              boxShadow: "0 4px 12px rgba(0,184,148,0.3)",
-              transition: "all 0.2s",
-              "&:hover": { backgroundColor: "#00a381", transform: "translateY(-1px)" },
-            }}>
+          <Box component="button" className="ar-btn ar-btn-success" onClick={handleOpenConfirmFinalizarDialog} sx={topBtnSx}>
             <img src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa13.png?alt=media&token=7b15c497-d494-4a52-9011-ee7e6bdbe1e8"
               alt="" style={{ height: 18, filter: "brightness(0) invert(1)" }} />
             Finalizar Solicitud
@@ -453,65 +465,57 @@ const AnticipoTable = () => {
       </Box>
       {/* Grilla: Siempre visible */}
       {!showForm && (
-        <TableContainer component={Paper} sx={{ marginBottom: 4, borderRadius: "12px", overflowX: "auto", boxShadow: "0 2px 16px rgba(46,49,146,0.08)", border: "1px solid #E2E6F0", WebkitOverflowScrolling: "touch" }}>
+        <TableContainer component={Paper} sx={{ marginBottom: 4, borderRadius: "12px", overflowX: "auto", boxShadow: "0 2px 16px rgba(27,59,111,0.08)", border: "1px solid #E2E6F0", WebkitOverflowScrolling: "touch" }}>
           <Table>
             <TableHead>
-              <TableRow sx={{ backgroundColor: "#1F237A" }}>
-                <TableCell
-                  sx={{
-                    color: "white",
-                    fontWeight: "bold",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                  }}
-                >
+              <TableRow sx={{ backgroundColor: "#1B3B6F" }}>
+                <TableCell align="left" sx={headCellSx}>
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa14.png?alt=media&token=0adf0d7c-ba88-48a2-abee-864cbf6850e5"
                     alt="Ícono Número de Ítem"
-                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                    style={{ height: "24px", marginRight: "8px" }}
                   />
                   Número de Ítem
                 </TableCell>
 
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                <TableCell align="left" sx={headCellSx}>
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa15.png?alt=media&token=3e9271c1-9533-4661-ab02-d30de0ad90e6"
                     alt="Ícono Número de Ítem"
-                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                    style={{ height: "24px", marginRight: "8px" }}
                   />
-                  Categoria
+                  Categoría
                 </TableCell>
 
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                <TableCell align="right" sx={headCellSx}>
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa16.png?alt=media&token=d8afd433-339c-4f9a-ab2d-b211e10345b2"
                     alt="Ícono Número de Ítem"
-                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                    style={{ height: "24px", marginRight: "8px" }}
                   />
                   Total
                 </TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                <TableCell align="center" sx={headCellSx}>
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa17.png?alt=media&token=aae19df1-ae52-45f4-8653-042af6b5a59b"
                     alt="Ícono Número de Ítem"
-                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                    style={{ height: "24px", marginRight: "8px" }}
                   />
                   Ver Archivo
                 </TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                <TableCell align="center" sx={headCellSx}>
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa18.png?alt=media&token=8228c7ef-c92f-478c-995a-2104ea29f3d4"
                     alt="Ícono Número de Ítem"
-                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                    style={{ height: "24px", marginRight: "8px" }}
                   />
                   Detalle
                 </TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                <TableCell align="center" sx={headCellSx}>
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa22.png?alt=media&token=554ee3ea-2338-48be-ba94-fd6535f34fc4"
                     alt="Ícono Número de Ítem"
-                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                    style={{ height: "24px", marginRight: "8px" }}
                   />
                   Eliminar
                 </TableCell>
@@ -519,43 +523,40 @@ const AnticipoTable = () => {
             </TableHead>
             <TableBody>
               {records.map((record, index) => (
-                <TableRow key={record.id}>
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell>{record.tipo_anticipo}</TableCell>{" "}
-                  {/* Mostrar tipo_anticipo */}
-                  <TableCell>{record.total}</TableCell> {/* Mostrar total */}
-                  <TableCell>
-                    {(() => {
-                      console.log("Valor de record.archivo:", record.archivo); // Para verificar el valor
-                      return (
-                        record.archivo && (
-                          <Button
-                            variant="text"
-                            onClick={() => handleViewFile(record.archivo)}
-                          >
-                            <img
-                              src={lupaIcon}
-                              alt="Ver Archivo"
-                              style={{ width: 24 }}
-                            />
-                          </Button>
-                        )
-                      );
-                    })()}
-                  </TableCell>
-                  <TableCell>
+                <TableRow key={record.id} hover sx={{ "&:last-child td": { borderBottom: 0 } }}>
+                  <TableCell align="left" sx={bodyCellSx}>{index + 1}</TableCell>
+                  <TableCell align="left" sx={bodyCellSx}>{record.tipo_anticipo}</TableCell>
+                  <TableCell align="right" sx={bodyCellSx}>{formatMoney(record.total)}</TableCell>
+                  <TableCell align="center" sx={bodyCellSx}>
+                    {record.archivo && (
                     <Button
                       variant="contained"
-                      color="info"
-                      onClick={() => handleViewDetail(record.id)}
-                      sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      color="success"
+                      onClick={() => handleViewFile(record.archivo)}
+                      sx={actionBtnSx}
+                      title="Ver archivo"
                     >
                       <img
-                        src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa20.png?alt=media&token=38395495-e82e-418f-8dbe-ff366f3f45c2"
-                        alt="Ícono Ver Detalle"
-                        style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                        src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa17.png?alt=media&token=aae19df1-ae52-45f4-8653-042af6b5a59b"
+                        alt="Ver Archivo"
+                        style={{ height: "24px" }}
                       />
-                      Ver Detalle
+                    </Button>
+                  )}
+                  </TableCell>
+                  <TableCell align="center" sx={bodyCellSx}>
+                    <Button
+                      variant="contained"
+                      color="warning"
+                      onClick={() => handleViewDetail(record.id)}
+                      sx={actionBtnSx}
+                      title="Ver detalle"
+                    >
+                      <img
+                        src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa18.png?alt=media&token=8228c7ef-c92f-478c-995a-2104ea29f3d4"
+                        alt="Ver Detalle"
+                        style={{ height: "24px" }}
+                      />
                     </Button>
                   </TableCell>
                   {/* <TableCell>
@@ -567,19 +568,19 @@ const AnticipoTable = () => {
                     Editar
                   </Button>
                 </TableCell> */}
-                  <TableCell>
+                  <TableCell align="center" sx={bodyCellSx}>
                     <Button
                       variant="contained"
                       color="error"
                       onClick={() => handleOpenConfirmDeleteDialog(record.id)}
-                      sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      sx={actionBtnSx}
+                      title="Eliminar"
                     >
                       <img
                         src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa22.png?alt=media&token=554ee3ea-2338-48be-ba94-fd6535f34fc4"
-                        alt="Ícono Eliminar"
-                        style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                        alt="Eliminar"
+                        style={{ height: "24px" }}
                       />
-                      Eliminar
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -591,8 +592,8 @@ const AnticipoTable = () => {
 
       {/* Modal para ver el archivo */}
       <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
-        <DialogTitle>Anticipo registrado</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={dialogTitleSx}>Anticipo registrado</DialogTitle>
+        <DialogContent sx={dialogContentSx}>
           {selectedFile && (
             <iframe
               src={selectedFile}
@@ -603,7 +604,7 @@ const AnticipoTable = () => {
             />
           )}
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={dialogActionsSx}>
           <Button onClick={handleClose} color="primary">
             Cerrar
           </Button>
@@ -615,8 +616,8 @@ const AnticipoTable = () => {
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>Detalle del Documento</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={dialogTitleSx}>Detalle del Documento</DialogTitle>
+        <DialogContent sx={dialogContentSx}>
           {documentDetail ? (
             <TableContainer component={Paper}>
               <Table>
@@ -681,7 +682,7 @@ const AnticipoTable = () => {
             <TableSkeleton rows={5} cols={5} />
           )}
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={dialogActionsSx}>
           <Button onClick={handleCloseDetailDialog} color="primary">
             Cerrar
           </Button>
@@ -692,11 +693,11 @@ const AnticipoTable = () => {
         open={confirmDeleteDialogOpen}
         onClose={handleCloseConfirmDeleteDialog}
       >
-        <DialogTitle>Confirmación</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={dialogTitleSx}>Confirmación</DialogTitle>
+        <DialogContent sx={dialogContentSx}>
           <Typography>¿Desea eliminar este registro?</Typography>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={dialogActionsSx}>
           <Button onClick={handleCloseConfirmDeleteDialog} color="primary">
             No
           </Button>
@@ -710,13 +711,13 @@ const AnticipoTable = () => {
         open={confirmFinalizarDialogOpen}
         onClose={handleCloseConfirmFinalizarDialog}
       >
-        <DialogTitle>Confirmación</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={dialogTitleSx}>Confirmación</DialogTitle>
+        <DialogContent sx={dialogContentSx}>
           <DialogContentText>
             ¿Estás seguro de finalizar la solicitud de anticipo?
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={dialogActionsSx}>
           <Button onClick={handleCloseConfirmFinalizarDialog} color="primary">
             No
           </Button>
@@ -740,8 +741,8 @@ const AnticipoTable = () => {
         fullWidth
         sx={{ "& .MuiDialog-paper": { padding: 3, borderRadius: 2 } }}
       >
-        <DialogTitle>Seleccionar Destino</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={dialogTitleSx}>Seleccionar Destino</DialogTitle>
+        <DialogContent sx={dialogContentSx}>
           {/* Aquí puedes añadir los campos de selección de departamento, provincia y distrito */}
           <TextField
             select
@@ -787,7 +788,7 @@ const AnticipoTable = () => {
             ))}
           </TextField>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={dialogActionsSx}>
           <Button onClick={() => setOpenUbigeoDialog(false)}>Cancelar</Button>
           <Button onClick={handleDestinoSelection}>Aceptar</Button>
         </DialogActions>
