@@ -118,7 +118,7 @@ const LandingPage = () => {
           />
           <img
             src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/slide2.png?alt=media&token=73e8e0d8-c11b-4133-a791-1473796f6035"
-            alt="Registro de comprobantes por WhatsApp"
+            alt="Registro de comprobantes en la plataforma"
             className="slide-image"
           />
           <img
@@ -164,7 +164,7 @@ const LandingPage = () => {
           <div className="step-card">
             <div className="step-number">1</div>
             <h3>Envía tu comprobante</h3>
-            <p>Tu equipo toma una foto de la boleta o factura y la envía por WhatsApp, o la sube directamente desde la plataforma.</p>
+            <p>Tu equipo toma una foto de la boleta o factura y la sube directamente a la plataforma desde el celular o la computadora.</p>
           </div>
           <div className="step-card">
             <div className="step-number">2</div>
@@ -255,9 +255,9 @@ const LandingPage = () => {
               </h3>
               <p className="plan-tagline">Para independientes o equipos pequeños</p>
               <ul>
-                <li className="text-card">Hasta 25 comprobantes al mes desde WhatsApp, en automático</li>
+                <li className="text-card">Hasta 25 comprobantes al mes, leídos en automático con IA</li>
                 <li className="text-card">1 usuario por razón social</li>
-                <li className="text-card">Descarga tus facturas desde WhatsApp y email</li>
+                <li className="text-card">Descarga tus comprobantes desde la plataforma</li>
               </ul>
               <p className="plan-price">S/ 8 <span>/ mensual</span></p>
               <button className="plan-cta" onClick={handleShowRegister}>Elegir plan</button>
@@ -275,7 +275,7 @@ const LandingPage = () => {
               </h3>
               <p className="plan-tagline">Para empresas en crecimiento</p>
               <ul>
-                <li className="text-card">Comprobantes ilimitados desde WhatsApp, por texto o foto</li>
+                <li className="text-card">Comprobantes ilimitados, leídos en automático con IA</li>
                 <li className="text-card">Descarga tu historial de gastos a Excel y PDF</li>
                 <li className="text-card">Acceso a Arendir, tu asistente financiero 24/7</li>
               </ul>
