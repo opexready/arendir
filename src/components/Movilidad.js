@@ -29,6 +29,61 @@ import { FormSkeleton, PageFade } from "./PageLoader";
 import api from "../api";
 import ubigeoData from "../data/ubigeoData";
 
+/* ── Estilos compartidos para uniformidad (tipografía, tamaños y botones) ── */
+const FONT_DISPLAY = "'Plus Jakarta Sans', sans-serif";
+const FONT_BODY = "'DM Sans', sans-serif";
+
+const backBtnSx = {
+  borderRadius: "10px", textTransform: "none", fontFamily: FONT_DISPLAY,
+  fontWeight: 600, fontSize: 14, height: 40, px: 2.5,
+  boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+};
+const cardSx = {
+  borderRadius: "16px", border: "1px solid #E2E6F0",
+  boxShadow: "0 2px 16px rgba(27,59,111,0.08)",
+};
+const titleSx = {
+  fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 24, color: "#1B3B6F",
+};
+const formFieldsSx = {
+  "& .MuiOutlinedInput-root": {
+    borderRadius: "10px", fontFamily: FONT_BODY, fontSize: 15, background: "#F8F9FC",
+    "& fieldset": { borderColor: "#E2E6F0" },
+    "&:hover fieldset": { borderColor: "#1B3B6F" },
+    "&.Mui-focused": { background: "#fff" },
+    "&.Mui-focused fieldset": { borderColor: "#1B3B6F", borderWidth: "1.5px" },
+  },
+  "& .MuiInputLabel-root": {
+    fontFamily: FONT_DISPLAY, fontSize: 14, fontWeight: 600, color: "#9099B5",
+    "&.Mui-focused": { color: "#1B3B6F" },
+  },
+};
+const submitBtnSx = {
+  mt: 4, height: 48, borderRadius: "12px", textTransform: "none",
+  fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 15, backgroundColor: "#1B3B6F",
+  boxShadow: "0 4px 12px rgba(27,59,111,0.3)",
+  "&:hover": { backgroundColor: "#10233F" },
+  "&.Mui-disabled": { backgroundColor: "#C9CEDD", color: "#fff" },
+};
+const dialogTitleSx = {
+  fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 18, color: "#2D3350",
+};
+const dialogContentSx = {
+  "& .MuiDialogContentText-root, & .MuiTypography-root, & .MuiFormControlLabel-label": {
+    fontFamily: FONT_BODY,
+  },
+};
+const dialogActionsSx = {
+  px: 3, pb: 2, gap: 1,
+  "& .MuiButton-root": {
+    fontFamily: FONT_DISPLAY, fontWeight: 600, fontSize: 14,
+    textTransform: "none", borderRadius: "10px", px: 2.5,
+  },
+  "& .MuiButton-colorPrimary": { color: "#1B3B6F" },
+  "& .MuiButton-colorSecondary": { color: "#0C9A6C", fontWeight: 700 },
+  "& .MuiButton-root.Mui-disabled": { color: "rgba(0,0,0,0.26)" },
+};
+
 const Movilidad = () => {
   const [formData, setFormData] = useState({
     origen: "",
@@ -280,20 +335,21 @@ const Movilidad = () => {
           variant="contained"
           color="warning"
           onClick={() => navigate(-1)}
+          sx={backBtnSx}
         >
           Regresar
         </Button>
       </Box>
-      <Card sx={{ boxShadow: 3 }}>
+      <Card sx={cardSx}>
         <CardContent>
-          <Typography variant="h4" component="div" align="center" gutterBottom>
+          <Typography variant="h4" component="div" align="center" gutterBottom sx={titleSx}>
             Gastos de Movilidad
           </Typography>
           <Box
             component="form"
             onSubmit={handleSubmit}
             noValidate
-            sx={{ mt: 2 }}
+            sx={{ mt: 2, ...formFieldsSx }}
           >
             <LocalizationProvider
               dateAdapter={AdapterDateFns}
@@ -376,7 +432,7 @@ const Movilidad = () => {
               variant="contained"
               color="primary"
               disabled={isLoading}
-              sx={{ marginTop: 4 }}
+              sx={submitBtnSx}
             >
               {isLoading ? "Enviando..." : "Solicitar"}
             </Button>
@@ -392,11 +448,11 @@ const Movilidad = () => {
       </Backdrop>
 
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Datos enviados con éxito</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={dialogTitleSx}>Datos enviados con éxito</DialogTitle>
+        <DialogContent sx={dialogContentSx}>
           <Typography>{responseMessage}</Typography>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={dialogActionsSx}>
           <Button onClick={() => handleClose(true)} color="primary">
             Adicionar Gasto
           </Button>
@@ -410,8 +466,8 @@ const Movilidad = () => {
         open={openUbigeoDialog}
         onClose={() => setOpenUbigeoDialog(false)}
       >
-        <DialogTitle>Selecciona Ubicación</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={dialogTitleSx}>Selecciona Ubicación</DialogTitle>
+        <DialogContent sx={{ ...dialogContentSx, ...formFieldsSx }}>
           <TextField
             select
             label="Departamento"
@@ -461,12 +517,12 @@ const Movilidad = () => {
             </TextField>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDistritoSelection} color="primary">
-            Guardar
-          </Button>
-          <Button onClick={() => setOpenUbigeoDialog(false)} color="secondary">
+        <DialogActions sx={dialogActionsSx}>
+          <Button onClick={() => setOpenUbigeoDialog(false)} color="primary">
             Cancelar
+          </Button>
+          <Button onClick={handleDistritoSelection} color="secondary">
+            Guardar
           </Button>
         </DialogActions>
       </Dialog>
