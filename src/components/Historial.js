@@ -9,7 +9,7 @@ import api, { baseURL } from "../api";
 
 const STATUS_COLORS = {
   "ABONADO":    { bg: "#e8f8f5", color: "#00a381", border: "#00B894" },
-  "NUEVO":      { bg: "#E8EAF6", color: "#2E3192", border: "#2E3192" },
+  "NUEVO":      { bg: "#E6EEF8", color: "#1B3B6F", border: "#1B3B6F" },
   "POR APROBAR":{ bg: "#fef9e7", color: "#9a7d0a", border: "#fdcb6e" },
   "TERMINADO":  { bg: "#e8f8f5", color: "#00a381", border: "#00B894" },
   "RECHAZADO":  { bg: "#fef0ee", color: "#c0392b", border: "#e17055" },
@@ -24,7 +24,7 @@ const HistorialTable = ({ title, icon, data, defaultOpen = true }) => {
   return (
     <Box sx={{
       border: "1px solid #E2E6F0", borderRadius: "16px", overflow: "hidden",
-      boxShadow: "0 2px 16px rgba(46,49,146,0.06)",
+      boxShadow: "0 2px 16px rgba(27,59,111,0.06)",
       animation: "fadeUp 0.4s ease both",
       "@keyframes fadeUp": { from: { opacity: 0, transform: "translateY(12px)" }, to: { opacity: 1, transform: "translateY(0)" } },
     }}>
@@ -32,21 +32,21 @@ const HistorialTable = ({ title, icon, data, defaultOpen = true }) => {
       <Box
         onClick={() => setOpen(!open)}
         sx={{
-          background: "#2E3192", color: "#fff",
+          background: "#1B3B6F", color: "#fff",
           px: 2.5, py: 1.5,
           display: "flex", alignItems: "center", justifyContent: "space-between",
           cursor: "pointer", userSelect: "none",
           transition: "background 0.2s",
-          "&:hover": { background: "#1F237A" },
+          "&:hover": { background: "#10233F" },
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
           <img src={icon} alt="" style={{ height: 22, filter: "brightness(0) invert(1)" }} />
-          <Typography sx={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "0.5px" }}>
+          <Typography sx={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 15, letterSpacing: "0.5px" }}>
             {title}
           </Typography>
           <Box sx={{ background: "rgba(255,255,255,0.2)", borderRadius: "12px", px: 1, py: 0.2 }}>
-            <Typography sx={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 12 }}>
+            <Typography sx={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 13 }}>
               {data.length}
             </Typography>
           </Box>
@@ -58,10 +58,10 @@ const HistorialTable = ({ title, icon, data, defaultOpen = true }) => {
       <Collapse in={open}>
         {/* Column headers */}
         <Box sx={{ display: "flex", justifyContent: "space-between", px: 2.5, py: 1, background: "#F8F9FC", borderBottom: "1px solid #E2E6F0" }}>
-          <Typography sx={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 11, color: "#5A6280", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+          <Typography sx={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 12, color: "#5A6280", textTransform: "uppercase", letterSpacing: "0.5px" }}>
             {title === "GASTO" ? "Gasto" : "Anticipo"}
           </Typography>
-          <Typography sx={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 11, color: "#5A6280", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+          <Typography sx={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 12, color: "#5A6280", textTransform: "uppercase", letterSpacing: "0.5px" }}>
             Estado
           </Typography>
         </Box>
@@ -80,7 +80,7 @@ const HistorialTable = ({ title, icon, data, defaultOpen = true }) => {
               "&:hover": { background: "#F0F2F8" },
               "&:last-child": { borderBottom: "none" },
             }}>
-              <Typography sx={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 13, color: "#2D3350" }}>
+              <Typography sx={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 14, color: "#2D3350" }}>
                 {item.nombre}
               </Typography>
               <Chip
@@ -91,8 +91,8 @@ const HistorialTable = ({ title, icon, data, defaultOpen = true }) => {
                   color: statusStyle.color,
                   border: `1px solid ${statusStyle.border}`,
                   fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontWeight: 600, fontSize: 11,
-                  height: 24, borderRadius: "12px",
+                  fontWeight: 600, fontSize: 12,
+                  height: 26, borderRadius: "12px",
                 }}
               />
             </Box>
@@ -101,7 +101,7 @@ const HistorialTable = ({ title, icon, data, defaultOpen = true }) => {
 
         {data.length === 0 && (
           <Box sx={{ px: 2.5, py: 3, textAlign: "center" }}>
-            <Typography sx={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: "#9099B5" }}>
+            <Typography sx={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: "#9099B5" }}>
               Sin registros
             </Typography>
           </Box>
