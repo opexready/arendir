@@ -90,9 +90,9 @@ const PaymentMethodsPage = () => {
               </h3>
               <p className="plan-tagline">Para independientes o equipos pequeños</p>
               <ul>
-                <li className="text-card">Hasta 25 comprobantes al mes desde WhatsApp, en automático</li>
+                <li className="text-card">Hasta 25 comprobantes al mes, leídos en automático con IA</li>
                 <li className="text-card">1 usuario por razón social</li>
-                <li className="text-card">Descarga tus facturas desde WhatsApp y email</li>
+                <li className="text-card">Descarga tus comprobantes desde la plataforma</li>
               </ul>
               <p className="plan-price">S/ 8 <span>/ mensual</span></p>
               <button className="plan-cta" onClick={handleHomeClick}>Elegir plan</button>
@@ -110,7 +110,7 @@ const PaymentMethodsPage = () => {
               </h3>
               <p className="plan-tagline">Para empresas en crecimiento</p>
               <ul>
-                <li className="text-card">Comprobantes ilimitados desde WhatsApp, por texto o foto</li>
+                <li className="text-card">Comprobantes ilimitados, leídos en automático con IA</li>
                 <li className="text-card">Descarga tu historial de gastos a Excel y PDF</li>
                 <li className="text-card">Acceso a Arendir, tu asistente financiero 24/7</li>
               </ul>
