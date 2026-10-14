@@ -37,6 +37,51 @@ import "../arendir-design.css";
 import api, { baseURL } from "../api";
 import { TableSkeleton, PageFade } from "./PageLoader";
 
+/* ── Estilos compartidos para uniformidad (tipografía, tamaños y botones) ── */
+const FONT_DISPLAY = "'Plus Jakarta Sans', sans-serif";
+const FONT_BODY = "'DM Sans', sans-serif";
+
+const headCellSx = {
+  color: "rgba(255,255,255,0.95)", fontFamily: FONT_DISPLAY, fontWeight: 600,
+  fontSize: 13, letterSpacing: "0.4px", py: 1.75, whiteSpace: "nowrap",
+};
+const bodyCellSx = {
+  fontFamily: FONT_BODY, fontSize: 14, color: "#2D3350", py: 1.5,
+  borderBottom: "1px solid #F0F2F8",
+};
+const actionBtnSx = {
+  minWidth: 0, width: 56, height: 40, p: 0, borderRadius: "10px",
+  textTransform: "none", boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+};
+const topBtnSx = {
+  display: "flex", alignItems: "center", justifyContent: "center", gap: 1,
+  border: "none", cursor: "pointer", minWidth: { xs: "100%", sm: 210 },
+};
+const dialogTitleSx = {
+  fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 18, color: "#2D3350",
+};
+const dialogContentSx = {
+  "& .MuiDialogContentText-root, & .MuiTypography-root, & .MuiFormControlLabel-label": {
+    fontFamily: FONT_BODY,
+  },
+  "& .MuiTableCell-root": { fontFamily: FONT_BODY, fontSize: 14, color: "#2D3350" },
+};
+const dialogActionsSx = {
+  px: 3, pb: 2, gap: 1,
+  "& .MuiButton-root": {
+    fontFamily: FONT_DISPLAY, fontWeight: 600, fontSize: 14,
+    textTransform: "none", borderRadius: "10px", px: 2.5,
+  },
+  "& .MuiButton-colorPrimary": { color: "#1B3B6F" },
+  "& .MuiButton-colorSecondary": { color: "#0C9A6C", fontWeight: 700 },
+  "& .MuiButton-root.Mui-disabled": { color: "rgba(0,0,0,0.26)" },
+};
+const formatMoney = (v) => {
+  if (v === null || v === undefined || v === "") return v;
+  const n = Number(v);
+  return Number.isFinite(n) ? n.toFixed(2) : v;
+};
+
 const DatosReciboTable = () => {
   const categoryOptions = [
     { value: "63111", label: "Servicio transporte De carga" },
@@ -735,17 +780,17 @@ const DatosReciboTable = () => {
       <Container sx={{ marginBottom: 2, marginTop: 0 }} disableGutters>
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5, mb: 1 }}>
           <Box component="button" className="ar-btn ar-btn-primary" onClick={() => navigate("/datos-recibo")}
-            sx={{ display: "flex", alignItems: "center", gap: 1, border: "none", cursor: "pointer" }}>
+            sx={topBtnSx}>
             <img src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa12.png?alt=media&token=605b5260-250c-4fb0-ade2-ff241845be1c" alt="" style={{ height: 18, filter: "brightness(0) invert(1)" }} />
             Nuevo Registro
           </Box>
           <Box component="button" className="ar-btn ar-btn-orange" onClick={() => navigate("/movilidad")}
-            sx={{ display: "flex", alignItems: "center", gap: 1, border: "none", cursor: "pointer" }}>
+            sx={topBtnSx}>
             <img src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa11.png?alt=media&token=6d72c9af-25f8-43b4-89e8-fb82b22224de" alt="" style={{ height: 18, filter: "brightness(0) invert(1)" }} />
             Movilidad
           </Box>
           <Box component="button" className="ar-btn ar-btn-success" onClick={() => setConfirmFinalizarDialogOpen(true)}
-            sx={{ display: "flex", alignItems: "center", gap: 1, border: "none", cursor: "pointer" }}>
+            sx={topBtnSx}>
             <img src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa13.png?alt=media&token=7b15c497-d494-4a52-9011-ee7e6bdbe1e8" alt="" style={{ height: 18, filter: "brightness(0) invert(1)" }} />
             Finalizar Rendición
           </Box>
@@ -769,8 +814,8 @@ const DatosReciboTable = () => {
                   color="primary"
                   onClick={handleSearch}
                   sx={{
-                    backgroundColor: "#2E3192",
-                    "&:hover": { backgroundColor: "#1F237A" },
+                    backgroundColor: "#1B3B6F",
+                    "&:hover": { backgroundColor: "#10233F" },
                   }}
                 >
                   Buscar
@@ -784,8 +829,8 @@ const DatosReciboTable = () => {
                   fullWidth
                   sx={{
                     marginTop: 2,
-                    borderColor: "#2E3192",
-                    color: "#2E3192",
+                    borderColor: "#1B3B6F",
+                    color: "#1B3B6F",
                     "&:hover": {
                       backgroundColor: "#F15A29",
                       borderColor: "#F15A29",
@@ -809,8 +854,8 @@ const DatosReciboTable = () => {
                   fullWidth
                   sx={{
                     marginTop: 2,
-                    borderColor: "#2E3192",
-                    color: "#2E3192",
+                    borderColor: "#1B3B6F",
+                    color: "#1B3B6F",
                     "&:hover": {
                       backgroundColor: "#F15A29",
                       borderColor: "#F15A29",
@@ -973,8 +1018,8 @@ const DatosReciboTable = () => {
                 onClick={editRecord ? handleUpdate : handleSubmit}
                 sx={{
                   marginTop: 4,
-                  backgroundColor: "#2E3192",
-                  "&:hover": { backgroundColor: "#1F237A" },
+                  backgroundColor: "#1B3B6F",
+                  "&:hover": { backgroundColor: "#10233F" },
                 }}
               >
                 {editRecord ? "Actualizar" : "Solicitar"}
@@ -994,13 +1039,13 @@ const DatosReciboTable = () => {
           <TableSkeleton rows={5} cols={7} />
         </Box>
       ) : (
-        <TableContainer component={Paper} sx={{ marginBottom: 4, borderRadius: "12px", overflowX: "auto", overflowY: "hidden", boxShadow: "0 2px 16px rgba(46,49,146,0.08)", border: "1px solid #E2E6F0", WebkitOverflowScrolling: "touch" }}>
+        <TableContainer component={Paper} sx={{ marginBottom: 4, borderRadius: "12px", overflowX: "auto", overflowY: "hidden", boxShadow: "0 2px 16px rgba(27,59,111,0.08)", border: "1px solid #E2E6F0", WebkitOverflowScrolling: "touch" }}>
           <Table sx={{ minWidth: 650 }}>
             <TableHead>
-              <TableRow sx={{ backgroundColor: "#2E3192" }}>
+              <TableRow sx={{ backgroundColor: "#1B3B6F" }}>
                 <TableCell
                   align="left"
-                  sx={{ color: "rgba(255,255,255,0.92)", fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: "0.4px", py: 1.5 }}
+                  sx={headCellSx}
                 >
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa14.png?alt=media&token=0adf0d7c-ba88-48a2-abee-864cbf6850e5"
@@ -1011,7 +1056,7 @@ const DatosReciboTable = () => {
                 </TableCell>
                 <TableCell
                   align="left"
-                  sx={{ color: "rgba(255,255,255,0.92)", fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: "0.4px", py: 1.5 }}
+                  sx={headCellSx}
                 >
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa15.png?alt=media&token=3e9271c1-9533-4661-ab02-d30de0ad90e6"
@@ -1021,8 +1066,8 @@ const DatosReciboTable = () => {
                   Rubro
                 </TableCell>
                 <TableCell
-                  align="left"
-                  sx={{ color: "rgba(255,255,255,0.92)", fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: "0.4px", py: 1.5 }}
+                  align="right"
+                  sx={headCellSx}
                 >
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa16.png?alt=media&token=d8afd433-339c-4f9a-ab2d-b211e10345b2"
@@ -1032,8 +1077,8 @@ const DatosReciboTable = () => {
                   Total
                 </TableCell>
                 <TableCell
-                  align="left"
-                  sx={{ color: "rgba(255,255,255,0.92)", fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: "0.4px", py: 1.5 }}
+                  align="center"
+                  sx={headCellSx}
                 >
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa17.png?alt=media&token=aae19df1-ae52-45f4-8653-042af6b5a59b"
@@ -1043,8 +1088,8 @@ const DatosReciboTable = () => {
                   Ver Archivo
                 </TableCell>
                 <TableCell
-                  align="left"
-                  sx={{ color: "rgba(255,255,255,0.92)", fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: "0.4px", py: 1.5 }}
+                  align="center"
+                  sx={headCellSx}
                 >
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa18.png?alt=media&token=8228c7ef-c92f-478c-995a-2104ea29f3d4"
@@ -1054,8 +1099,8 @@ const DatosReciboTable = () => {
                   Detalle
                 </TableCell>
                 <TableCell
-                  align="left"
-                  sx={{ color: "rgba(255,255,255,0.92)", fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: "0.4px", py: 1.5 }}
+                  align="center"
+                  sx={headCellSx}
                 >
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa21.png?alt=media&token=8eacf126-3bd4-42cb-bdb1-900c746eea23"
@@ -1065,8 +1110,8 @@ const DatosReciboTable = () => {
                   Editar
                 </TableCell>
                 <TableCell
-                  align="left"
-                  sx={{ color: "rgba(255,255,255,0.92)", fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: "0.4px", py: 1.5 }}
+                  align="center"
+                  sx={headCellSx}
                 >
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa22.png?alt=media&token=554ee3ea-2338-48be-ba94-fd6535f34fc4"
@@ -1079,16 +1124,17 @@ const DatosReciboTable = () => {
             </TableHead>
             <TableBody>
               {records.map((record, index) => (
-                <TableRow key={record.id}>
-                  <TableCell align="left">{index + 1}</TableCell>
-                  <TableCell align="left">{record.rubro}</TableCell>
-                  <TableCell align="left">{record.total}</TableCell>
-                  <TableCell align="left">
+                <TableRow key={record.id} hover sx={{ "&:last-child td": { borderBottom: 0 } }}>
+                  <TableCell align="left" sx={bodyCellSx}>{index + 1}</TableCell>
+                  <TableCell align="left" sx={bodyCellSx}>{record.rubro}</TableCell>
+                  <TableCell align="right" sx={bodyCellSx}>{formatMoney(record.total)}</TableCell>
+                  <TableCell align="center" sx={bodyCellSx}>
                     {record.archivo && (
                       <Button
                         variant="contained"
                         color="success"
                         onClick={() => handleViewFile(record.archivo)}
+                        sx={actionBtnSx}
                       >
                         <img
                           src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa17.png?alt=media&token=aae19df1-ae52-45f4-8653-042af6b5a59b"
@@ -1098,11 +1144,12 @@ const DatosReciboTable = () => {
                       </Button>
                     )}
                   </TableCell>
-                  <TableCell align="left">
+                  <TableCell align="center" sx={bodyCellSx}>
                     <Button
                       variant="contained"
                       color="warning"
                       onClick={() => handleViewDetail(record.id)}
+                        sx={actionBtnSx}
                     >
                       <img
                         src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa18.png?alt=media&token=8228c7ef-c92f-478c-995a-2104ea29f3d4"
@@ -1111,11 +1158,12 @@ const DatosReciboTable = () => {
                       />
                     </Button>
                   </TableCell>
-                  <TableCell align="left">
+                  <TableCell align="center" sx={bodyCellSx}>
                     <Button
                       variant="contained"
                       color="primary"
                       onClick={() => handleEditRecord(record)}
+                        sx={actionBtnSx}
                       disabled={record.rubro.toLowerCase() === "movilidad"}
                     >
                       <img
@@ -1125,11 +1173,12 @@ const DatosReciboTable = () => {
                       />
                     </Button>
                   </TableCell>
-                  <TableCell align="left">
+                  <TableCell align="center" sx={bodyCellSx}>
                     <Button
                       variant="contained"
                       color="error"
                       onClick={() => handleOpenConfirmDeleteDialog(record.id)}
+                        sx={actionBtnSx}
                     >
                       <img
                         src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa22.png?alt=media&token=554ee3ea-2338-48be-ba94-fd6535f34fc4"
@@ -1145,11 +1194,11 @@ const DatosReciboTable = () => {
         </TableContainer>
       )}
       <Dialog open={dialogOpen} onClose={() => handleDialogClose(false)}>
-        <DialogTitle>Datos enviados con éxito</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={dialogTitleSx}>Datos enviados con éxito</DialogTitle>
+        <DialogContent sx={dialogContentSx}>
           <DialogContentText>Documento creado correctamente.</DialogContentText>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={dialogActionsSx}>
           <Button onClick={() => handleDialogClose(true)} color="primary">
             Adicionar Gasto
           </Button>
@@ -1195,11 +1244,11 @@ const DatosReciboTable = () => {
         open={confirmDeleteDialogOpen}
         onClose={handleCloseConfirmDeleteDialog}
       >
-        <DialogTitle>Confirmación</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={dialogTitleSx}>Confirmación</DialogTitle>
+        <DialogContent sx={dialogContentSx}>
           <DialogContentText>¿Desea eliminar este registro?</DialogContentText>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={dialogActionsSx}>
           <Button onClick={handleCloseConfirmDeleteDialog} color="primary">
             No
           </Button>
@@ -1215,8 +1264,8 @@ const DatosReciboTable = () => {
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>Detalle del Documento</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={dialogTitleSx}>Detalle del Documento</DialogTitle>
+        <DialogContent sx={dialogContentSx}>
           {documentDetail ? (
             <TableContainer component={Paper}>
               <Table>
@@ -1337,7 +1386,7 @@ const DatosReciboTable = () => {
             <CircularProgress />
           )}
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={dialogActionsSx}>
           <Button onClick={handleCloseDetailDialog} color="primary">
             Cerrar
           </Button>
@@ -1348,8 +1397,8 @@ const DatosReciboTable = () => {
         open={confirmFinalizarDialogOpen}
         onClose={handleCloseFinalizarDialog}
       >
-        <DialogTitle>Seleccionar Anticipos</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={dialogTitleSx}>Seleccionar Anticipos</DialogTitle>
+        <DialogContent sx={dialogContentSx}>
           {isLoadingSolicitudes ? (
             <CircularProgress /> // Mostrar un indicador de carga
           ) : (
@@ -1388,7 +1437,7 @@ const DatosReciboTable = () => {
             </>
           )}
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={dialogActionsSx}>
           <Button onClick={handleCloseFinalizarDialog} color="primary">
             Cancelar
           </Button>
@@ -1466,14 +1515,14 @@ const DatosReciboTable = () => {
 
       {/* Modal para "No se encontraron anticipos" */}
       <Dialog open={noAnticiposModalOpen} onClose={handleCloseNoAnticiposModal}>
-        <DialogTitle>No se encontraron anticipos</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={dialogTitleSx}>No se encontraron anticipos</DialogTitle>
+        <DialogContent sx={dialogContentSx}>
           <DialogContentText>
             No hay anticipos disponibles para asociar a esta rendición. ¿Desea
             crear una nueva rendición sin anticipos?
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={dialogActionsSx}>
           <Button onClick={handleCloseNoAnticiposModal} color="primary">
             Cancelar
           </Button>
