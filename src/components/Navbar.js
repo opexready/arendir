@@ -64,7 +64,7 @@ const Navbar = () => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
       <AppBar position="fixed" elevation={scrolled ? 3 : 0}
-        sx={{ background: "#2E3192", boxShadow: scrolled ? "0 4px 20px rgba(46,49,146,0.3)" : "0 2px 8px rgba(46,49,146,0.15)", zIndex: (t) => t.zIndex.drawer + 1, transition: "box-shadow 0.3s" }}>
+        sx={{ background: "#1B3B6F", boxShadow: scrolled ? "0 4px 20px rgba(27,59,111,0.3)" : "0 2px 8px rgba(27,59,111,0.15)", zIndex: (t) => t.zIndex.drawer + 1, transition: "box-shadow 0.3s" }}>
         <Toolbar sx={{ minHeight: { xs: 56, sm: 64 }, gap: 1 }}>
           <IconButton color="inherit" onClick={() => navigate(-1)}
             sx={{ borderRadius: "10px", "&:hover": { background: "rgba(255,255,255,0.12)", transform: "translateX(-2px)" }, transition: "all 0.2s" }}>
@@ -92,19 +92,19 @@ const Navbar = () => {
       </AppBar>
 
       {showSubnav && (
-        <Box sx={{ position: "fixed", top: { xs: 56, sm: 64 }, left: 0, right: 0, zIndex: (t) => t.zIndex.drawer, background: "#fff", borderBottom: "1px solid #E2E6F0", boxShadow: "0 2px 8px rgba(46,49,146,0.06)" }}>
+        <Box sx={{ position: "fixed", top: { xs: 56, sm: 64 }, left: 0, right: 0, zIndex: (t) => t.zIndex.drawer, background: "#fff", borderBottom: "1px solid #E2E6F0", boxShadow: "0 2px 8px rgba(27,59,111,0.06)" }}>
           {isMobile ? (
             <Box sx={{ px: 2, py: 0.5, display: "flex", alignItems: "center" }}>
-              <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} sx={{ color: "#2E3192", borderRadius: "10px" }}><MenuIcon /></IconButton>
-              <Typography sx={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 13, color: "#2E3192", ml: 1 }}>
+              <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} sx={{ color: "#1B3B6F", borderRadius: "10px" }}><MenuIcon /></IconButton>
+              <Typography sx={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 13, color: "#1B3B6F", ml: 1 }}>
                 {NAV_ITEMS.find((n) => location.pathname.startsWith(n.to))?.label || "Menú"}
               </Typography>
               <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}
-                PaperProps={{ sx: { borderRadius: "12px", boxShadow: "0 8px 32px rgba(46,49,146,0.15)", minWidth: 180 } }}>
+                PaperProps={{ sx: { borderRadius: "12px", boxShadow: "0 8px 32px rgba(27,59,111,0.15)", minWidth: 180 } }}>
                 {NAV_ITEMS.map((item) => (
                   <MenuItem key={item.to} component={Link} to={item.to} onClick={() => setAnchorEl(null)}
                     selected={location.pathname.startsWith(item.to)}
-                    sx={{ gap: 1.5, fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 13, "&.Mui-selected": { background: "#E8EAF6", color: "#2E3192" } }}>
+                    sx={{ gap: 1.5, fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 13, "&.Mui-selected": { background: "#E6EEF8", color: "#1B3B6F" } }}>
                     <img src={item.iconUrl} alt={item.label} style={{ width: 20, height: 20 }} />
                     {item.label}
                   </MenuItem>
@@ -120,15 +120,15 @@ const Navbar = () => {
                     <Box sx={{
                       display: "flex", alignItems: "center", gap: "7px", px: 2, py: 1.25, borderRadius: "8px",
                       fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 13,
-                      color: active ? "#2E3192" : "#9099B5",
-                      background: active ? "#E8EAF6" : "transparent",
+                      color: active ? "#1B3B6F" : "#9099B5",
+                      background: active ? "#E6EEF8" : "transparent",
                       position: "relative", transition: "all 0.2s", cursor: "pointer",
-                      "&:hover": { color: "#2E3192", background: "#E8EAF6" },
+                      "&:hover": { color: "#1B3B6F", background: "#E6EEF8" },
                     }}>
                       <img src={item.iconUrl} alt={item.label}
                         style={{ width: 18, height: 18, filter: active ? "invert(18%) sepia(98%) saturate(800%) hue-rotate(213deg)" : "invert(60%) sepia(10%) saturate(400%) hue-rotate(180deg)", transition: "filter 0.2s" }} />
                       {item.label}
-                      {active && <Box sx={{ position: "absolute", bottom: -1, left: "20%", width: "60%", height: "2px", background: "#F15A29", borderRadius: "2px" }} />}
+                      {active && <Box sx={{ position: "absolute", bottom: -1, left: "20%", width: "60%", height: "2px", background: "#10B981", borderRadius: "2px" }} />}
                     </Box>
                   </Link>
                 );
@@ -151,14 +151,14 @@ const Navbar = () => {
           </Typography>
           {missingFields.map((f) => (
             <Box key={f} sx={{ display: "flex", alignItems: "center", gap: 1, py: 0.5 }}>
-              <Box sx={{ width: 6, height: 6, borderRadius: "50%", background: "#F15A29" }} />
+              <Box sx={{ width: 6, height: 6, borderRadius: "50%", background: "#10B981" }} />
               <Typography sx={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 13, color: "#2D3350" }}>{FIELD_LABELS[f] || f}</Typography>
             </Box>
           ))}
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
           <Button fullWidth variant="contained" onClick={() => { navigate("/profile"); setOpenProfileDialog(false); }}
-            sx={{ background: "#2E3192", borderRadius: "10px", fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, textTransform: "none", py: 1.2, "&:hover": { background: "#1F237A" } }}>
+            sx={{ background: "#1B3B6F", borderRadius: "10px", fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, textTransform: "none", py: 1.2, "&:hover": { background: "#10233F" } }}>
             Actualizar perfil
           </Button>
         </DialogActions>
@@ -175,7 +175,7 @@ const Navbar = () => {
             Cancelar
           </Button>
           <Button onClick={() => { setOpenLogoutDialog(false); handleLogout(); }} variant="contained"
-            sx={{ flex: 1, borderRadius: "10px", background: "#2E3192", fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, textTransform: "none", "&:hover": { background: "#1F237A" } }}>
+            sx={{ flex: 1, borderRadius: "10px", background: "#1B3B6F", fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, textTransform: "none", "&:hover": { background: "#10233F" } }}>
             Cerrar sesión
           </Button>
         </DialogActions>
