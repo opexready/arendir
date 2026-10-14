@@ -76,7 +76,7 @@ const Login = () => {
   return (
     <Box sx={{
       minHeight: "100vh",
-      background: "linear-gradient(135deg, #1a1f5e 0%, #2E3192 45%, #3949AB 70%, #F15A29 100%)",
+      background: "linear-gradient(135deg, #10233F 0%, #1B3B6F 50%, #2C5599 78%, #10B981 100%)",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
@@ -216,7 +216,7 @@ const Login = () => {
               </button>
 
               <Typography
-                sx={{ textAlign: "center", fontFamily: "'DM Sans',sans-serif", fontSize: 13, color: "#9099B5", cursor: "pointer", transition: "color 0.2s", "&:hover": { color: "#2E3192" } }}
+                sx={{ textAlign: "center", fontFamily: "'DM Sans',sans-serif", fontSize: 13, color: "#9099B5", cursor: "pointer", transition: "color 0.2s", "&:hover": { color: "#1B3B6F" } }}
                 onClick={() => setShowResetForm(true)}
               >
                 ¿Olvidaste tu contraseña?
@@ -241,8 +241,8 @@ const inputSx = {
     fontSize: 14,
     background: "#F8F9FC",
     "& fieldset": { borderColor: "#E2E6F0" },
-    "&:hover fieldset": { borderColor: "#2E3192" },
-    "&.Mui-focused fieldset": { borderColor: "#2E3192", borderWidth: "1.5px" },
+    "&:hover fieldset": { borderColor: "#1B3B6F" },
+    "&.Mui-focused fieldset": { borderColor: "#1B3B6F", borderWidth: "1.5px" },
     "&.Mui-focused": { background: "#fff" },
   },
   "& .MuiInputLabel-root": {
@@ -250,7 +250,7 @@ const inputSx = {
     fontSize: 13,
     fontWeight: 600,
     color: "#9099B5",
-    "&.Mui-focused": { color: "#2E3192" },
+    "&.Mui-focused": { color: "#1B3B6F" },
   },
 };
 
