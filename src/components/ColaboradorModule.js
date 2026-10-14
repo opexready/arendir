@@ -27,7 +27,7 @@ const ColaboradorModule = () => {
   return (
     <Box sx={{
       minHeight: "100vh",
-      background: "linear-gradient(160deg, #1a1f5e 0%, #2E3192 50%, #3949AB 100%)",
+      background: "linear-gradient(160deg, #10233F 0%, #1B3B6F 50%, #2C5599 100%)",
       display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
       position: "relative", overflow: "hidden", px: 2, pb: 6,
     }}>
@@ -89,7 +89,7 @@ const ColaboradorModule = () => {
                 "@keyframes cardIn": { from: { opacity: 0, transform: "translateY(24px) scale(0.9)" }, to: { opacity: 1, transform: "translateY(0) scale(1)" } },
                 "&::before": {
                   content: '""', position: "absolute", top: 0, left: 0, right: 0, height: "3px",
-                  background: "#F15A29", transform: "scaleX(0)", transformOrigin: "left",
+                  background: "#10B981", transform: "scaleX(0)", transformOrigin: "left",
                   transition: "transform 0.3s ease",
                 },
                 "&:hover": { transform: "translateY(-6px)", boxShadow: "0 16px 48px rgba(0,0,0,0.2)" },
@@ -98,18 +98,18 @@ const ColaboradorModule = () => {
               }}>
               <Box sx={{
                 width: { xs: 60, sm: 72 }, height: { xs: 60, sm: 72 },
-                borderRadius: "16px", background: "#F15A29",
+                borderRadius: "16px", background: "#10B981",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                boxShadow: "0 8px 20px rgba(241,90,41,0.35)",
+                boxShadow: "0 8px 20px rgba(16,185,129,0.35)",
                 transition: "all 0.3s ease",
-                ".MuiBox-root:hover &": { transform: "scale(1.1) rotate(-4deg)", boxShadow: "0 12px 28px rgba(241,90,41,0.5)" },
+                ".MuiBox-root:hover &": { transform: "scale(1.1) rotate(-4deg)", boxShadow: "0 12px 28px rgba(16,185,129,0.5)" },
               }}>
                 <Box component="img" src={svc.iconUrl} alt={svc.label}
                   sx={{ width: { xs: 36, sm: 44 }, height: { xs: 36, sm: 44 }, objectFit: "contain", filter: "brightness(0) invert(1)" }} />
               </Box>
               <Typography sx={{
                 fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700,
-                fontSize: { xs: 13, sm: 14 }, color: "#2E3192", textAlign: "center",
+                fontSize: { xs: 13, sm: 14 }, color: "#1B3B6F", textAlign: "center",
               }}>
                 {svc.label}
               </Typography>
@@ -129,7 +129,7 @@ const ColaboradorModule = () => {
               border: "1px solid rgba(255,255,255,0.2)",
               borderRadius: "20px", px: 2.5, py: 1,
             }}>
-              <Box sx={{ width: 8, height: 8, borderRadius: "50%", background: "#F15A29", animation: "pulse 2s infinite", "@keyframes pulse": { "0%,100%": { opacity: 1 }, "50%": { opacity: 0.4 } } }} />
+              <Box sx={{ width: 8, height: 8, borderRadius: "50%", background: "#10B981", animation: "pulse 2s infinite", "@keyframes pulse": { "0%,100%": { opacity: 1 }, "50%": { opacity: 0.4 } } }} />
               <Typography sx={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: "rgba(255,255,255,0.8)", fontWeight: 500 }}>
                 {user.company_name || user.empresa || "Arendir"}
               </Typography>
