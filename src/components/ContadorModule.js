@@ -117,6 +117,9 @@ const ContadorModule = () => {
   const [openRendiciones, setOpenRendiciones] = useState({});
   const [colaboradores, setColaboradores] = useState([]);
   const [empresa, setEmpresa] = useState("");
+  const [cargando, setCargando] = useState(false);
+  const [errorCarga, setErrorCarga] = useState("");
+  const [estadoConsultado, setEstadoConsultado] = useState("POR APROBAR");
   const [filtros, setFiltros] = useState({
     colaborador: "",
     estado: "",
@@ -204,6 +207,9 @@ const ContadorModule = () => {
   }, []);
 
   const fetchRendiciones = async () => {
+    setCargando(true);
+    setErrorCarga("");
+    setEstadoConsultado(filtros.estado || "POR APROBAR");
     const userString = localStorage.getItem("user");
     const user = userString ? JSON.parse(userString) : null;
     const idEmpresa = user ? user.id_empresa : null;
@@ -222,10 +228,23 @@ const ContadorModule = () => {
           },
         }
       );
-      setRendiciones(response.data);
+      if (Array.isArray(response.data)) {
+        setRendiciones(response.data);
+      } else {
+        setRendiciones([]);
+        setErrorCarga("El servidor respondió con un formato inesperado.");
+      }
       setOpenRendiciones({});
     } catch (error) {
       console.error("Error al obtener las rendiciones:", error);
+      setRendiciones([]);
+      setErrorCarga(
+        error.response
+          ? `El servidor respondió con un error (código ${error.response.status}). Avisa al equipo técnico.`
+          : "No se pudo conectar con el servidor. Revisa tu conexión e inténtalo de nuevo."
+      );
+    } finally {
+      setCargando(false);
     }
   };
 
@@ -436,6 +455,26 @@ const ContadorModule = () => {
               </TableRow>
             </TableHead>
             <TableBody>
+              {(cargando || errorCarga || rendiciones.length === 0) && (
+                <TableRow>
+                  <TableCell
+                    colSpan={7}
+                    align="center"
+                    sx={{ ...bodyCellSx, py: 5, borderBottom: 0, color: errorCarga && !cargando ? "#C62828" : "#5A6280" }}
+                  >
+                    {cargando ? (
+                      <>
+                        <CircularProgress size={20} sx={{ mr: 1.5, verticalAlign: "middle" }} />
+                        Buscando resultados…
+                      </>
+                    ) : errorCarga ? (
+                      errorCarga
+                    ) : (
+                      `No se encontraron resultados con los filtros aplicados (Estado: ${estadoConsultado}).`
+                    )}
+                  </TableCell>
+                </TableRow>
+              )}
               {rendiciones.map((rendicion) => (
                 <React.Fragment key={rendicion.rendicion.id}>
                   <TableRow hover>
