@@ -27,6 +27,91 @@ import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import axios from "axios";
 import { baseURL, getUsersByCompanyAndRole } from "../api";
 
+/* ── Estilos compartidos para uniformidad (tipografía, tamaños y botones) ── */
+const FONT_DISPLAY = "'Plus Jakarta Sans', sans-serif";
+const FONT_BODY = "'DM Sans', sans-serif";
+
+const headCellSx = {
+  color: "rgba(255,255,255,0.95)", fontFamily: FONT_DISPLAY, fontWeight: 600,
+  fontSize: 13, letterSpacing: "0.4px", py: 1.75, whiteSpace: "nowrap",
+};
+const bodyCellSx = {
+  fontFamily: FONT_BODY, fontSize: 14, color: "#2D3350", py: 1.5,
+  borderBottom: "1px solid #F0F2F8",
+};
+const actionBtnSx = {
+  minWidth: 0, width: 56, height: 40, p: 0, borderRadius: "10px",
+  textTransform: "none", boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+};
+const paperSx = {
+  borderRadius: "12px", border: "1px solid #E2E6F0",
+  boxShadow: "0 2px 16px rgba(27,59,111,0.08)",
+};
+const titleSx = {
+  fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 24, color: "#1B3B6F", mb: 3,
+};
+const formFieldsSx = {
+  "& .MuiOutlinedInput-root": {
+    borderRadius: "10px", fontFamily: FONT_BODY, fontSize: 15, background: "#F8F9FC",
+    "& fieldset": { borderColor: "#E2E6F0" },
+    "&:hover fieldset": { borderColor: "#1B3B6F" },
+    "&.Mui-focused": { background: "#fff" },
+    "&.Mui-focused fieldset": { borderColor: "#1B3B6F", borderWidth: "1.5px" },
+  },
+  "& .MuiInputLabel-root": {
+    fontFamily: FONT_DISPLAY, fontSize: 14, fontWeight: 600, color: "#9099B5",
+    "&.Mui-focused": { color: "#1B3B6F" },
+  },
+  "& .MuiSelect-select em": { fontStyle: "normal", color: "#5A6280" },
+};
+const filterBtnSx = {
+  height: 48, borderRadius: "12px", textTransform: "none",
+  fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 15, color: "#fff",
+  backgroundColor: "#1B3B6F", boxShadow: "0 4px 12px rgba(27,59,111,0.3)",
+  "&:hover": { backgroundColor: "#10233F" },
+};
+const toggleBtnSx = {
+  backgroundColor: "#F15A29", color: "#fff", minWidth: 110, height: 40, borderRadius: "10px",
+  textTransform: "none", fontFamily: FONT_DISPLAY, fontWeight: 600, fontSize: 13,
+  boxShadow: "0 2px 6px rgba(0,0,0,0.15)", "&:hover": { backgroundColor: "#D44A1C" },
+};
+const estadoSelectSx = {
+  minWidth: 150, borderRadius: "10px", fontFamily: FONT_BODY, fontSize: 13, fontWeight: 600,
+  color: "#2D3350", background: "#F8F9FC",
+  "& .MuiOutlinedInput-notchedOutline": { borderColor: "#E2E6F0" },
+  "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#1B3B6F" },
+  "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#1B3B6F", borderWidth: "1.5px" },
+};
+const menuProps = {
+  PaperProps: {
+    sx: { borderRadius: "10px", "& .MuiMenuItem-root": { fontFamily: FONT_BODY, fontSize: 14 }, "& em": { fontStyle: "normal" } },
+  },
+};
+const dialogTitleSx = {
+  fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 18, color: "#2D3350",
+};
+const dialogContentSx = {
+  "& .MuiDialogContentText-root, & .MuiTypography-root, & .MuiFormControlLabel-label": {
+    fontFamily: FONT_BODY,
+  },
+  "& .MuiTableCell-root": { fontFamily: FONT_BODY, fontSize: 14, color: "#2D3350" },
+};
+const dialogActionsSx = {
+  px: 3, pb: 2, gap: 1,
+  "& .MuiButton-root": {
+    fontFamily: FONT_DISPLAY, fontWeight: 600, fontSize: 14,
+    textTransform: "none", borderRadius: "10px", px: 2.5,
+  },
+  "& .MuiButton-colorPrimary": { color: "#1B3B6F" },
+  "& .MuiButton-colorSecondary": { color: "#0C9A6C", fontWeight: 700 },
+  "& .MuiButton-root.Mui-disabled": { color: "rgba(0,0,0,0.26)" },
+};
+const formatMoney = (v) => {
+  if (v === null || v === undefined || v === "") return v;
+  const n = Number(v);
+  return Number.isFinite(n) ? n.toFixed(2) : v;
+};
+
 const ContadorModule = () => {
   const [rendiciones, setRendiciones] = useState([]);
   const [openRendiciones, setOpenRendiciones] = useState({});
@@ -186,14 +271,8 @@ const ContadorModule = () => {
     setSelectedFile(fileUrl);
   };
 
-  const headerStyle = {
-    backgroundColor: "#2E3192",
-    color: "white",
-    fontWeight: "bold",
-  };
-
   const rowStyle = {
-    backgroundColor: "#f3f3f3",
+    backgroundColor: "#F8F9FC",
   };
 
   return (
@@ -202,13 +281,13 @@ const ContadorModule = () => {
         variant="h4"
         align="center"
         gutterBottom
-        sx={{ color: "#F15A29", fontWeight: "bold", fontSize: "1.5rem" }}
+        sx={titleSx}
       >
         Módulo de Aprobador - Rendiciones y Anticipos
       </Typography>
 
       {/* Filtros */}
-      <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
+      <Paper elevation={0} sx={{ ...paperSx, p: 3, mb: 3, ...formFieldsSx }}>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={4}>
             <FormControl fullWidth>
@@ -217,6 +296,7 @@ const ContadorModule = () => {
                 value={filtros.colaborador || ""}
                 onChange={handleFiltroChange}
                 displayEmpty
+                MenuProps={menuProps}
               >
                 <MenuItem value="">
                   <em>Todos los Colaboradores</em>
@@ -236,6 +316,7 @@ const ContadorModule = () => {
                 value={filtros.estado || ""}
                 onChange={handleFiltroChange}
                 displayEmpty
+                MenuProps={menuProps}
               >
                 <MenuItem value="">
                   <em>Todos los Estados</em>
@@ -252,6 +333,7 @@ const ContadorModule = () => {
                 value={filtros.tipo_solicitud || ""}
                 onChange={handleFiltroChange}
                 displayEmpty
+                MenuProps={menuProps}
               >
                 <MenuItem value="">
                   <em>Tipos los tipos</em>
@@ -287,11 +369,7 @@ const ContadorModule = () => {
             <Button
               variant="contained"
               onClick={handleFiltrarClick}
-              sx={{
-                backgroundColor: "#2E3192",
-                "&:hover": { backgroundColor: "#1F237A" },
-                color: "white",
-              }}
+              sx={filterBtnSx}
               fullWidth
             >
               Filtrar
@@ -301,79 +379,76 @@ const ContadorModule = () => {
       </Paper>
 
       {/* Tabla de Rendiciones */}
-      <Paper elevation={3} sx={{ p: 3 }}>
+      <Paper elevation={0} sx={{ ...paperSx, overflow: "hidden" }}>
         <TableContainer>
           <Table>
             <TableHead>
-              <TableRow>
-                <TableCell style={headerStyle}>
-                  {" "}
+              <TableRow sx={{ backgroundColor: "#1B3B6F" }}>
+                <TableCell sx={headCellSx}>
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/a46.png?alt=media&token=00936ed5-e266-4eca-853b-f869b3f2afeb"
                     alt="Ícono Eliminar"
-                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                    style={{ height: "24px", marginRight: "8px" }}
                   />
                   Código
                 </TableCell>
-                <TableCell style={headerStyle}>
-                  {" "}
+                <TableCell sx={headCellSx}>
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/a47.png?alt=media&token=63738bbc-85ca-4d4e-8ea5-ffd95fa4e805"
                     alt="Ícono Eliminar"
-                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                    style={{ height: "24px", marginRight: "8px" }}
                   />
                   Colaborador
                 </TableCell>
-                <TableCell style={headerStyle}>
-                  {" "}
+                <TableCell sx={headCellSx}>
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/a48.png?alt=media&token=af55ca0b-19f9-4c2d-8b32-b118eacff3f1"
                     alt="Ícono Eliminar"
-                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                    style={{ height: "24px", marginRight: "8px" }}
                   />
                   Tipo
                 </TableCell>
-                <TableCell style={headerStyle}>
-                  {" "}
+                <TableCell sx={headCellSx}>
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/a49.png?alt=media&token=eb9186e8-2de5-4872-a22b-7121a463b16f"
                     alt="Ícono Eliminar"
-                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                    style={{ height: "24px", marginRight: "8px" }}
                   />
                   Estado
                 </TableCell>
-                <TableCell style={headerStyle}>
-                  {" "}
+                <TableCell sx={headCellSx}>
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/a56.png?alt=media&token=0007a489-531b-41e3-862e-7025a3140f95"
                     alt="Ícono Eliminar"
-                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                    style={{ height: "24px", marginRight: "8px" }}
                   />
                   Fecha Registro
                 </TableCell>
-                <TableCell style={headerStyle}>
-                  {" "}
+                <TableCell sx={headCellSx}>
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/a56.png?alt=media&token=0007a489-531b-41e3-862e-7025a3140f95"
                     alt="Ícono Eliminar"
-                    style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                    style={{ height: "24px", marginRight: "8px" }}
                   />
                   Fecha Actualización
                 </TableCell>
-                <TableCell style={headerStyle}></TableCell>
+                <TableCell align="center" sx={headCellSx}></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {rendiciones.map((rendicion) => (
                 <React.Fragment key={rendicion.rendicion.id}>
-                  <TableRow>
-                    <TableCell>{rendicion.rendicion.nombre}</TableCell>
-                    <TableCell>{rendicion.rendicion.nombre_usuario}</TableCell>
-                    <TableCell>{rendicion.rendicion.tipo}</TableCell>
-                    {/* <TableCell>{rendicion.rendicion.estado}</TableCell> */}
-                    <TableCell>
+                  <TableRow hover>
+                    <TableCell sx={bodyCellSx}>{rendicion.rendicion.nombre}</TableCell>
+                    <TableCell sx={bodyCellSx}>{rendicion.rendicion.nombre_usuario}</TableCell>
+                    <TableCell sx={bodyCellSx}>{rendicion.rendicion.tipo}</TableCell>
+                    {/* <TableCell sx={bodyCellSx}>{rendicion.rendicion.estado}</TableCell> */}
+                    <TableCell sx={bodyCellSx}>
                       <FormControl fullWidth>
                         <Select
+                          size="small"
+                          sx={estadoSelectSx}
+                          MenuProps={menuProps}
                           value={rendicion.rendicion.estado}
                           onChange={(e) =>
                             updateEstadoRendicion(
@@ -390,19 +465,15 @@ const ContadorModule = () => {
                       </FormControl>
                     </TableCell>
 
-                    <TableCell>{rendicion.rendicion.fecha_registro}</TableCell>
-                    <TableCell>
+                    <TableCell sx={bodyCellSx}>{rendicion.rendicion.fecha_registro}</TableCell>
+                    <TableCell sx={bodyCellSx}>
                       {rendicion.rendicion.fecha_actualizacion || "N/A"}
                     </TableCell>
-                    <TableCell>
+                    <TableCell align="center" sx={bodyCellSx}>
                       <Button
                         onClick={() => toggleRendicion(rendicion.rendicion.id)}
                         size="small"
-                        sx={{
-                          backgroundColor: "#F15A29",
-                          color: "white",
-                          "&:hover": { backgroundColor: "#D14A23" },
-                        }}
+                        sx={toggleBtnSx}
                       >
                         {openRendiciones[rendicion.rendicion.id] ? (
                           <>
@@ -420,7 +491,7 @@ const ContadorModule = () => {
                   </TableRow>
                   <TableRow>
                     <TableCell
-                      colSpan={6}
+                      colSpan={7}
                       style={{ padding: 0, border: "none" }}
                     >
                       <Collapse
@@ -430,93 +501,84 @@ const ContadorModule = () => {
                       >
                         <Table size="small">
                           <TableHead>
-                            <TableRow>
-                              <TableCell style={headerStyle}>
-                                {" "}
+                            <TableRow sx={{ backgroundColor: "#2C5599" }}>
+                              <TableCell sx={headCellSx}>
                                 <img
                                   src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
                                   alt="Ícono Eliminar"
-                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                  style={{ height: "24px", marginRight: "8px" }}
                                 />
                                 RUC
                               </TableCell>
-                              <TableCell style={headerStyle}>
-                                {" "}
+                              <TableCell sx={headCellSx}>
                                 <img
                                   src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
                                   alt="Ícono Eliminar"
-                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                  style={{ height: "24px", marginRight: "8px" }}
                                 />
                                 Proveedor
                               </TableCell>
-                              <TableCell style={headerStyle}>
-                                {" "}
+                              <TableCell sx={headCellSx}>
                                 <img
                                   src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
                                   alt="Ícono Eliminar"
-                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                  style={{ height: "24px", marginRight: "8px" }}
                                 />
                                 Fecha Emisión
                               </TableCell>
-                              <TableCell style={headerStyle}>
-                                {" "}
+                              <TableCell sx={headCellSx}>
                                 <img
                                   src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
                                   alt="Ícono Eliminar"
-                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                  style={{ height: "24px", marginRight: "8px" }}
                                 />
                                 Moneda
                               </TableCell>
-                              <TableCell style={headerStyle}>
-                                {" "}
+                              <TableCell sx={headCellSx}>
                                 <img
                                   src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
                                   alt="Ícono Eliminar"
-                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                  style={{ height: "24px", marginRight: "8px" }}
                                 />
                                 Tipo Documento
                               </TableCell>
-                              <TableCell style={headerStyle}>
-                                {" "}
+                              <TableCell align="right" sx={headCellSx}>
                                 <img
                                   src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
                                   alt="Ícono Eliminar"
-                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                  style={{ height: "24px", marginRight: "8px" }}
                                 />
                                 Total
                               </TableCell>
-                              <TableCell style={headerStyle}>
-                                {" "}
+                              <TableCell sx={headCellSx}>
                                 <img
                                   src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
                                   alt="Ícono Eliminar"
-                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                  style={{ height: "24px", marginRight: "8px" }}
                                 />
                                 Estado
                               </TableCell>
-                              <TableCell style={headerStyle}>
-                                {" "}
+                              <TableCell sx={headCellSx}>
                                 <img
                                   src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
                                   alt="Ícono Eliminar"
-                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                  style={{ height: "24px", marginRight: "8px" }}
                                 />
                                 Empresa
                               </TableCell>
-                              <TableCell style={headerStyle}>
-                                {" "}
+                              <TableCell align="center" sx={headCellSx}>
                                 <img
                                   src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa7.png?alt=media&token=7a3336ee-c877-4991-b3e1-48af36dd3ed7"
                                   alt="Ícono Eliminar"
-                                  style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                  style={{ height: "24px", marginRight: "8px" }}
                                 />
                                 Archivo
                               </TableCell>
-                              <TableCell style={headerStyle}>
+                              <TableCell align="center" sx={headCellSx}>
                                 <img
                                   src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa18.png?alt=media&token=8228c7ef-c92f-478c-995a-2104ea29f3d4"
                                   alt="Ícono Detalle"
-                                  style={{ height: "24px" }}
+                                  style={{ height: "24px", marginRight: "8px" }}
                                 />
                                 Detalle
                               </TableCell>
@@ -525,15 +587,18 @@ const ContadorModule = () => {
                           <TableBody>
                             {rendicion.documentos.map((doc) => (
                               <TableRow key={doc.id} style={rowStyle}>
-                                <TableCell>{doc.ruc}</TableCell>
-                                <TableCell>{doc.proveedor}</TableCell>
-                                <TableCell>{doc.fecha_emision}</TableCell>
-                                <TableCell>{doc.moneda}</TableCell>
-                                <TableCell>{doc.tipo_documento}</TableCell>
-                                <TableCell>{doc.total}</TableCell>
-                                <TableCell>
+                                <TableCell sx={bodyCellSx}>{doc.ruc}</TableCell>
+                                <TableCell sx={bodyCellSx}>{doc.proveedor}</TableCell>
+                                <TableCell sx={bodyCellSx}>{doc.fecha_emision}</TableCell>
+                                <TableCell sx={bodyCellSx}>{doc.moneda}</TableCell>
+                                <TableCell sx={bodyCellSx}>{doc.tipo_documento}</TableCell>
+                                <TableCell align="right" sx={bodyCellSx}>{formatMoney(doc.total)}</TableCell>
+                                <TableCell sx={bodyCellSx}>
                                   <FormControl fullWidth>
                                     <Select
+                                      size="small"
+                                      sx={estadoSelectSx}
+                                      MenuProps={menuProps}
                                       value={doc.estado}
                                       onChange={(e) =>
                                         updateEstadoDocumento(
@@ -555,12 +620,13 @@ const ContadorModule = () => {
                                     </Select>
                                   </FormControl>
                                 </TableCell>
-                                <TableCell>{doc.empresa}</TableCell>
-                                <TableCell>
+                                <TableCell sx={bodyCellSx}>{doc.empresa}</TableCell>
+                                <TableCell align="center" sx={bodyCellSx}>
                                   <Button
                                     variant="contained"
-                                    color="primary"
+                                    color="success"
                                     onClick={() => handleViewFile(doc.archivo)}
+                                    sx={actionBtnSx}
                                     // component="a"
                                     // href={doc.archivo}
                                     // target="_blank"
@@ -569,20 +635,16 @@ const ContadorModule = () => {
                                     <img
                                       src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa17.png?alt=media&token=aae19df1-ae52-45f4-8653-042af6b5a59b"
                                       alt="Ícono Número de Ítem"
-                                      style={{ height: "24px" }} // Ajusta el tamaño de la imagen
+                                      style={{ height: "24px", marginRight: "8px" }}
                                     />
                                   </Button>
                                 </TableCell>
-                                <TableCell>
+                                <TableCell align="center" sx={bodyCellSx}>
                                   <Button
                                     variant="contained"
                                     color="warning"
                                     onClick={() => handleViewDetail(doc.id)}
-                                    sx={{
-                                      backgroundColor: "#F15A29",
-                                      color: "white",
-                                      "&:hover": { backgroundColor: "#D14A23" },
-                                    }}
+                                    sx={actionBtnSx}
                                   >
                                     <img
                                       src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa18.png?alt=media&token=8228c7ef-c92f-478c-995a-2104ea29f3d4"
@@ -611,8 +673,8 @@ const ContadorModule = () => {
         maxWidth="lg"
         fullWidth
       >
-        <DialogTitle>Archivo del Documento</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={dialogTitleSx}>Archivo del Documento</DialogTitle>
+        <DialogContent sx={dialogContentSx}>
           {selectedFile && (
             selectedFile.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
               <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", p: 2, background: "#F8F9FC", minHeight: 300 }}>
@@ -633,8 +695,8 @@ const ContadorModule = () => {
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>Detalle del Documento</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={dialogTitleSx}>Detalle del Documento</DialogTitle>
+        <DialogContent sx={dialogContentSx}>
           {documentDetail ? (
             <TableContainer component={Paper}>
               <Table>
@@ -738,7 +800,7 @@ const ContadorModule = () => {
             <CircularProgress />
           )}
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={dialogActionsSx}>
           <Button onClick={handleCloseDetailDialog} color="primary">
             Cerrar
           </Button>
