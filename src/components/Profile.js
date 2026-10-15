@@ -19,6 +19,47 @@ import {
   Select
 } from "@mui/material";
 
+/* ── Estilos compartidos para uniformidad (tipografía, tamaños y botones) ── */
+const FONT_DISPLAY = "'Plus Jakarta Sans', sans-serif";
+const FONT_BODY = "'DM Sans', sans-serif";
+
+const titleSx = {
+  fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 24, color: "#1B3B6F", mb: 3,
+};
+const cardSx = {
+  borderRadius: "16px", border: "1px solid #E2E6F0", overflow: "hidden",
+  boxShadow: "0 2px 16px rgba(27,59,111,0.08)",
+};
+const alertSx = { mb: 3, borderRadius: "10px", fontFamily: FONT_BODY, fontSize: 14 };
+const rowSx = { display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 2, mb: 3 };
+const formFieldsSx = {
+  "& .MuiOutlinedInput-root": {
+    borderRadius: "10px", fontFamily: FONT_BODY, fontSize: 15, background: "#F8F9FC",
+    "& fieldset": { borderColor: "#E2E6F0" },
+    "&:hover fieldset": { borderColor: "#1B3B6F" },
+    "&.Mui-focused": { background: "#fff" },
+    "&.Mui-focused fieldset": { borderColor: "#1B3B6F", borderWidth: "1.5px" },
+    "&.Mui-disabled": { background: "#F0F2F8" },
+    "&.Mui-disabled fieldset": { borderColor: "#E2E6F0" },
+    "& .Mui-disabled": { WebkitTextFillColor: "#8A93AE" },
+  },
+  "& .MuiInputLabel-root": {
+    fontFamily: FONT_DISPLAY, fontSize: 14, fontWeight: 600, color: "#9099B5",
+    "&.Mui-focused": { color: "#1B3B6F" },
+    "&.Mui-disabled": { color: "#9099B5" },
+  },
+};
+const submitBtnSx = {
+  px: 4, height: 48, borderRadius: "12px", textTransform: "none",
+  fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 15, backgroundColor: "#1B3B6F",
+  boxShadow: "0 4px 12px rgba(27,59,111,0.3)",
+  "&:hover": { backgroundColor: "#10233F" },
+  "&.Mui-disabled": { backgroundColor: "#C9CEDD", color: "#fff" },
+};
+const menuProps = {
+  PaperProps: { sx: { borderRadius: "10px", "& .MuiMenuItem-root": { fontFamily: FONT_BODY, fontSize: 14 } } },
+};
+
 const Profile = () => {
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
@@ -125,47 +166,30 @@ const bancosPeru = [
 
   return (
     <Container sx={{ marginTop: 0}}>
-      <Typography
-        variant="h4"
-        align="center"
-        gutterBottom
-        sx={{
-          color: "#F15A29",
-          fontWeight: "bold",
-          mb: 4
-        }}
-      >
+      <Typography variant="h4" align="center" gutterBottom sx={titleSx}>
         Perfil de Usuario
       </Typography>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
+        <Alert severity="error" sx={alertSx}>
           {error}
         </Alert>
       )}
 
       {success && (
-        <Alert severity="success" sx={{ mb: 3 }}>
+        <Alert severity="success" sx={alertSx}>
           {success}
         </Alert>
       )}
 
-      <Card sx={{ boxShadow: 3 }}>
-        <Box
-          sx={{
-            backgroundColor: "#2E3192",
-            color: "white",
-            p: 2,
-            borderTopLeftRadius: "4px",
-            borderTopRightRadius: "4px"
-          }}
-        >
-          <Typography variant="h6">Información del Usuario</Typography>
+      <Card sx={cardSx}>
+        <Box sx={{ backgroundColor: "#1B3B6F", color: "white", px: 3, py: 2 }}>
+          <Typography sx={{ fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 18 }}>Información del Usuario</Typography>
         </Box>
         
-        <CardContent>
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
-            <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+        <CardContent sx={{ p: 3 }}>
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, ...formFieldsSx }}>
+            <Box sx={rowSx}>
               <TextField
                 fullWidth
                 label="Nombre de usuario"
@@ -185,7 +209,7 @@ const bancosPeru = [
               />
             </Box>
 
-            <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+            <Box sx={rowSx}>
               <TextField
                 fullWidth
                 label="Nombre completo"
@@ -205,7 +229,7 @@ const bancosPeru = [
               />
             </Box>
 
-            <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+            <Box sx={rowSx}>
               <TextField
                 fullWidth
                 label="Empresa"
@@ -225,7 +249,7 @@ const bancosPeru = [
               />
             </Box>
 
-            <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+            <Box sx={rowSx}>
               <TextField
                 fullWidth
                 label="DNI"
@@ -244,7 +268,7 @@ const bancosPeru = [
               />
             </Box>
 
-            <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+            <Box sx={rowSx}>
               <TextField
                 fullWidth
                 label="Área"
@@ -263,7 +287,7 @@ const bancosPeru = [
               />
             </Box>
 
-            <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+            <Box sx={rowSx}>
               <TextField
                 fullWidth
                 label="Gerencia"
@@ -292,6 +316,7 @@ const bancosPeru = [
                   value={formData.banco || ""}
                   onChange={handleChange}
                   variant="outlined"
+                  MenuProps={menuProps}
                 >
                   <MenuItem value="">
                     <em>Seleccionar banco</em>
@@ -323,12 +348,7 @@ const bancosPeru = [
               <Button
                 type="submit"
                 variant="contained"
-                sx={{
-                  backgroundColor: "#F15A29",
-                  "&:hover": { backgroundColor: "#D44115" },
-                  px: 4,
-                  py: 1.5
-                }}
+                sx={submitBtnSx}
               >
                 Guardar cambios
               </Button>
