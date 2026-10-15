@@ -21,6 +21,12 @@ const NAV_ITEMS = [
 
 const FIELD_LABELS = { dni: "DNI", cargo: "Cargo", banco: "Banco", cuenta_bancaria: "Cuenta Bancaria" };
 
+/* Botones del diálogo "¿Cerrar sesión?": mismo alto, mismo tamaño de letra y sin partir el texto */
+const LOGOUT_BTN_SX = {
+  flex: 1, height: 44, px: 2.5, borderRadius: "10px", textTransform: "none",
+  fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 14, whiteSpace: "nowrap",
+};
+
 const Navbar = () => {
   const [user, setUser] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -164,18 +170,18 @@ const Navbar = () => {
         </DialogActions>
       </Dialog>
 
-      <Dialog open={openLogoutDialog} onClose={() => setOpenLogoutDialog(false)} PaperProps={{ sx: { borderRadius: "16px", p: 1, maxWidth: 360 } }}>
-        <DialogTitle sx={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 16 }}>¿Cerrar sesión?</DialogTitle>
+      <Dialog open={openLogoutDialog} onClose={() => setOpenLogoutDialog(false)} maxWidth="xs" fullWidth PaperProps={{ sx: { borderRadius: "16px", p: 1 } }}>
+        <DialogTitle sx={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 18, color: "#2D3350" }}>¿Cerrar sesión?</DialogTitle>
         <DialogContent>
-          <Typography sx={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: "#5A6280" }}>Se cerrará tu sesión actual en Arendir.</Typography>
+          <Typography sx={{ fontFamily: "'DM Sans', sans-serif", fontSize: 15, lineHeight: 1.6, color: "#5A6280" }}>Se cerrará tu sesión actual en Arendir.</Typography>
         </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
+        <DialogActions sx={{ px: 3, pb: 2, gap: 1.5, "& > :not(:first-of-type)": { ml: 0 } }}>
           <Button onClick={() => setOpenLogoutDialog(false)}
-            sx={{ flex: 1, borderRadius: "10px", border: "1.5px solid #E2E6F0", color: "#5A6280", fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, textTransform: "none" }}>
+            sx={{ ...LOGOUT_BTN_SX, border: "1.5px solid #E2E6F0", color: "#5A6280", fontWeight: 600, "&:hover": { background: "#F8F9FC", borderColor: "#C9CEDD" } }}>
             Cancelar
           </Button>
           <Button onClick={() => { setOpenLogoutDialog(false); handleLogout(); }} variant="contained"
-            sx={{ flex: 1, borderRadius: "10px", background: "#1B3B6F", fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, textTransform: "none", "&:hover": { background: "#10233F" } }}>
+            sx={{ ...LOGOUT_BTN_SX, fontWeight: 700, background: "#1B3B6F", boxShadow: "0 4px 12px rgba(27,59,111,0.3)", "&:hover": { background: "#10233F" } }}>
             Cerrar sesión
           </Button>
         </DialogActions>
