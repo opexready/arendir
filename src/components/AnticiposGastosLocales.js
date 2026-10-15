@@ -21,6 +21,61 @@ import { FormSkeleton, PageFade } from "./PageLoader";
 import api, { baseURL } from "../api";
 import "./AnticiposGastosLocales.css"; // Mantén tu archivo CSS personalizado si es necesario
 import { useNavigate } from "react-router-dom";
+/* ── Estilos compartidos para uniformidad (tipografía, tamaños y botones) ── */
+const FONT_DISPLAY = "'Plus Jakarta Sans', sans-serif";
+const FONT_BODY = "'DM Sans', sans-serif";
+
+const topBtnSx = {
+  display: "flex", alignItems: "center", justifyContent: "center", gap: 1,
+  border: "none", cursor: "pointer", minWidth: { xs: "100%", sm: 210 },
+};
+const cardSx = {
+  borderRadius: "16px", border: "1px solid #E2E6F0",
+  boxShadow: "0 2px 16px rgba(27,59,111,0.08)",
+};
+const titleSx = {
+  fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 24, color: "#1B3B6F",
+};
+const formFieldsSx = {
+  "& .MuiOutlinedInput-root": {
+    borderRadius: "10px", fontFamily: FONT_BODY, fontSize: 15, background: "#F8F9FC",
+    "& fieldset": { borderColor: "#E2E6F0" },
+    "&:hover fieldset": { borderColor: "#1B3B6F" },
+    "&.Mui-focused": { background: "#fff" },
+    "&.Mui-focused fieldset": { borderColor: "#1B3B6F", borderWidth: "1.5px" },
+  },
+  "& .MuiInputLabel-root": {
+    fontFamily: FONT_DISPLAY, fontSize: 14, fontWeight: 600, color: "#9099B5",
+    "&.Mui-focused": { color: "#1B3B6F" },
+  },
+};
+const submitBtnSx = {
+  mt: 4, height: 48, borderRadius: "12px", textTransform: "none",
+  fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 15, backgroundColor: "#1B3B6F",
+  boxShadow: "0 4px 12px rgba(27,59,111,0.3)",
+  "&:hover": { backgroundColor: "#10233F" },
+  "&.Mui-disabled": { backgroundColor: "#C9CEDD", color: "#fff" },
+};
+const dialogTitleSx = {
+  fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 18, color: "#2D3350",
+};
+const dialogContentSx = {
+  "& .MuiDialogContentText-root, & .MuiTypography-root, & .MuiFormControlLabel-label": {
+    fontFamily: FONT_BODY,
+  },
+  "& .MuiTableCell-root": { fontFamily: FONT_BODY, fontSize: 14, color: "#2D3350" },
+};
+const dialogActionsSx = {
+  px: 3, pb: 2, gap: 1,
+  "& .MuiButton-root": {
+    fontFamily: FONT_DISPLAY, fontWeight: 600, fontSize: 14,
+    textTransform: "none", borderRadius: "10px", px: 2.5,
+  },
+  "& .MuiButton-colorPrimary": { color: "#1B3B6F" },
+  "& .MuiButton-colorSecondary": { color: "#0C9A6C", fontWeight: 700 },
+  "& .MuiButton-root.Mui-disabled": { color: "rgba(0,0,0,0.26)" },
+};
+
 const AnticiposGastosLocales = () => {
   const getCurrentDate = () => {
     const today = new Date();
@@ -192,62 +247,33 @@ const fetchTipoCambio = async (fecha) => {
 
   return (
     <Container sx={{ paddingTop: 2 }}>
-      <Container sx={{ marginBottom: 2 }}>
-        <Box display="flex" justifyContent="flex-end">
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ marginRight: 2 }}
-            onClick={handleAnticipoViajes}
-          >
-            <img
-              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa11.png?alt=media&token=6d72c9af-25f8-43b4-89e8-fb82b22224de"
-              alt="Ícono de Anticipo Viajes"
-              style={{ height: "24px" }} // Ajusta el tamaño de la imagen
-            />
+      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5, mb: 2 }}>
+          <Box component="button" className="ar-btn ar-btn-primary" onClick={handleAnticipoViajes} sx={topBtnSx}>
+            <img src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa11.png?alt=media&token=6d72c9af-25f8-43b4-89e8-fb82b22224de"
+              alt="" style={{ height: 18, filter: "brightness(0) invert(1)" }} />
             Anticipo Viajes
-          </Button>
-          <Button
-            variant="contained"
-            color="warning"
-            sx={{ marginRight: 2 }}
-            onClick={handleAnticipoGastosLocales}
-          >
-            <img
-              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa12.png?alt=media&token=605b5260-250c-4fb0-ade2-ff241845be1c"
-              alt="Ícono de Anticipo Gastos Locales"
-              style={{ height: "24px" }} // Ajusta el tamaño de la imagen
-            />
+          </Box>
+
+          <Box component="button" className="ar-btn ar-btn-orange" onClick={handleAnticipoGastosLocales} sx={topBtnSx}>
+            <img src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa12.png?alt=media&token=605b5260-250c-4fb0-ade2-ff241845be1c"
+              alt="" style={{ height: 18, filter: "brightness(0) invert(1)" }} />
             Anticipo Gastos Locales
-          </Button>
-          <Button
-            variant="contained"
-            color="success"
-            sx={{ marginRight: 2 }}
-            onClick={handleAnticipoGastosLocales}
-          >
-            <img
-              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa13.png?alt=media&token=7b15c497-d494-4a52-9011-ee7e6bdbe1e8"
-              alt="Ícono de Finalizar Solicitud"
-              style={{ height: "24px" }} // Ajusta el tamaño de la imagen
-            />
+          </Box>
+
+          <Box component="button" className="ar-btn ar-btn-success" onClick={handleAnticipoGastosLocales} sx={topBtnSx}>
+            <img src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa13.png?alt=media&token=7b15c497-d494-4a52-9011-ee7e6bdbe1e8"
+              alt="" style={{ height: 18, filter: "brightness(0) invert(1)" }} />
             Finalizar Solicitud
-          </Button>
+          </Box>
         </Box>
-      </Container>
-      <Card sx={{ boxShadow: 3 }}>
+      <Card sx={cardSx}>
         <CardContent>
           <Typography
             variant="h4"
             component="h1"
             align="center"
             gutterBottom
-            sx={{
-              color: "#F15A29",
-              fontWeight: "bold",
-              margin: "0",
-              fontSize: "1.5rem",
-            }}
+            sx={titleSx}
           >
             Anticipos Gastos Locales
           </Typography>
@@ -256,7 +282,7 @@ const fetchTipoCambio = async (fecha) => {
             component="form"
             onSubmit={handleSubmit}
             noValidate
-            sx={{ mt: 2 }}
+            sx={{ mt: 2, ...formFieldsSx }}
           >
             <TextField
               variant="outlined"
@@ -322,19 +348,7 @@ const fetchTipoCambio = async (fecha) => {
               fullWidth
               variant="contained"
               disabled={isLoading}
-              sx={{
-                mt: 3,
-                mb: 2,
-                backgroundColor: "#2E3192",
-                "&:hover": {
-                  backgroundColor: "#1F237A",
-                },
-                color: "white",
-                "&:disabled": {
-                  backgroundColor: "#A5A5A5",
-                  color: "#E0E0E0",
-                },
-              }}
+              sx={submitBtnSx}
             >
               {isLoading ? "Enviando..." : "Solicitar"}
             </Button>
@@ -343,11 +357,11 @@ const fetchTipoCambio = async (fecha) => {
       </Card>
 
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Registro Exitoso</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={dialogTitleSx}>Registro Exitoso</DialogTitle>
+        <DialogContent sx={dialogContentSx}>
           <Typography>{responseMessage}</Typography>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={dialogActionsSx}>
           <Button onClick={handleClose} color="primary">
             OK
           </Button>
