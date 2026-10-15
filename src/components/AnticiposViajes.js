@@ -31,6 +31,67 @@ import ubigeoData from "../data/ubigeoData";
 import paisesSudamerica from "../data/paisesMundo";
 import { useNavigate } from "react-router-dom";
 
+/* ── Estilos compartidos para uniformidad (tipografía, tamaños y botones) ── */
+const FONT_DISPLAY = "'Plus Jakarta Sans', sans-serif";
+const FONT_BODY = "'DM Sans', sans-serif";
+
+const topBtnSx = {
+  display: "flex", alignItems: "center", justifyContent: "center", gap: 1,
+  border: "none", cursor: "pointer", minWidth: { xs: "100%", sm: 210 },
+};
+const cardSx = {
+  borderRadius: "16px", border: "1px solid #E2E6F0",
+  boxShadow: "0 2px 16px rgba(27,59,111,0.08)",
+};
+const titleSx = {
+  fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 24, color: "#1B3B6F",
+};
+const formFieldsSx = {
+  "& .MuiOutlinedInput-root": {
+    borderRadius: "10px", fontFamily: FONT_BODY, fontSize: 15, background: "#F8F9FC",
+    "& fieldset": { borderColor: "#E2E6F0" },
+    "&:hover fieldset": { borderColor: "#1B3B6F" },
+    "&.Mui-focused": { background: "#fff" },
+    "&.Mui-focused fieldset": { borderColor: "#1B3B6F", borderWidth: "1.5px" },
+  },
+  "& .MuiInputLabel-root": {
+    fontFamily: FONT_DISPLAY, fontSize: 14, fontWeight: 600, color: "#9099B5",
+    "&.Mui-focused": { color: "#1B3B6F" },
+  },
+};
+const submitBtnSx = {
+  mt: 4, height: 48, borderRadius: "12px", textTransform: "none",
+  fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 15, backgroundColor: "#1B3B6F",
+  boxShadow: "0 4px 12px rgba(27,59,111,0.3)",
+  "&:hover": { backgroundColor: "#10233F" },
+  "&.Mui-disabled": { backgroundColor: "#C9CEDD", color: "#fff" },
+};
+const dialogTitleSx = {
+  fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 18, color: "#2D3350",
+};
+const dialogContentSx = {
+  "& .MuiDialogContentText-root, & .MuiTypography-root, & .MuiFormControlLabel-label": {
+    fontFamily: FONT_BODY,
+  },
+  "& .MuiTableCell-root": { fontFamily: FONT_BODY, fontSize: 14, color: "#2D3350" },
+};
+const dialogActionsSx = {
+  px: 3, pb: 2, gap: 1,
+  "& .MuiButton-root": {
+    fontFamily: FONT_DISPLAY, fontWeight: 600, fontSize: 14,
+    textTransform: "none", borderRadius: "10px", px: 2.5,
+  },
+  "& .MuiButton-colorPrimary": { color: "#1B3B6F" },
+  "& .MuiButton-colorSecondary": { color: "#0C9A6C", fontWeight: 700 },
+  "& .MuiButton-root.Mui-disabled": { color: "rgba(0,0,0,0.26)" },
+};
+const selectDestBtnSx = {
+  mt: 2, mb: 2, height: 48, borderRadius: "10px", textTransform: "none",
+  fontFamily: FONT_DISPLAY, fontWeight: 600, fontSize: 14,
+  color: "#1B3B6F", borderColor: "#1B3B6F",
+  "&:hover": { backgroundColor: "#E6EEF8", borderColor: "#1B3B6F" },
+};
+
 const AnticiposViajes = () => {
   
   const getCurrentDate = () => {
@@ -447,65 +508,37 @@ const AnticiposViajes = () => {
 
   return (
     <Container sx={{ paddingTop: 2 }}>
-      <Container sx={{ marginBottom: 2 }}>
-        <Box display="flex" justifyContent="flex-end">
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ marginRight: 2 }}
-            onClick={() => setShowForm(true)} // Mostrar formulario
-          >
-            <img
-              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa11.png?alt=media&token=6d72c9af-25f8-43b4-89e8-fb82b22224de"
-              alt="Ícono de Anticipo Viajes"
-              style={{ height: "24px" }} // Ajusta el tamaño de la imagen
-            />
+      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5, mb: 2 }}>
+          <Box component="button" className="ar-btn ar-btn-primary" onClick={() => setShowForm(true)} sx={topBtnSx}>
+            <img src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa11.png?alt=media&token=6d72c9af-25f8-43b4-89e8-fb82b22224de"
+              alt="" style={{ height: 18, filter: "brightness(0) invert(1)" }} />
             Anticipo Viajes
-          </Button>
-          <Button
-            variant="contained"
-            color="warning"
-            sx={{ marginRight: 2 }}
-            onClick={handleAnticipoGastosLocales}
-          >
-            <img
-              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa12.png?alt=media&token=605b5260-250c-4fb0-ade2-ff241845be1c"
-              alt="Ícono de Anticipo Gastos Locales"
-              style={{ height: "24px" }} // Ajusta el tamaño de la imagen
-            />
+          </Box>
+
+          <Box component="button" className="ar-btn ar-btn-orange" onClick={handleAnticipoGastosLocales} sx={topBtnSx}>
+            <img src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa12.png?alt=media&token=605b5260-250c-4fb0-ade2-ff241845be1c"
+              alt="" style={{ height: 18, filter: "brightness(0) invert(1)" }} />
             Anticipo Gastos Locales
-          </Button>
-          <Button
-            variant="contained"
-            color="success"
-            sx={{ marginRight: 2 }}
-            onClick={handleOpenConfirmFinalizarDialog}
-          >
-            <img
-              src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa13.png?alt=media&token=7b15c497-d494-4a52-9011-ee7e6bdbe1e8"
-              alt="Ícono de Finalizar Solicitud"
-              style={{ height: "24px" }} // Ajusta el tamaño de la imagen
-            />
+          </Box>
+
+          <Box component="button" className="ar-btn ar-btn-success" onClick={handleOpenConfirmFinalizarDialog} sx={topBtnSx}>
+            <img src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa13.png?alt=media&token=7b15c497-d494-4a52-9011-ee7e6bdbe1e8"
+              alt="" style={{ height: 18, filter: "brightness(0) invert(1)" }} />
             Finalizar Solicitud
-          </Button>
+          </Box>
         </Box>
-      </Container>
-      <Typography variant="h6" gutterBottom>
+      <Box className="ar-rendicion-chip" sx={{ mb: 2, display: "inline-flex" }}>
+        <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#F15A29", display: "inline-block", marginRight: 6 }}></span>
         SOLICITUD: {ultimaSolicitud}
-      </Typography>
-      <Card sx={{ boxShadow: 3 }}>
+      </Box>
+      <Card sx={cardSx}>
         <CardContent>
           <Typography
             variant="h4"
             component="h1"
             align="center"
             gutterBottom
-            sx={{
-              color: "#F15A29",
-              fontWeight: "bold",
-              margin: "0",
-              fontSize: "1.5rem",
-            }}
+            sx={titleSx}
           >
             Anticipos de Viajes
           </Typography>
@@ -515,7 +548,7 @@ const AnticiposViajes = () => {
             component="form"
             onSubmit={handleSubmit}
             noValidate
-            sx={{ mt: 2 }}
+            sx={{ mt: 2, ...formFieldsSx }}
           >
             {/* Campos del formulario */}
             <TextField
@@ -545,22 +578,12 @@ const AnticiposViajes = () => {
                     console.log("Botón de selección de destino clickeado");
                     setOpenUbigeoDialog(true);
                   }}
-                  sx={{
-                    mt: 2,
-                    mb: 2,
-                    color: "#2E3192",
-                    borderColor: "#2E3192",
-                    "&:hover": {
-                      backgroundColor: "#F15A29",
-                      borderColor: "#F15A29",
-                      color: "white",
-                    },
-                  }}
+                  sx={selectDestBtnSx}
                 >
                   Seleccionar Destino (Nacional)
                 </Button>
 
-                <Typography variant="body1" sx={{ mb: 2 }}>
+                <Typography variant="body1" sx={{ mb: 2, fontFamily: FONT_BODY, fontSize: 14, color: "#5A6280" }}>
                   {formData.destino
                     ? `Destino seleccionado: ${formData.destino}`
                     : "No se ha seleccionado destino."}
@@ -681,19 +704,7 @@ const AnticiposViajes = () => {
               fullWidth
               variant="contained"
               disabled={isLoading}
-              sx={{
-                mt: 3,
-                mb: 2,
-                backgroundColor: "#2E3192",
-                "&:hover": {
-                  backgroundColor: "#1F237A",
-                },
-                color: "white",
-                "&:disabled": {
-                  backgroundColor: "#A5A5A5",
-                  color: "#E0E0E0",
-                },
-              }}
+              sx={submitBtnSx}
             >
               {isLoading ? "Enviando..." : "Solicitar"}
             </Button>
@@ -703,11 +714,11 @@ const AnticiposViajes = () => {
 
       {/* Modal para confimar el registro */}
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Registro Exitoso</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={dialogTitleSx}>Registro Exitoso</DialogTitle>
+        <DialogContent sx={dialogContentSx}>
           <Typography>{responseMessage}</Typography>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={dialogActionsSx}>
           <Button onClick={handleClose} color="primary">
             OK
           </Button>
@@ -722,8 +733,8 @@ const AnticiposViajes = () => {
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>Detalle del Documento</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={dialogTitleSx}>Detalle del Documento</DialogTitle>
+        <DialogContent sx={dialogContentSx}>
           {documentDetail ? (
             <TableContainer component={Paper}>
               <Table>
@@ -749,7 +760,7 @@ const AnticiposViajes = () => {
             <CircularProgress />
           )}
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={dialogActionsSx}>
           <Button onClick={handleCloseDetailDialog} color="primary">
             Cerrar
           </Button>
@@ -760,11 +771,11 @@ const AnticiposViajes = () => {
         open={confirmDeleteDialogOpen}
         onClose={handleCloseConfirmDeleteDialog}
       >
-        <DialogTitle>Confirmación</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={dialogTitleSx}>Confirmación</DialogTitle>
+        <DialogContent sx={dialogContentSx}>
           <Typography>¿Desea eliminar este registro?</Typography>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={dialogActionsSx}>
           <Button onClick={handleCloseConfirmDeleteDialog} color="primary">
             No
           </Button>
@@ -778,13 +789,13 @@ const AnticiposViajes = () => {
         open={confirmFinalizarDialogOpen}
         onClose={handleCloseConfirmFinalizarDialog}
       >
-        <DialogTitle>Confirmación</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={dialogTitleSx}>Confirmación</DialogTitle>
+        <DialogContent sx={dialogContentSx}>
           <DialogContentText>
             ¿Estás seguro de finalizar la solicitud de anticipo?
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={dialogActionsSx}>
           <Button onClick={handleCloseConfirmFinalizarDialog} color="primary">
             No
           </Button>
@@ -808,8 +819,8 @@ const AnticiposViajes = () => {
         fullWidth
         sx={{ "& .MuiDialog-paper": { padding: 3, borderRadius: 2 } }}
       >
-        <DialogTitle>Seleccionar Destino</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={dialogTitleSx}>Seleccionar Destino</DialogTitle>
+        <DialogContent sx={{ ...dialogContentSx, ...formFieldsSx, "& .MuiTextField-root": { mt: 1.5 } }}>
           {/* Aquí puedes añadir los campos de selección de departamento, provincia y distrito */}
           <TextField
             select
@@ -855,9 +866,9 @@ const AnticiposViajes = () => {
             ))}
           </TextField>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={dialogActionsSx}>
           <Button onClick={() => setOpenUbigeoDialog(false)}>Cancelar</Button>
-          <Button onClick={handleDestinoSelection}>Aceptar</Button>
+          <Button onClick={handleDestinoSelection} color="secondary">Aceptar</Button>
         </DialogActions>
       </Dialog>
     </Container>
