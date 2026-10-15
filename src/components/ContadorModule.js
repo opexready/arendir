@@ -635,7 +635,7 @@ const ContadorModule = () => {
                                     <img
                                       src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa17.png?alt=media&token=aae19df1-ae52-45f4-8653-042af6b5a59b"
                                       alt="Ícono Número de Ítem"
-                                      style={{ height: "24px", marginRight: "8px" }}
+                                      style={{ height: "24px" }}
                                     />
                                   </Button>
                                 </TableCell>
