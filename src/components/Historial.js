@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Container, Typography, Box, Alert, Collapse, Chip } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import { Container, Typography, Box, Alert, Chip } from "@mui/material";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import axios from "axios";
 import "../arendir-design.css";
 import { HistorialSkeleton, PageFade } from "./PageLoader";
@@ -15,11 +14,16 @@ const STATUS_COLORS = {
   "RECHAZADO":  { bg: "#fef0ee", color: "#c0392b", border: "#e17055" },
 };
 
-const HistorialTable = ({ title, icon, data, defaultOpen = true }) => {
-  const [open, setOpen] = useState(defaultOpen);
+const SUBHEAD_SX = {
+  fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 12,
+  color: "#5A6280", textTransform: "uppercase", letterSpacing: "0.5px",
+};
 
-  // Sort by nombre descending (R00010 before R00001)
-  const sorted = [...data].sort((a, b) => b.nombre.localeCompare(a.nombre));
+const HistorialTable = ({ title, icon, data }) => {
+  // Más reciente primero: el nombre lleva un número correlativo (R00015 es posterior a R00009)
+  const sorted = [...data].sort((a, b) =>
+    (b.nombre || "").localeCompare(a.nombre || "", undefined, { numeric: true })
+  );
 
   return (
     <Box sx={{
@@ -28,54 +32,46 @@ const HistorialTable = ({ title, icon, data, defaultOpen = true }) => {
       animation: "fadeUp 0.4s ease both",
       "@keyframes fadeUp": { from: { opacity: 0, transform: "translateY(12px)" }, to: { opacity: 1, transform: "translateY(0)" } },
     }}>
-      {/* Header — clickable to collapse */}
-      <Box
-        onClick={() => setOpen(!open)}
-        sx={{
-          background: "#1B3B6F", color: "#fff",
-          px: 2.5, py: 1.5,
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          cursor: "pointer", userSelect: "none",
-          transition: "background 0.2s",
-          "&:hover": { background: "#10233F" },
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-          <img src={icon} alt="" style={{ height: 22, filter: "brightness(0) invert(1)" }} />
-          <Typography sx={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 15, letterSpacing: "0.5px" }}>
-            {title}
+      {/* Encabezado de la columna */}
+      <Box sx={{
+        background: "#1B3B6F", color: "#fff", px: 2.5, py: 1.5,
+        display: "flex", alignItems: "center", gap: 1.5,
+      }}>
+        <img src={icon} alt="" style={{ height: 22, filter: "brightness(0) invert(1)" }} />
+        <Typography sx={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 15, letterSpacing: "0.5px" }}>
+          {title}
+        </Typography>
+        <Box sx={{ background: "rgba(255,255,255,0.2)", borderRadius: "12px", px: 1, py: 0.2 }}>
+          <Typography sx={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 13 }}>
+            {data.length}
           </Typography>
-          <Box sx={{ background: "rgba(255,255,255,0.2)", borderRadius: "12px", px: 1, py: 0.2 }}>
-            <Typography sx={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 13 }}>
-              {data.length}
-            </Typography>
-          </Box>
         </Box>
-        {open ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
       </Box>
 
-      {/* Collapsible content */}
-      <Collapse in={open}>
-        {/* Column headers */}
-        <Box sx={{ display: "flex", justifyContent: "space-between", px: 2.5, py: 1, background: "#F8F9FC", borderBottom: "1px solid #E2E6F0" }}>
-          <Typography sx={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 12, color: "#5A6280", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-            {title === "GASTO" ? "Gasto" : "Anticipo"}
-          </Typography>
-          <Typography sx={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 12, color: "#5A6280", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-            Estado
-          </Typography>
-        </Box>
+      {/* Títulos de columnas */}
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", px: 2.5, py: 1, background: "#F8F9FC", borderBottom: "1px solid #E2E6F0" }}>
+        <Typography sx={{ ...SUBHEAD_SX, display: "flex", alignItems: "center", gap: 0.5 }}>
+          Más recientes primero <ArrowDownwardIcon sx={{ fontSize: 14 }} />
+        </Typography>
+        <Typography sx={SUBHEAD_SX}>Estado</Typography>
+      </Box>
 
-        {/* Rows */}
+      {/* Filas: de la solicitud más reciente a la más antigua (con scroll propio) */}
+      <Box sx={{
+        maxHeight: { xs: "none", md: "max(320px, calc(100vh - 340px))" },
+        overflowY: "auto",
+        "&::-webkit-scrollbar": { width: 6 },
+        "&::-webkit-scrollbar-thumb": { background: "#D5DAE8", borderRadius: 3 },
+      }}>
         {sorted.map((item, i) => {
           const statusStyle = STATUS_COLORS[item.estado] || { bg: "#F0F2F8", color: "#5A6280", border: "#E2E6F0" };
           return (
-            <Box key={i} sx={{
+            <Box key={`${item.nombre}-${i}`} sx={{
               display: "flex", justifyContent: "space-between", alignItems: "center",
               px: 2.5, py: 1.2, borderBottom: "1px solid #F0F2F8",
               background: i % 2 === 0 ? "#fff" : "#FAFBFD",
               transition: "background 0.15s",
-              animation: `fadeIn 0.3s ease ${i * 0.03}s both`,
+              animation: `fadeIn 0.3s ease ${Math.min(i, 15) * 0.03}s both`,
               "@keyframes fadeIn": { from: { opacity: 0 }, to: { opacity: 1 } },
               "&:hover": { background: "#F0F2F8" },
               "&:last-child": { borderBottom: "none" },
@@ -106,7 +102,7 @@ const HistorialTable = ({ title, icon, data, defaultOpen = true }) => {
             </Typography>
           </Box>
         )}
-      </Collapse>
+      </Box>
     </Box>
   );
 };
@@ -157,18 +153,16 @@ const Historial = () => {
   return (
     <PageFade ready={!loading}>
       <Container sx={{ paddingTop: 2 }}>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2.5, alignItems: "start" }}>
           <HistorialTable
             title="GASTO"
             icon="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa5.png?alt=media&token=b6854d9a-a91c-4930-bac3-150808ccabe5"
             data={rendiciones}
-            defaultOpen={true}
           />
           <HistorialTable
             title="ANTICIPO"
             icon="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa6.png?alt=media&token=7ac20ab7-9ee1-45f3-ad4f-ab7d40c3e2cc"
             data={solicitudes}
-            defaultOpen={true}
           />
         </Box>
       </Container>
