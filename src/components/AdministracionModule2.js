@@ -25,6 +25,8 @@ import {
   DialogContent,
 } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import SearchIcon from "@mui/icons-material/Search";
+import DownloadIcon from "@mui/icons-material/Download";
 import axios from "axios";
 import { baseURL, getUsersByCompanyAndRole } from "../api";
 import { red } from "@mui/material/colors";
@@ -122,6 +124,141 @@ const pdfBtnSx = {
   minWidth: 140, height: 40, px: 2, borderRadius: "10px", textTransform: "none", gap: 1,
   fontFamily: FONT_DISPLAY, fontWeight: 600, fontSize: 13, whiteSpace: "nowrap",
   boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+};
+
+/* ── Buscador de comprobantes aprobados (lógica) ── */
+const ESTADOS_APROBADOS = ["APROBADO", "ABONADO"];
+const ETIQUETA_ESTADO = { APROBADO: "POR ABONAR", ABONADO: "TERMINADO", RECHAZADO: "RECHAZADO" };
+const MAX_DETALLES = 150;
+
+const soloDigitos = (v) => String(v ?? "").replace(/\D/g, "");
+
+// "00012345" y "12345" son el mismo número
+const normalizarCorrelativo = (v) => {
+  const t = String(v ?? "").trim();
+  return /^\d+$/.test(t) ? String(parseInt(t, 10)) : t.toUpperCase();
+};
+
+// "F001-00012345" → { serie: "F001", correlativo: "12345" }
+const separarSerieNumero = (texto) => {
+  const t = String(texto ?? "").trim().toUpperCase();
+  if (!t) return { serie: "", correlativo: "" };
+  const partes = t.split(/[-\s/]+/).filter(Boolean);
+  if (partes.length === 1) {
+    return /^\d+$/.test(partes[0])
+      ? { serie: "", correlativo: normalizarCorrelativo(partes[0]) }
+      : { serie: partes[0], correlativo: "" };
+  }
+  return { serie: partes[0], correlativo: normalizarCorrelativo(partes[1]) };
+};
+
+const coincideSerieNumero = (doc, buscada) => {
+  if (buscada.serie && String(doc.serie ?? "").trim().toUpperCase() !== buscada.serie) return false;
+  if (buscada.correlativo && normalizarCorrelativo(doc.correlativo ?? doc.numero) !== buscada.correlativo) return false;
+  return true;
+};
+
+const textoSerieNumero = (doc) => {
+  const serie = String(doc.serie ?? "").trim();
+  const numero = String(doc.correlativo ?? doc.numero ?? "").trim();
+  return serie && numero ? `${serie}-${numero}` : serie || numero || "—";
+};
+
+const buscarComprobantesAprobados = async ({ http, idEmpresa, ruc, serieNumero }) => {
+  const rucLimpio = soloDigitos(ruc);
+  const buscada = separarSerieNumero(serieNumero);
+  if (!rucLimpio && !buscada.serie && !buscada.correlativo) {
+    return { error: "Ingresa el RUC y/o la serie-número para buscar." };
+  }
+  if (rucLimpio && rucLimpio.length !== 11) {
+    return { error: "El RUC debe tener 11 dígitos." };
+  }
+
+  // Rendiciones aprobadas (POR ABONAR) y ya abonadas (TERMINADO)
+  const respuestas = await Promise.all(
+    ESTADOS_APROBADOS.map((estado) =>
+      http.get(`${baseURL}/api/rendiciones-solicitudes/con-documentos/`, {
+        params: { estado, id_empresa: idEmpresa },
+      })
+    )
+  );
+
+  let candidatos = [];
+  respuestas.forEach((r) =>
+    (Array.isArray(r.data) ? r.data : []).forEach((item) =>
+      (item.documentos || []).forEach((doc) =>
+        candidatos.push({ doc, rendicion: item.rendicion || {} })
+      )
+    )
+  );
+
+  if (rucLimpio) {
+    candidatos = candidatos.filter((c) => soloDigitos(c.doc.ruc) === rucLimpio);
+  }
+
+  if (buscada.serie || buscada.correlativo) {
+    // Si la lista no trae serie/número, se consulta el detalle de cada comprobante
+    const faltaDetalle = (c) =>
+      c.doc.serie === undefined && c.doc.correlativo === undefined && c.doc.numero === undefined;
+    const pendientes = candidatos.filter(faltaDetalle).length;
+    if (pendientes > MAX_DETALLES) {
+      return {
+        error: `Hay ${pendientes} comprobantes por revisar. Ingresa también el RUC del proveedor para acotar la búsqueda.`,
+      };
+    }
+    if (pendientes > 0) {
+      candidatos = await Promise.all(
+        candidatos.map(async (c) => {
+          if (!faltaDetalle(c)) return c;
+          try {
+            const d = await http.get(`${baseURL}/documentos/${c.doc.id}`);
+            return { ...c, doc: { ...d.data, ...c.doc } };
+          } catch (e) {
+            return c;
+          }
+        })
+      );
+    }
+    candidatos = candidatos.filter((c) => coincideSerieNumero(c.doc, buscada));
+  }
+
+  return { resultados: candidatos };
+};
+
+const extensionDe = (url, tipoMime) => {
+  const m = String(url).split("?")[0].match(/\.([a-zA-Z0-9]{2,5})$/);
+  if (m) return m[1].toLowerCase();
+  const mapa = { "application/pdf": "pdf", "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
+  return mapa[tipoMime] || "pdf";
+};
+
+// Descarga el archivo; si el navegador lo bloquea, lo abre en una pestaña nueva
+const descargarComprobante = async (doc) => {
+  const url = doc.archivo;
+  if (!url) return;
+  const base = `${doc.ruc || "comprobante"}_${textoSerieNumero(doc) !== "—" ? textoSerieNumero(doc) : doc.id}`
+    .replace(/[^A-Za-z0-9_-]/g, "");
+  try {
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const blob = await resp.blob();
+    const enlace = document.createElement("a");
+    enlace.href = URL.createObjectURL(blob);
+    enlace.download = `${base}.${extensionDe(url, blob.type)}`;
+    document.body.appendChild(enlace);
+    enlace.click();
+    enlace.remove();
+    URL.revokeObjectURL(enlace.href);
+  } catch (e) {
+    window.open(url, "_blank", "noopener");
+  }
+};
+/* ── fin del buscador ── */
+
+const buscarBtnSx = {
+  height: 44, borderRadius: "10px", textTransform: "none", fontFamily: FONT_DISPLAY,
+  fontWeight: 600, fontSize: 14, color: "#1B3B6F", borderColor: "#1B3B6F",
+  "&:hover": { backgroundColor: "#E6EEF8", borderColor: "#1B3B6F" },
 };
 
 const AdministracionModule2 = () => {
@@ -248,6 +385,48 @@ const AdministracionModule2 = () => {
 
     fetchUserAndColaboradores();
   }, []);
+
+  // Buscador de comprobantes aprobados
+  const [buscarOpen, setBuscarOpen] = useState(false);
+  const [busqueda, setBusqueda] = useState({ ruc: "", serieNumero: "" });
+  const [buscando, setBuscando] = useState(false);
+  const [resultadosBusqueda, setResultadosBusqueda] = useState(null);
+  const [errorBusqueda, setErrorBusqueda] = useState("");
+
+  const ejecutarBusqueda = async () => {
+    const userString = localStorage.getItem("user");
+    const user = userString ? JSON.parse(userString) : null;
+    const idEmpresa = user ? user.id_empresa : null;
+    setBuscando(true);
+    setErrorBusqueda("");
+    setResultadosBusqueda(null);
+    try {
+      const r = await buscarComprobantesAprobados({
+        http: axios,
+        idEmpresa,
+        ruc: busqueda.ruc,
+        serieNumero: busqueda.serieNumero,
+      });
+      if (r.error) setErrorBusqueda(r.error);
+      else setResultadosBusqueda(r.resultados);
+    } catch (error) {
+      console.error("Error al buscar comprobantes:", error);
+      setErrorBusqueda(
+        error.response
+          ? `El servidor respondió con un error (código ${error.response.status}). Avisa al equipo técnico.`
+          : "No se pudo conectar con el servidor. Revisa tu conexión e inténtalo de nuevo."
+      );
+    } finally {
+      setBuscando(false);
+    }
+  };
+
+  const cerrarBusqueda = () => {
+    setBuscarOpen(false);
+    setBusqueda({ ruc: "", serieNumero: "" });
+    setResultadosBusqueda(null);
+    setErrorBusqueda("");
+  };
 
   const fetchRendiciones = async () => {
     const userString = localStorage.getItem("user");
@@ -391,6 +570,12 @@ const AdministracionModule2 = () => {
       >
         Módulo de Administración - Rendiciones y Anticipos
       </Typography>
+      <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+        <Button variant="outlined" startIcon={<SearchIcon />} onClick={() => setBuscarOpen(true)} sx={buscarBtnSx}>
+          Buscar comprobante
+        </Button>
+      </Box>
+
 
       {/* Filtros */}
       <Paper elevation={0} sx={{ ...paperSx, p: 3, mb: 3, ...formFieldsSx }}>
@@ -959,6 +1144,133 @@ const AdministracionModule2 = () => {
           <Button onClick={handleCloseDetailDialog} color="primary">
             Cerrar
           </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Ventana: buscar comprobante aprobado por RUC y serie-número */}
+      <Dialog open={buscarOpen} onClose={cerrarBusqueda} maxWidth="lg" fullWidth PaperProps={{ sx: { borderRadius: "16px" } }}>
+        <DialogTitle sx={dialogTitleSx}>Buscar comprobante aprobado</DialogTitle>
+        <DialogContent sx={{ ...dialogContentSx, ...formFieldsSx, pt: "12px !important" }}>
+          <Typography sx={{ fontFamily: FONT_BODY, fontSize: 14, color: "#5A6280", mb: 2.5 }}>
+            Ingresa el RUC del proveedor y/o la serie-número del comprobante. Se busca entre las
+            rendiciones aprobadas (POR ABONAR) y las ya abonadas (TERMINADO).
+          </Typography>
+
+          <Grid container spacing={2} alignItems="flex-start">
+            <Grid item xs={12} md={4}>
+              <TextField
+                fullWidth
+                label="RUC del proveedor"
+                value={busqueda.ruc}
+                onChange={(e) => setBusqueda((p) => ({ ...p, ruc: soloDigitos(e.target.value) }))}
+                onKeyDown={(e) => e.key === "Enter" && ejecutarBusqueda()}
+                inputProps={{ maxLength: 11, inputMode: "numeric" }}
+                helperText="11 dígitos"
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <TextField
+                fullWidth
+                label="Serie-Número"
+                placeholder="F001-12345"
+                value={busqueda.serieNumero}
+                onChange={(e) => setBusqueda((p) => ({ ...p, serieNumero: e.target.value }))}
+                onKeyDown={(e) => e.key === "Enter" && ejecutarBusqueda()}
+                helperText="Ejemplo: F001-12345"
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Button
+                fullWidth
+                variant="contained"
+                onClick={ejecutarBusqueda}
+                disabled={buscando}
+                startIcon={buscando ? <CircularProgress size={18} color="inherit" /> : <SearchIcon />}
+                sx={{ ...filterBtnSx, height: 56, "&.Mui-disabled": { backgroundColor: "#C9CEDD", color: "#fff" } }}
+              >
+                {buscando ? "Buscando…" : "Buscar"}
+              </Button>
+            </Grid>
+          </Grid>
+
+          {errorBusqueda && (
+            <Typography sx={{ mt: 2, fontFamily: FONT_BODY, fontSize: 14, color: "#C62828" }}>
+              {errorBusqueda}
+            </Typography>
+          )}
+
+          {resultadosBusqueda !== null && resultadosBusqueda.length === 0 && (
+            <Typography sx={{ mt: 3, fontFamily: FONT_BODY, fontSize: 14, color: "#5A6280" }}>
+              No se encontró ningún comprobante aprobado con esos datos. Revisa el RUC y la
+              serie-número, o confirma que la rendición ya fue aprobada.
+            </Typography>
+          )}
+
+          {resultadosBusqueda !== null && resultadosBusqueda.length > 0 && (
+            <>
+              <Typography sx={{ mt: 3, mb: 1, fontFamily: FONT_DISPLAY, fontWeight: 600, fontSize: 14, color: "#1B3B6F" }}>
+                {resultadosBusqueda.length} comprobante{resultadosBusqueda.length === 1 ? "" : "s"} encontrado{resultadosBusqueda.length === 1 ? "" : "s"}
+              </Typography>
+              <TableContainer sx={{ maxHeight: 420, border: "1px solid #E2E6F0", borderRadius: "12px" }}>
+                <Table stickyHeader size="small">
+                  <TableHead>
+                    <TableRow>
+                      {["Rendición", "Colaborador", "Estado", "RUC", "Proveedor", "Serie-Número", "Emisión"].map((t) => (
+                        <TableCell key={t} align="left" sx={{ ...headCellSx, backgroundColor: "#1B3B6F" }}>{t}</TableCell>
+                      ))}
+                      <TableCell align="right" sx={{ ...headCellSx, backgroundColor: "#1B3B6F" }}>Total</TableCell>
+                      <TableCell align="center" sx={{ ...headCellSx, backgroundColor: "#1B3B6F" }}>Archivo</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {resultadosBusqueda.map((c) => (
+                      <TableRow key={c.doc.id} hover>
+                        <TableCell sx={{ ...bodyCellSx, fontWeight: 700, color: "#1B3B6F" }}>{c.rendicion.nombre || "—"}</TableCell>
+                        <TableCell sx={bodyCellSx}>{c.rendicion.nombre_usuario || "—"}</TableCell>
+                        <TableCell sx={bodyCellSx}>{ETIQUETA_ESTADO[c.rendicion.estado] || c.rendicion.estado || "—"}</TableCell>
+                        <TableCell sx={bodyCellSx}>{c.doc.ruc || "—"}</TableCell>
+                        <TableCell sx={bodyCellSx}>{c.doc.proveedor || "—"}</TableCell>
+                        <TableCell sx={bodyCellSx}>{textoSerieNumero(c.doc)}</TableCell>
+                        <TableCell sx={bodyCellSx}>{c.doc.fecha_emision || "—"}</TableCell>
+                        <TableCell align="right" sx={bodyCellSx}>{formatMoney(c.doc.total)}</TableCell>
+                        <TableCell align="center" sx={bodyCellSx}>
+                          <Box sx={{ display: "inline-flex", gap: 1 }}>
+                            <Button
+                              variant="contained"
+                              color="success"
+                              disabled={!c.doc.archivo}
+                              onClick={() => handleViewFile(c.doc.archivo)}
+                              sx={actionBtnSx}
+                              title="Ver archivo"
+                            >
+                              <img
+                                src="https://firebasestorage.googleapis.com/v0/b/hawejin-files.appspot.com/o/pa17.png?alt=media&token=aae19df1-ae52-45f4-8653-042af6b5a59b"
+                                alt="Ver archivo"
+                                style={{ height: "24px" }}
+                              />
+                            </Button>
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              disabled={!c.doc.archivo}
+                              onClick={() => descargarComprobante(c.doc)}
+                              sx={actionBtnSx}
+                              title="Descargar"
+                            >
+                              <DownloadIcon />
+                            </Button>
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </>
+          )}
+        </DialogContent>
+        <DialogActions sx={dialogActionsSx}>
+          <Button onClick={cerrarBusqueda} color="primary">Cerrar</Button>
         </DialogActions>
       </Dialog>
     </Container>
